@@ -1,34 +1,44 @@
-# PO1 Factory West Destroyed / Actor: HQ / Update: 07/05/2007 / VO Ready
-BaseDestroyed = {
-  {text = '<LOC X01_M01_130_010>[{i HQ}]: Scratch one of the bases. HQ out.', vid = 'X01_HQ_M01_03624.sfd', bank = 'X01_VO', cue = 'X01_HQ_M01_03624', faction = 'UEF'},
+# Dear Retard you arent here to complain but to work.
+# Grey = To Do
+# Need to find name and voice for sACU
+
+
+# --------
+# Game End
+# --------
+
+--[[
+# Player Win / Actor: Gyle / Update / VO TODO
+PlayerWin = {
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# M1 NIS Intro #3 / Actor: HQ / Update: 07/05/2007 / VO Ready
-Beginning = {
-  {text = '<LOC X05_M01_012_010>[{i HQ}]: Get it in gear, Commander. HQ out.', vid = 'X05_HQ_M01_04909.sfd', bank = 'X05_VO', cue = 'X05_HQ_M01_04909', faction = 'UEF'},
+# Player Dies / Actor: Gyle / Update / VO TODO
+PlayerDies = {
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
-
-# Completed PO2 / Actor: HQ / Update: 07/06/2007 / VO Ready
-X06_M03_240 = {
-  {text = '<LOC X06_M03_240_010>[{i HQ}]: Scratch one alien. HQ out.', vid = 'X06_HQ_M03_04002.sfd', bank = 'X06_VO', cue = 'X06_HQ_M03_04002', faction = 'UEF'},
-}
-
-# ------------
-# Gyle Sounds
-# ------------
-# Retards rant : first, why do your things have all the wrong actors specified and you didnt bother to change the date or anything at all on the descriptions.
-#  second, theres no proper section header like thee one above this rant, and lastly, if i get anything wrong you can blame your awesome use of the same string for all the base destroyed objectives.
-# if you dont have different ones, but plan to later, just put in copies of the strings, not just use the same one every time! 
-#noobspeed2
-#imdone
-
--- this is the test one, it should normally be the second last one. if you don't move it I'll be very sad.
-# Player Death / Actor: Gyle / Update 22/05/2015 / VO Ready
-PlayerLose1 = {
+]]--
+# Player Lose To AI / Actor: Gyle / Update 22/05/2015 / VO Ready
+PlayerLoseToAI = {
   {text = '[Gyle]: Commander, your ACU has been brought to critical health and can no longer participate in combat. You have been defeated!', vid = 'UEF_Logo.sfd', bank = 'G_VO1', cue = '26Playerlose', faction = 'UEF'},
 }
+--[[
+# sACU Die / Actor: Gyle / Update / VO TODO
+sACUDie = {
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# HQ Lost / Actor: Gyle / Update / VO TODO
+sACUDie = {
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+]]--
 
 
+# ----------------------------
+# Mission 1
+# Destroy Outpost + Beach Base
+#-----------------------------
 
 
 
@@ -52,11 +62,10 @@ postintro = {
   {text = '[Gyle]: The training AI has been activated – Good Luck Commander! ', vid = 'UEF_Logo.sfd', bank = 'G_VO1', cue = '4postintro', faction = 'UEF'},
 }
 
-# First objective complete / Actor: Gyle / Update 22/05/2015 / VO Ready
+# First Base Killed / Actor: Gyle / Update 22/05/2015 / VO Ready
 base1killed = {
   {text = '[Gyle]: The outpost has been destroyed, secure the area and push forward. HQ Out', vid = 'UEF_Logo.sfd', bank = 'G_VO1', cue = '5base1killed', faction = 'UEF'},
 }
-
 
 
 
@@ -82,8 +91,6 @@ HQcapremind4 = {
 
 
 
-
-
 # First objective reminder 1 / Actor: Gyle / Update 22/05/2015 / VO Ready
 base1remind1 = {
   {text = '[Gyle]: The outpost is obstructing your progress. Destroy it immediately. HQ Out', vid = 'UEF_Logo.sfd', bank = 'G_VO1', cue = '10base1remind1', faction = 'UEF'},
@@ -99,6 +106,12 @@ base2remind1 = {
   {text = '[Gyle]: The base is still operational - you need to destroy it to secure the beach. HQ Out', vid = 'UEF_Logo.sfd', bank = 'G_VO1', cue = '12base2remind1', faction = 'UEF'},
 }
 
+
+
+# ------------------
+# Mission 2
+# Destroy South Base
+# ------------------
 
 
 
@@ -119,8 +132,6 @@ southbase2 = {
 
 
 
-
-
 # Third objective reminder 1 / Actor: Gyle / Update 22/05/2015 / VO Ready
 southbaseremind1 = {
   {text = '[Gyle]: The complex in the south is still operational - send a force to deal with it. HQ Out', vid = 'UEF_Logo.sfd', bank = 'G_VO1', cue = '16southbaseremind1', faction = 'UEF'},
@@ -130,8 +141,6 @@ southbaseremind1 = {
 southbaseremind2 = {
   {text = '[Gyle]: The island is still not secure - you need to ensure there are no enemy structures remaining. HQ Out', vid = 'UEF_Logo.sfd', bank = 'G_VO1', cue = '17southbaseremind2', faction = 'UEF'},
 }
-
-
 
 
 
@@ -152,6 +161,12 @@ titankilled = {
 
 
 
+# ----------------
+# Mission 3
+# Destroy Air Base
+# ----------------
+
+
 
 # Fourth objective intro 1 / Actor: Gyle / Update 22/05/2015 / VO Ready
 airbase1 = {
@@ -170,7 +185,6 @@ postintro3 = {
 
 
 
-
 # Fourth objective reminder 1 / Actor: Gyle / Update 22/05/2015 / VO Ready
 airbaseremind1 = {
   {text = '[Gyle]: The second island is still in the hands of the enemy. Send units to attack it. HQ Out', vid = 'UEF_Logo.sfd', bank = 'G_VO1', cue = '24airbaseremind1', faction = 'UEF'},
@@ -181,17 +195,118 @@ airbaseremind2 = {
   {text = '[Gyle]: The Air base is still operational, get it done commander. HQ Out', vid = 'UEF_Logo.sfd', bank = 'G_VO1', cue = '25airbaseremind2', faction = 'UEF'},
 }
 
---
---26 goes here from above place. please move it.
---
---
---
+
 
 # Most important part / Actor: Gyle / Update 22/05/2015 / VO Ready
 epicEprop = {
   {text = '[Gyle]: Thank you for playing this scenario. This experience has been brought to you courtesy of empire clan. Mission made by speed2, some other useless things were made by Exotic_Retard, and I was responsible for your lovely voiceovers. This is Gyle, Signing out.', vid = 'UEF_Logo.sfd', bank = 'G_VO1', cue = '27epicEprop', faction = 'UEF'},
 }
 
+
+
+# ---------
+# Mission 4
+# 
+# ---------
+
+
+
+# ------------------------------------------
+# Mission 5
+# Protect sACU and Defeat Seraphim Commander
+# ------------------------------------------
+
+
+--[[
+# Objective 5 Intro 1 / Actor: sACU, Gyle / Update / VO TOD
+obj5intro = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+]]--
+# Objective 5 Post Intro / Actor: Thel-Uuthow / Update: 06/28/2007 / VO Ready
+obj5postintro = {
+  {text = '[Zottoo-Zithutin]: [Language Not Recognized]', vid = 'X03_Thel-Uuthow_T01_04346.sfd', bank = 'X03_VO', cue = 'X03_Thel-Uuthow_T01_04346', faction = 'Seraphim'},
+}
+
+
+--[[
+# Main Obj Reminder 1 / Actor: Gyle / Update / VO TODO
+M5MainReminder1 = {
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# Main Obj Reminder 2 / Actor: Gyle / Update / VO TODO
+M5MainReminder2 = {
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+
+
+# Protect sACU / Actor: Gyle / Update / VO TODO
+ProtectsACU = {
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# Defeat Seraphim ACU / Actor: Gyle / Update / VO TODO
+M5KillSeraACU = {
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# sACU on Losing Defences / Actor: / Update / VO TODO
+sACULoseDef = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# sACU on Losing Factory / Actor: / Update / VO TODO
+sACULoseFac = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# sACU on Taking Damage / Actor: / Update / VO TODO
+sACUTakesDmg = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+
+
+# Secondary Obj Destroy Seraphim Island Bases / Actor: Gyle / Update / VO TODO
+sACUTakesDmg = {
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# Secondary Obj First Island Base Destroyed / Actor: Gyle / Update / VO TODO
+IslandBase1Killed = {
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# Secondary Obj Second Island Base Destroyed / Actor: Gyle / Update / VO TODO
+IslandBase2Killed = {
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# Secondary Obj All Island Base Destroyed / Actor: Gyle, sACU / Update / VO TODO
+IslandBaseAllKilled = {
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+
+# Secondary Obj Protect Civs / Actor:  / Update / VO TODO
+M5EProtectCivs = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# Secondary Obj Evacuate Civs 1 / Actor:  / Update / VO TODO
+M5EvacCivs1 = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# Secondary Obj Evacuate Civs from Island / Actor:  / Update / VO TODO
+M5EvacCivs2 = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+]]--
 
 
 # ------------

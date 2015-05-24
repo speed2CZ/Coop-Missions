@@ -22,7 +22,7 @@ function UEFM5IslandBaseAI()
     # ------------------
     # UEF M5 Island Base
     # ------------------
-    UEFM5IslandBase:Initialize(ArmyBrains[UEF], 'M5_Island_Base', 'M5_UEF_Island_Base_Marker', 100, {M5_Island_Base = 100})
+    UEFM5IslandBase:Initialize(ArmyBrains[UEF], 'M5_UEF_Island_Base', 'M5_UEF_Island_Base_Marker', 100, {M5_UEF_Island_Base = 100})
     UEFM5IslandBase:StartNonZeroBase({30, 26})
     UEFM5IslandBase:SetMaximumConstructionEngineers(4)
     UEFM5IslandBase:SetActive('AirScouting', true)
@@ -140,10 +140,30 @@ function UEFM5IslandBaseLandAttacks()
         Priority = 120,
         PlatoonType = 'Land',
         RequiresConstruction = true,
-        LocationType = 'M5_Island_Base',
+        LocationType = 'M5_UEF_Island_Base',
         PlatoonAIFunction = {SPAIFileName, 'PatrolChainPickerThread'},     
         PlatoonData = {
             PatrolChains = {'M5_UEF_Island_Hover_Attack_Chain', 'M5_UEF_Island_Naval_Attack_Chain1', 'M5_UEF_Island_Naval_Attack_Chain2', 'M5_UEF_Island_Naval_Defense_Chain1'},
+        },
+    }
+    ArmyBrains[UEF]:PBMAddPlatoon( Builder )
+
+    Temp = {
+        'UEFM5EngieTemp1',
+        'NoPlan',
+        { 'xel0209', 1, 2, 'Attack', 'None' },   # Sparky
+    }
+    Builder = {
+        BuilderName = 'UEFM5EngieBuilder2',
+        PlatoonTemplate = Temp,
+        InstanceCount = 1,
+        Priority = 110,
+        PlatoonType = 'Land',
+        RequiresConstruction = true,
+        LocationType = 'M5_UEF_Island_Base',
+        PlatoonAIFunction = {SPAIFileName, 'PatrolThread'},     
+        PlatoonData = {
+            PatrolChain = 'M5_UEF_Island_Base_EngineersChain',
         },
     }
     ArmyBrains[UEF]:PBMAddPlatoon( Builder )
@@ -161,6 +181,7 @@ function UEFM5IslandBaseLandAttacks()
         )
         opai:SetChildQuantity('AmphibiousTanks', 12)
     end
+
 
 end
 
@@ -180,7 +201,7 @@ function UEFM5IslandBaseNavalAttacks()
         Priority = 200,
         PlatoonType = 'Sea',
         RequiresConstruction = true,
-        LocationType = 'M5_Island_Base',
+        LocationType = 'M5_UEF_Island_Base',
         PlatoonAIFunction = {SPAIFileName, 'PatrolChainPickerThread'},     
         PlatoonData = {
             PatrolChains = {'M5_UEF_Island_Naval_Attack_Chain1', 'M5_UEF_Island_Naval_Attack_Chain2'},
@@ -203,7 +224,7 @@ function UEFM5IslandBaseNavalAttacks()
         Priority = 220,
         PlatoonType = 'Sea',
         RequiresConstruction = true,
-        LocationType = 'M5_Island_Base',
+        LocationType = 'M5_UEF_Island_Base',
         PlatoonAIFunction = {SPAIFileName, 'PatrolThread'},     
         PlatoonData = {
             PatrolChain = 'M5_UEF_Island_Naval_Defense_Chain1',
@@ -223,7 +244,7 @@ function UEFM5IslandBaseNavalAttacks()
         Priority = 210,
         PlatoonType = 'Sea',
         RequiresConstruction = true,
-        LocationType = 'M5_Island_Base',
+        LocationType = 'M5_UEF_Island_Base',
         PlatoonAIFunction = {SPAIFileName, 'PatrolThread'},     
         PlatoonData = {
             PatrolChain = 'M5_UEF_Island_Naval_Defense_Chain2',

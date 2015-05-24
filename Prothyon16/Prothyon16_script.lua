@@ -230,7 +230,7 @@ function PlayerLoseToAI()
                 v:ManualResult(false)
             end
         end
-        ScenarioFramework.Dialogue(OpStrings.PlayerLose1, KillGame, true)
+        ScenarioFramework.Dialogue(OpStrings.PlayerLosetoAI, KillGame, true)
     end
 end
 
@@ -431,6 +431,7 @@ function StartMission1()
             if(result) then
                 ForkThread(UEFBattleships)
                 ForkThread(UEFFlyover)
+                # ScenarioFramework.Dialogue(OpStrings., IntroMission2, true)       # Will get added once done
                 IntroMission2()
             end
         end
@@ -990,14 +991,14 @@ function M3InitialAttack()
         end
     end
 
-    # Spawns Destroyers for every 25 Riptides, up to 2 x 4 groups
+    # Spawns Destroyers for every 30 Riptides, up to 2 x 4 groups
     local num = 0
     for _, player in ScenarioInfo.HumanPlayers do
         num = num + table.getn(ArmyBrains[player]:GetListOfUnits(categories.uel0203, false))
     end
 
     if(num > 0) then
-        num = math.ceil(num/25)
+        num = math.ceil(num/30)
         if(num > 4) then
             num = 4
         end
@@ -1487,9 +1488,9 @@ function PlayRandomReminderTaunt()
     end
 end
 
-#-------
+# ------
 # Taunts
-#-------
+# ------
 
 function SetupWestM5Taunts()
     --ZottooWestTM:AddUnitKilledTaunt('TAUNT1', ScenarioInfo.UnitNames[Seraphim]['M1_Seraph_East_AC'])

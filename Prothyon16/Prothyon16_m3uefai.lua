@@ -51,7 +51,7 @@ function UEFM3LandBaseAI()
     # ----------------
     # UEF M3 Land Base
     # ----------------
-    UEFM3LandBase:Initialize(ArmyBrains[UEF], 'M3_Land_Base', 'M3_Land_Base_Marker', 30, {LandBase = 100})
+    UEFM3LandBase:Initialize(ArmyBrains[UEF], 'M3_Land_Base', 'M3_Land_Base_Marker', 40, {LandBase = 100})
     UEFM3LandBase:StartNonZeroBase({10, 8})
     UEFM3LandBase:SetBuild('Defenses', true)
 
@@ -421,7 +421,7 @@ function UEFM3LandBaseLandAttacks()
             Priority = 110,
         })
         opai:SetChildQuantity({'HeavyTanks'}, 6)
-        opai:SetLockingStyle('BuildTimer', {LockTimer = 180})
+        # opai:SetLockingStyle('BuildTimer', {LockTimer = 180})
     end
 
     for i = 1, 2 do
@@ -436,7 +436,7 @@ function UEFM3LandBaseLandAttacks()
             Priority = 110,
         })
         opai:SetChildQuantity({'LightArtillery'}, 14)
-        opai:SetLockingStyle('BuildTimer', {LockTimer = 180})
+        # opai:SetLockingStyle('BuildTimer', {LockTimer = 180})
     end
 
     for i = 1, 2 do
@@ -452,7 +452,7 @@ function UEFM3LandBaseLandAttacks()
             Priority = 110,
         })
         opai:SetChildQuantity({'HeavyTanks'}, 6)
-        opai:SetLockingStyle('BuildTimer', {LockTimer = 180})
+        # opai:SetLockingStyle('BuildTimer', {LockTimer = 180})
     end
 
     for i = 1, 2 do
@@ -468,7 +468,7 @@ function UEFM3LandBaseLandAttacks()
             Priority = 110,
         })
         opai:SetChildQuantity({'LightArtillery'}, 14)
-        opai:SetLockingStyle('BuildTimer', {LockTimer = 180})
+        # opai:SetLockingStyle('BuildTimer', {LockTimer = 180})
     end
 
     #-------------

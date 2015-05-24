@@ -32,7 +32,7 @@ function SeraphimM5MainBaseAI()
     SeraphimM5MainBase:StartNonZeroBase({40, 36})
     SeraphimM5MainBase:SetActive('AirScouting', true)
 
-    SeraphimM5T3Base:Initialize(ArmyBrains[Seraphim], 'M5_Sera_T3_Base', 'M5_Sera_T3_Base_Marker', 30, {M5_Sera_T3_Base = 100})
+    SeraphimM5T3Base:Initialize(ArmyBrains[Seraphim], 'M5_Sera_T3_Base', 'M5_Sera_T3_Base_Marker', 40, {M5_Sera_T3_Base = 100})
     SeraphimM5T3Base:StartNonZeroBase({3, 2})
 
     SeraphimM5NavDefBase:Initialize(ArmyBrains[Seraphim], 'M5_Sera_Main_NavDef_Base', 'M5_Sera_Main_NavDef_Base_Marker', 30, {M5_Sera_Main_NavDef_Base = 100})
@@ -316,6 +316,46 @@ function SeraphimM5MainBaseLandAttacks()
     }
     ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
 
+    Temp = {
+        'M5SeraEngineerAttackTemp1',
+        'NoPlan',
+        { 'xsl0105', 1, 1, 'Attack', 'None' },   # T1 Engies
+    }
+    Builder = {
+        BuilderName = 'M5SeraEngineerAttackBuilder1',
+        PlatoonTemplate = Temp,
+        InstanceCount = 15,
+        Priority = 110,
+        PlatoonType = 'Land',
+        RequiresConstruction = true,
+        LocationType = 'M5_Sera_Main_AirDef_Base',
+        PlatoonAIFunction = {SPAIFileName, 'PatrolChainPickerThread'},       
+        PlatoonData = {
+            PatrolChains = {'M5_Sera_Main_Air_AttackUEF_Chain1', 'M5_Sera_Main_Hover_AttackUEF_Chain', 'M5_Sera_Main_Naval_AttackUEF_Chain1', 'M5_Sera_Main_Naval_AttackUEF_Chain2'},
+        },
+    }
+    ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
+
+    Temp = {
+        'M5SeraEngineerAttackTemp2',
+        'NoPlan',
+        { 'xsl0105', 1, 1, 'Attack', 'None' },   # T1 Engies
+    }
+    Builder = {
+        BuilderName = 'M5SeraEngineerAttackBuilder2',
+        PlatoonTemplate = Temp,
+        InstanceCount = 20,
+        Priority = 110,
+        PlatoonType = 'Land',
+        RequiresConstruction = true,
+        LocationType = 'M5_Sera_Main_AirDef_Base',
+        PlatoonAIFunction = {SPAIFileName, 'PatrolChainPickerThread'},       
+        PlatoonData = {
+            PatrolChains = {'M5_Sera_Main_Naval_AttackPlayer_Chain1', 'M5_Sera_Main_Naval_AttackPlayer_Chain2', 'M5_Sera_Main_Naval_AttackPlayer_Chain3', 'M5_Sera_Main_AirAttackPlayer_Chain1', 'M5_Sera_Main_AirAttackPlayer_Chain2', 'M5_Sera_Main_AirAttackPlayer_Chain3', 'M5_Sera_Main_AirAttackPlayer_Chain4', },
+        },
+    }
+    ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
+
     # sends 12 [hover tanks] 6 times
     for i = 1, 6 do
         opai = SeraphimM5MainBase:AddOpAI('BasicLandAttack', 'M5_Sera_HoverAttack1_' ..i,
@@ -363,14 +403,14 @@ end
 function SeraphimM5MainBaseNavalAttacks()
 
     local Temp = {
-        'SeraM5NavalAttackTemp1',
+        'SeraM5NavalAttackPlayerTemp1',
         'NoPlan',
         { 'xss0201', 1, 6, 'Attack', 'AttackFormation' },   # Destroyers
         { 'xss0202', 1, 2, 'Attack', 'AttackFormation' },   # Cruisers
         { 'xss0203', 1, 8, 'Attack', 'AttackFormation' },   # T1 Sub
     }
     local Builder = {
-        BuilderName = 'SeraM5NavyAttackBuilder1',
+        BuilderName = 'SeraM5NavyAttackPlayerBuilder1',
         PlatoonTemplate = Temp,
         InstanceCount = 2,
         Priority = 200,
@@ -385,13 +425,13 @@ function SeraphimM5MainBaseNavalAttacks()
     ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
 
     Temp = {
-        'SeraM5NavalAttackTemp2',
+        'SeraM5NavalAttackPlayerTemp2',
         'NoPlan',
         { 'xss0201', 1, 2, 'Attack', 'AttackFormation' },   # Destroyers
         { 'xss0103', 1, 12, 'Attack', 'AttackFormation' },   # Frigate
     }
     Builder = {
-        BuilderName = 'SeraM5NavyAttackBuilder2',
+        BuilderName = 'SeraM5NavyAttackPlayerBuilder2',
         PlatoonTemplate = Temp,
         InstanceCount = 2,
         Priority = 200,
@@ -406,12 +446,12 @@ function SeraphimM5MainBaseNavalAttacks()
     ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
 
     Temp = {
-        'SeraM5NavalAttackTemp3',
+        'SeraM5NavalAttackPlayerTemp3',
         'NoPlan',
         { 'xss0201', 1, 4, 'Attack', 'AttackFormation' },   # Destroyers
     }
     Builder = {
-        BuilderName = 'SeraM5NavyAttackBuilder3',
+        BuilderName = 'SeraM5NavyAttackPlayerBuilder3',
         PlatoonTemplate = Temp,
         InstanceCount = 3,
         Priority = 200,
@@ -426,14 +466,14 @@ function SeraphimM5MainBaseNavalAttacks()
     ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
 
     Temp = {
-        'SeraM5NavalT3AttackTemp1',
+        'SeraM5NavalT3AttackPlayerTemp1',
         'NoPlan',
         { 'xss0302', 1, 1, 'Attack', 'GrowthFormation' },   # Battleship
         { 'xss0201', 1, 2, 'Attack', 'GrowthFormation' },   # Destroyers
         { 'xss0203', 1, 3, 'Attack', 'GrowthFormation' },   # T1 Sub
     }
     Builder = {
-        BuilderName = 'SeraM5NavyT3AttackBuilder1',
+        BuilderName = 'SeraM5NavyT3AttackPlayerBuilder1',
         PlatoonTemplate = Temp,
         InstanceCount = 1,
         Priority = 300,
@@ -448,14 +488,14 @@ function SeraphimM5MainBaseNavalAttacks()
     ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
 
     Temp = {
-        'SeraM5NavalT3AttackTemp2',
+        'SeraM5NavalT3AttackPlayerTemp2',
         'NoPlan',
         { 'xss0201', 1, 5, 'Attack', 'AttackFormation' },   # Destroyers
         { 'xss0202', 1, 2, 'Attack', 'AttackFormation' },   # Cruisers
         { 'xss0103', 1, 9, 'Attack', 'AttackFormation' },   # Frigate
     }
     Builder = {
-        BuilderName = 'SeraM5NavyT3AttackBuilder2',
+        BuilderName = 'SeraM5NavyT3AttackPlayerBuilder2',
         PlatoonTemplate = Temp,
         InstanceCount = 1,
         Priority = 200,
@@ -473,7 +513,7 @@ function SeraphimM5MainBaseNavalAttacks()
     # Attack UEF
 	#-----------
     Temp = {
-        'SeraM5NavalAttackTemp3',
+        'SeraM5NavalAttackUEFTemp3',
         'NoPlan',
         { 'xss0201', 1, 5, 'Attack', 'AttackFormation' },   # Destroyers
     }
@@ -535,13 +575,13 @@ function SeraphimM5MainBaseNavalAttacks()
     ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
 
     Temp = {
-        'SeraM5NavalT3DefAttackUEFTemp1',
+        'SeraM5NavalDefAttackUEFTemp1',
         'NoPlan',
         { 'xss0201', 1, 4, 'Attack', 'AttackFormation' },   # Destroyers
         { 'xss0202', 1, 2, 'Attack', 'AttackFormation' },   # Cruisers
     }
     Builder = {
-        BuilderName = 'SeraM5NavyT3DefAttackUEFBuilder1',
+        BuilderName = 'SeraM5NavyDefAttackUEFBuilder1',
         PlatoonTemplate = Temp,
         InstanceCount = 1,
         Priority = 150,
@@ -555,9 +595,14 @@ function SeraphimM5MainBaseNavalAttacks()
     }
     ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
 
+    Temp = {
+        'SeraM5NavalDefAttackUEFTemp3',
+        'NoPlan',
+        { 'xss0201', 1, 5, 'Attack', 'AttackFormation' },   # Destroyers
+    }
     Builder = {
-        BuilderName = 'SeraM5NavyT3AttackUEFBuilder4',
-        PlatoonTemplate = 'SeraM5NavalAttackTemp3',
+        BuilderName = 'SeraM5NavyDefAttackUEFBuilder2',
+        PlatoonTemplate = Temp,
         InstanceCount = 1,
         Priority = 150,
         PlatoonType = 'Sea',
@@ -570,7 +615,9 @@ function SeraphimM5MainBaseNavalAttacks()
     }
     ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
 
+    # -------
     # Defense
+    # -------
     Temp = {
         'SeraM5NavalDefenseTemp1',
         'NoPlan',
@@ -668,7 +715,7 @@ function SeraphimM5IslandMiddleBaseAI()
     # SeraphimM5IslandMiddleBase:SetMaximumConstructionEngineers(4)
     # SeraphimM5IslandMiddleBase:SetPermanentAssistCount(16)
 
-    SeraphimM5IslandMiddleT1NavalBase:Initialize(ArmyBrains[Seraphim], 'M5_Sera_Island_Middle_Base_T1_Naval', 'M5_Sera_Island_Middle_Base_T1_Naval_Marker', 30, {M5_Sera_Island_Middle_Base_T1_Naval = 100})
+    SeraphimM5IslandMiddleT1NavalBase:Initialize(ArmyBrains[Seraphim], 'M5_Sera_Island_Middle_Base_T1_Naval', 'M5_Sera_Island_Middle_Base_T1_Naval_Marker', 40, {M5_Sera_Island_Middle_Base_T1_Naval = 100})
     SeraphimM5IslandMiddleT1NavalBase:StartNonZeroBase({8, 7})
 
     SeraphimM5IslandMiddleT2NavalBase:Initialize(ArmyBrains[Seraphim], 'M5_Sera_Island_Middle_Base_T2_Naval', 'M5_Sera_Island_Middle_Base_T2_Naval_Marker', 30, {M5_Sera_Island_Middle_Base_T2_Naval = 100})
