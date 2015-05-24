@@ -57,9 +57,9 @@ local ReminderTaunts = {
 # -----------
 # Debug only!
 # -----------
-local SkipNIS1 = false
-local SkipNIS2 = false
-local SkipNIS3 = false
+local SkipNIS1 = true
+local SkipNIS2 = true
+local SkipNIS3 = true
 local SkipNIS5 = true
 
 # --------------
@@ -211,7 +211,7 @@ function PlayerWin()
 end
 
 function PlayerLoseToAI()
-    if(not ScenarioInfo.OpEnded) then
+    if(not ScenarioInfo.OpEnded) and (ScenarioInfo.MissionNumber <= 3) then
         IssueClearCommands({ScenarioInfo.PlayerCDR})
         #ScenarioInfo.CDRPlatoon:Stop()
         for _, player in ScenarioInfo.HumanPlayers do
@@ -1051,13 +1051,22 @@ function IntroMission5()
     ForkThread(
         function()
 
-            # New Alliance
+            # New Alliances
             for _, player in ScenarioInfo.HumanPlayers do
                 SetAlliance(player, UEF, 'Ally')
             end
             for _, player in ScenarioInfo.HumanPlayers do
                 SetAlliance(UEF, player, 'Ally')
             end
+            for _, player in ScenarioInfo.HumanPlayers do
+                SetAlliance(player, Objective, 'Ally')
+            end
+            for _, player in ScenarioInfo.HumanPlayers do
+                SetAlliance(Objective, player, 'Ally')
+            end
+
+            # No invincible ACU anymore
+            ScenarioInfo.PlayerCDR:SetCanBeKilled(true)
             
             --------
             # UEF AI
@@ -1106,7 +1115,6 @@ function IntroMission5()
             # ------------
             # Seraphim ACU
             # ------------
-            
             ScenarioInfo.SeraACU = ScenarioUtils.CreateArmyUnit('Seraphim', 'M5_Sera_ACU')
             ScenarioInfo.SeraACU:SetCustomName("Zottoo-Zithutin")
             ScenarioInfo.SeraACU:CreateEnhancement('AdvancedEngineering')
@@ -1118,21 +1126,14 @@ function IntroMission5()
             ScenarioInfo.SeraACU:SetReclaimable(false)
             ScenarioFramework.CreateUnitDamagedTrigger(SeraACUWarp, ScenarioInfo.SeraACU, .8)
             ZottooWestTM:AddTauntingCharacter(ScenarioInfo.SeraACU)
-            --[[
-            ScenarioInfo.UnitNames[Seraphim]['M5_Sera_ACU']:SetCustomName("Zottoo-Zithutin")
-            ScenarioInfo.UnitNames[Seraphim]['M5_Sera_ACU']:CreateEnhancement('AdvancedEngineering')
-            ScenarioInfo.UnitNames[Seraphim]['M5_Sera_ACU']:CreateEnhancement('DamageStabilization')
-            ScenarioInfo.UnitNames[Seraphim]['M5_Sera_ACU']:CreateEnhancement('DamageStabilizationAdvanced')
-            ScenarioInfo.UnitNames[Seraphim]['M5_Sera_ACU']:CreateEnhancement('RateOfFire')
-            ScenarioInfo.UnitNames[Seraphim]['M5_Sera_ACU']:SetCanBeKilled(false)
-            ScenarioInfo.UnitNames[Seraphim]['M5_Sera_ACU']:SetCapturable(false)
-            ScenarioInfo.UnitNames[Seraphim]['M5_Sera_ACU']:SetReclaimable(false)
-            #ScenarioFramework.CreateUnitDamagedTrigger(SeraACUWarp, ScenarioInfo.UnitNames[Seraphim]['M5_Sera_ACU'], .8)
-            ZottooWestTM:AddTauntingCharacter(ScenarioInfo.UnitNames[Seraphim]['M5_Sera_ACU'])
-            ]]--
+
             # --------------------
             # Objective Structures
             # --------------------
+            ScenarioInfo.M5_Other_Buildings = ScenarioUtils.CreateArmyGroup('Objective', 'M5_Other_Buildings')
+            for k,v in ScenarioInfo.M5_Other_Buildings do
+                v:SetCapturable(false)
+            end
 
             # ------------------------
             # Cheat Economy/Buildpower
