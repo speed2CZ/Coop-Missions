@@ -736,14 +736,15 @@ function StartMission2()
     ScenarioInfo.M2P1:AddResultCallback(
         function(result)
             if(result) then
-                ScenarioFramework.Dialogue(OpStrings.airbase1, IntroMission3)
+                # ScenarioFramework.Dialogue(OpStrings.airbase1, IntroMission3)
+                IntroMission3 ()
             end
         end
     )
     table.insert(AssignedObjectives, ScenarioInfo.M2P1)
     ScenarioFramework.CreateTimerTrigger(M2P1Reminder1, 15*60)
 
-    ScenarioFramework.Dialogue(OpStrings.airhqtechcentre, M2SecondaryCaptureTech)
+    # ScenarioFramework.Dialogue(OpStrings.airhqtechcentre, M2SecondaryCaptureTech)
 
 end
 
@@ -1037,7 +1038,8 @@ function StartMission3()
     ScenarioInfo.M3P1:AddResultCallback(
         function(result)
             if(result) then
-                ScenarioFramework.Dialogue(OpStrings.epicEprop, IntroMission5)
+                # ScenarioFramework.Dialogue(OpStrings.epicEprop, IntroMission5)
+                IntroMission5()
             end
         end
     )
@@ -1089,6 +1091,7 @@ function IntroMission5()
             -------------
             M5SeraphimAI.SeraphimM5MainBaseAI()
             M5SeraphimAI.SeraphimM5IslandMiddleBaseAI()
+            M5SeraphimAI.SeraphimM5IslandWestBaseAI()
 
             ArmyBrains[Seraphim]:GiveResource('MASS', 15000)
             ArmyBrains[Seraphim]:GiveResource('ENERGY', 30000)
@@ -1098,12 +1101,19 @@ function IntroMission5()
             -----------------
             # Initial Patrols
             -----------------
-            --[[
-            local units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'M5_UEF_IslandBase_AirDef', 'GrowthFormation')
+            local units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Sera_Main_DefGroup', 'GrowthFormation')
             for k, v in units:GetPlatoonUnits() do
-                ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M5_UEF_Island_Air_Defense_Chain')))
+                ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M5_Sera_Main_Base_Air_Def_Chain')))
             end
-
+            units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Sera_West_DefGroup', 'GrowthFormation')
+            for k, v in units:GetPlatoonUnits() do
+                ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M5_Sera_Island_West_AirDef_Chain')))
+            end
+            units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Sera_Middle_DefGroup', 'GrowthFormation')
+            for k, v in units:GetPlatoonUnits() do
+                ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M5_Sera_Island_Middle_AirDef_Chain')))
+            end
+            --[[
             for i = 1, 6 do
                 ScenarioInfo.Engineer = ScenarioUtils.CreateArmyUnit('UEF', 'M5_Engie' .. i)
                 local platoon = ArmyBrains[UEF]:MakePlatoon('', '')
@@ -1336,8 +1346,10 @@ function StartMission5()
                     # WaitSeconds(0.2)
                 # end
                 if not ScenarioFramework.GroupDeathCheck(ScenarioInfo.M5SeraBase) then
-                    ScenarioFramework.Dialogue(OpStrings.X06_M03_240, Mission5Part2, true)
+                    ScenarioFramework.Dialogue(OpStrings.obj5postintro, Mission5Part2, true)        # temporary
+                    # ScenarioFramework.Dialogue(OpStrings.M5SereBaseRemains, Mission5Part2, true)
                 else
+                    # ScenarioFramework.Dialogue(OpStrings.M5SereDefeated, PlayerWin, true)
                     PlayerWin()
                 end
                 
@@ -1346,6 +1358,39 @@ function StartMission5()
    )
     table.insert(AssignedObjectives, ScenarioInfo.M5P2)
 
+    # ScenarioFramework.Dialogue(OpStrings.M5ProtectCivs, nil, true)
+    local units = ScenarioFramework.GetCatUnitsInArea((categories.uec1101 + categories.uec1201 + categories.uec1301 + categories.uec1401 + categories.uec1501 + categories.xec1301), 'M5_Area', ArmyBrains[Objective])
+    # -----------------------------------------
+    # Secondary Objective 1 - Protect Civilians
+    # -----------------------------------------
+    ScenarioInfo.M5S1 = Objectives.Protect(
+        'secondary',                              # type
+        'incomplete',                           # complete
+        'Protect Civilian Cities',          # title
+        '80% of the city buildings must survive.',          # description
+        {                                       # target
+            Units = units,
+            NumRequired = math.ceil(table.getn(units)/1.25),
+            PercentProgress = true,
+            ShowFaction = 'UEF',
+        }
+    )
+    ScenarioInfo.M5S1:AddResultCallback(
+        function(result)
+            if(not result and not ScenarioInfo.OpEnded) then
+                ScenarioFramework.Dialogue(OpStrings.obj5postintro)     # temporary
+                # ScenarioFramework.Dialogue(OpStrings.M5CivsDied)
+            end
+        end
+    )
+    table.insert(AssignedObjectives, ScenarioInfo.M5S1)
+    --[[ # Test once done
+    ScenarioInfo.M5CivBuildingCount = table.getn(units)
+    ScenarioInfo.M5BuildingFailLimit = math.ceil(table.getn(units)/1.25)
+    for i = 1, ScenarioInfo.M5CivBuildingCount do
+        ScenarioFramework.CreateUnitDeathTrigger(M5S1Warnings, units[i])
+    end
+    ]]--
     SetupWestM5Taunts()
 end
 
@@ -1359,6 +1404,20 @@ function SeraACUWarp()
     )  
     ScenarioInfo.M5P2:ManualResult(true)
     
+end
+
+function M5S1Warnings()
+    ScenarioInfo.M5CivBuildingCount = ScenarioInfo.M5CivBuildingCount - 1
+
+    # if we have only 3 buildings more than the min, play a warning
+    if ScenarioInfo.M5CivBuildingCount == (ScenarioInfo.M5BuildingFailLimit + 4) and ScenarioInfo.M5S1.Active then
+        ScenarioFramework.Dialogue(OpStrings.LosingCivs1)
+    end
+
+    # if we have only 1 building more than the min, play another
+    if ScenarioInfo.M5CivBuildingCount == (ScenarioInfo.M5BuildingFailLimit + 1) and ScenarioInfo.M5S1.Active then
+        ScenarioFramework.Dialogue(OpStrings.LosingCivs2)
+    end
 end
 
 function Mission5Part2()
@@ -1392,7 +1451,7 @@ function Mission5Part2()
             end
         end
     )
-    table.insert(AssignedObjectives, ScenarioInfo.M3P3)
+    table.insert(AssignedObjectives, ScenarioInfo.M5P3)
 
 end
 

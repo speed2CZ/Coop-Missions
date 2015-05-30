@@ -122,6 +122,26 @@ function UEFM5IslandBaseAirAttacks()
         opai:SetChildQuantity({'TorpedoBombers'}, 4)
     end
 
+    local Temp = {
+        'M5ComabtFighetTemp1',
+        'NoPlan',
+        { 'dea0202', 1, 5, 'Attack', 'GrowthFormation' },   # T2 CombatFighter
+    }
+    local Builder = {
+        BuilderName = 'M5CombatFighterAttackBuilder1',
+        PlatoonTemplate = Temp,
+        InstanceCount = 3,
+        Priority = 110,
+        PlatoonType = 'Air',
+        RequiresConstruction = true,
+        LocationType = 'M5_UEF_Island_Base',
+        PlatoonAIFunction = {SPAIFileName, 'RandomDefensePatrolThread'},       
+        PlatoonData = {
+            PatrolChain = 'M5_UEF_Island_Air_Defense_Chain',
+        },
+    }
+    ArmyBrains[UEF]:PBMAddPlatoon( Builder )
+
 end
 
 function UEFM5IslandBaseLandAttacks()
@@ -235,7 +255,7 @@ function UEFM5IslandBaseNavalAttacks()
     Temp = {
         'UEFM5NavalDefenseTemp2',
         'NoPlan',
-        { 'ues0201', 1, 2, 'Attack', 'GrowthFormation' },   # Destroyers
+        { 'ues0201', 1, 4, 'Attack', 'GrowthFormation' },   # Destroyers
     }
     Builder = {
         BuilderName = 'UEFM5NavyDefenseBuilder2',

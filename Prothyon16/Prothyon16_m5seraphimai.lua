@@ -22,6 +22,8 @@ local SeraphimM5AirDefBase = BaseManager.CreateBaseManager()
 local SeraphimM5IslandMiddleBase = BaseManager.CreateBaseManager()
 local SeraphimM5IslandMiddleT1NavalBase = BaseManager.CreateBaseManager()
 local SeraphimM5IslandMiddleT2NavalBase = BaseManager.CreateBaseManager()
+local SeraphimM5IslandWestBase = BaseManager.CreateBaseManager()
+local SeraphimM5IslandWestT2NavalBase = BaseManager.CreateBaseManager()
 
 function SeraphimM5MainBaseAI()
 
@@ -65,7 +67,7 @@ function SeraphimM5MainBaseAirAttacks()
     opai:SetChildActive('T2Transports', true)
     opai:SetChildQuantity({'T2Transports'}, 4)
     opai:AddBuildCondition('/lua/editor/unitcountbuildconditions.lua',
-        'HaveLessThanUnitsWithCategory', {'default_brain', 4, categories.xsa0104})   # T2 Transport
+        'HaveLessThanUnitsWithCategory', {'default_brain', 8, categories.xsa0104})   # T2 Transport
 
     # Transport Builder
     opai = SeraphimM5AirDefBase:AddOpAI('EngineerAttack', 'M5_Sera_MainDefTransportBuilder',
@@ -315,7 +317,27 @@ function SeraphimM5MainBaseLandAttacks()
         },
     }
     ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
-
+--[[
+    Temp = {
+        'M5Serasacu',
+        'NoPlan',
+        { 'xsl0301', 1, 1, 'Attack', 'None' },   # T1 Engies
+    }
+    Builder = {
+        BuilderName = 'M5Serasacubiulder',
+        PlatoonTemplate = Temp,
+        InstanceCount = 1,
+        Priority = 300,
+        PlatoonType = 'Gate',
+        RequiresConstruction = true,
+        LocationType = 'M5_Sera_Main_Base',
+        PlatoonAIFunction = {SPAIFileName, 'PatrolChainPickerThread'},       
+        PlatoonData = {
+            PatrolChains = {'M5_Sera_Main_Air_AttackUEF_Chain1', 'M5_Sera_Main_Hover_AttackUEF_Chain', 'M5_Sera_Main_Naval_AttackUEF_Chain1', 'M5_Sera_Main_Naval_AttackUEF_Chain2'},
+        },
+    }
+    ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
+]]--
     Temp = {
         'M5SeraEngineerAttackTemp1',
         'NoPlan',
@@ -702,6 +724,292 @@ function SeraphimM5MainBaseNavalAttacks()
 
 end
 
+function SeraphimM5IslandWestBaseAI()
+
+    # ---------------------
+    # Seraphim M5 West Base
+    # ---------------------
+    SeraphimM5IslandWestBase:Initialize(ArmyBrains[Seraphim], 'M5_Sera_Island_West_Base', 'M5_Sera_Island_West_Base_Marker', 80, {M5_Sera_Island_West_Base = 100})
+    SeraphimM5IslandWestBase:StartNonZeroBase({32, 27})
+    SeraphimM5IslandWestBase:SetActive('AirScouting', true)
+
+    SeraphimM5IslandWestT2NavalBase:Initialize(ArmyBrains[Seraphim], 'M5_Sera_Island_West_Base_T2_Naval', 'M5_Sera_Island_West_Base_T2_Naval_Marker', 35, {M5_Sera_Island_West_Base_T2_Naval = 100})
+    SeraphimM5IslandWestT2NavalBase:StartNonZeroBase({7, 6})
+
+    # SeraphimM5NavDefBase:Initialize(ArmyBrains[Seraphim], 'M5_Sera_Main_NavDef_Base', 'M5_Sera_Main_NavDef_Base_Marker', 30, {M5_Sera_Main_NavDef_Base = 100})
+    # SeraphimM5NavDefBase:StartNonZeroBase({4, 3})
+
+    SeraphimM5IslandWestBase:AddBuildGroup('M5_Sera_Island_West_BaseUnfinished', 90)
+    
+    SeraphimM5IslandWestBaseAirAttacks()
+    SeraphimM5IslandWestBaseLandAttacks()
+    SeraphimM5IslandWestBaseNavalAttacks()
+end
+
+function SeraphimM5IslandWestBaseAirAttacks()
+    local opai = nil
+    # Transport Builder
+    opai = SeraphimM5IslandWestBase:AddOpAI('EngineerAttack', 'M5_Sera_WestTransportBuilder',
+    {
+        MasterPlatoonFunction = {'/lua/ScenarioPlatoonAI.lua', 'LandAssaultWithTransports'},
+        PlatoonData = {
+            AttackChain = 'M5_Sera_Middle_Transport_Attack_Chain',
+            LandingChain = 'M5_Sera_Middle_Landing_Chain',
+            TransportReturn = 'M5_Sera_Island_West_Base_Transport',
+        },
+        Priority = 1000,
+    })
+    opai:SetChildActive('All', false)
+    opai:SetChildActive('T2Transports', true)
+    opai:SetChildQuantity({'T2Transports'}, 4)
+    opai:AddBuildCondition('/lua/editor/unitcountbuildconditions.lua',
+        'HaveLessThanUnitsWithCategory', {'default_brain', 8, categories.xsa0104})   # T2 Transport
+
+    opai = SeraphimM5IslandWestBase:AddOpAI('AirAttacks', 'M5_Sera_West_AirAttackPlayer1' ,
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M5_Sera_Island_West_Air_AttackPlayer_Chain4',
+            },
+            Priority = 100,
+        }
+    )
+    opai:SetChildQuantity({'TorpedoBombers'}, 5)
+
+    # Builds platoon of 16 Bombers 3 times
+    for i = 1, 3 do
+        opai = SeraphimM5IslandWestBase:AddOpAI('AirAttacks', 'M5_Sera_West_AirAttackPlayer2_' .. i,
+            {
+                MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+                PlatoonData = {
+                    PatrolChains = {'M5_Sera_Island_West_Air_AttackPlayer_Chain1', 'M5_Sera_Island_West_Air_AttackPlayer_Chain2', 'M5_Sera_Island_West_Air_AttackPlayer_Chain3'},
+                },
+                Priority = 100,
+            }
+        )
+        opai:SetChildQuantity('Bombers', 16)
+    end
+
+    # Builds platoon of 16 Gunships 3 times
+    for i = 1, 3 do
+        opai = SeraphimM5IslandWestBase:AddOpAI('AirAttacks', 'M5_Sera_West_AirAttackPlayer3_' .. i,
+            {
+                MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+                PlatoonData = {
+                    PatrolChains = {'M5_Sera_Island_West_Air_AttackPlayer_Chain1', 'M5_Sera_Island_West_Air_AttackPlayer_Chain2', 'M5_Sera_Island_West_Air_AttackPlayer_Chain3'},
+                },
+                Priority = 110,
+            }
+        )
+        opai:SetChildQuantity('Gunships', 16)
+    end
+
+    # Builds platoon of 24 Interceptors 2 times if Player has more than 40 mobile air
+    for i = 1, 2 do
+        opai = SeraphimM5IslandWestBase:AddOpAI('AirAttacks', 'M5_Sera_West_AirAttackPlayer4_' .. i,
+            {
+                MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+                PlatoonData = {
+                    PatrolChains = {'M5_Sera_Island_West_Air_AttackPlayer_Chain1', 'M5_Sera_Island_West_Air_AttackPlayer_Chain2', 'M5_Sera_Island_West_Air_AttackPlayer_Chain3'},
+                },
+                Priority = 100,
+            }
+        )
+        opai:SetChildQuantity('Interceptors', 24)
+        opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
+        {'default_brain', 'Player', 40, categories.AIR * categories.MOBILE})
+    end
+
+    local Temp = {
+        'M5SeraWestComabtFighetTemp1',
+        'NoPlan',
+        { 'xsa0202', 1, 16, 'Attack', 'AttackFormation' },   # T2 CombatFighter
+    }
+    local Builder = {
+        BuilderName = 'M5SeraWestCombatFighterAttackBuilder1',
+        PlatoonTemplate = Temp,
+        InstanceCount = 2,
+        Priority = 110,
+        PlatoonType = 'Air',
+        RequiresConstruction = true,
+        LocationType = 'M5_Sera_Island_West_Base',
+        BuildConditions = {
+            { '/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
+        {'default_brain', 'Player', 60, categories.AIR * categories.MOBILE}},
+        },
+        PlatoonAIFunction = {SPAIFileName, 'PatrolChainPickerThread'},       
+        PlatoonData = {
+            PatrolChains = {'M5_Sera_Island_West_Air_AttackPlayer_Chain1', 'M5_Sera_Island_West_Air_AttackPlayer_Chain2', 'M5_Sera_Island_West_Air_AttackPlayer_Chain3'},
+        },
+    }
+    ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
+
+    # Air Defense
+    # Maintains 30 Interceptors
+    for i = 1, 6 do
+        opai = SeraphimM5IslandWestBase:AddOpAI('AirAttacks', 'M5_WestAirDefense1_' .. i,
+            {
+                MasterPlatoonFunction = {SPAIFileName, 'RandomDefensePatrolThread'},
+                PlatoonData = {
+                    PatrolChain = 'M5_Sera_Island_West_AirDef_Chain',
+                },
+                Priority = 100,
+            }
+        )
+        opai:SetChildQuantity({'Interceptors'}, 5)
+    end
+
+    # Maintains 16 Gunships
+    for i = 1, 4 do
+        opai = SeraphimM5IslandWestBase:AddOpAI('AirAttacks', 'M5_WestAirDefense2_' .. i,
+            {
+                MasterPlatoonFunction = {SPAIFileName, 'RandomDefensePatrolThread'},
+                PlatoonData = {
+                    PatrolChain = 'M5_Sera_Island_West_AirDef_Chain',
+                },
+                Priority = 100,
+            }
+        )
+        opai:SetChildQuantity({'Gunships'}, 4)
+    end
+
+    # Maintains 15 Tropedo Bombers
+    for i = 1, 3 do
+        opai = SeraphimM5IslandWestBase:AddOpAI('AirAttacks', 'M5_WestAirDefense3_' .. i,
+            {
+                MasterPlatoonFunction = {SPAIFileName, 'RandomDefensePatrolThread'},
+                PlatoonData = {
+                    PatrolChain = 'M5_Sera_Island_West_AirDef_Chain',
+                },
+                Priority = 100,
+            }
+        )
+        opai:SetChildQuantity({'TorpedoBombers'}, 5)
+    end
+end
+
+function SeraphimM5IslandWestBaseLandAttacks()
+    local Temp = {
+        'M5SeraWestHoverAttackTemp1',
+        'NoPlan',
+        { 'xsl0203', 1, 12, 'Attack', 'AttackFormation' },   # Hover Tank
+        { 'xsl0205', 1, 4, 'Attack', 'AttackFormation' },   # Hover Flak
+    }
+    local Builder = {
+        BuilderName = 'M5SeraWestHoverAttackBuilder1',
+        PlatoonTemplate = Temp,
+        InstanceCount = 4,
+        Priority = 110,
+        PlatoonType = 'Land',
+        RequiresConstruction = true,
+        LocationType = 'M5_Sera_Island_West_Base',
+        PlatoonAIFunction = {SPAIFileName, 'PatrolChainPickerThread'},       
+        PlatoonData = {
+            PatrolChains = {'M5_Sera_Island_West_Hover_Attack_Chain1', 'M5_Sera_Island_West_Hover_Attack_Chain2'},
+        },
+    }
+    ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
+
+    for i = 1, 3 do
+        opai = SeraphimM5IslandWestBase:AddOpAI('BasicLandAttack', 'M5_WestLandAttack1_' ..i,
+            {
+                MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+                PlatoonData = {
+                    PatrolChain = 'M5_Sera_Island_West_Land_Attack_Chain',
+                },
+                Priority = 100,
+            }
+        )
+        opai:SetChildQuantity({'HeavyTanks'}, 20)
+    end
+
+    opai = SeraphimM5IslandWestBase:AddOpAI('BasicLandAttack', 'M5_WestLandAttack2',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M5_Sera_Island_West_Land_Attack_Chain',
+            },
+            Priority = 100,
+        }
+    )
+    opai:SetChildQuantity({'MobileMissiles'}, 16)
+
+    opai = SeraphimM5IslandWestBase:AddOpAI('BasicLandAttack', 'M5_WestLandAttackCivs',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M5_Sera_Island_West_Land_Attack_Civs_Chain',
+            },
+            Priority = 120,
+        }
+    )
+    opai:SetChildQuantity({'LightTanks'}, 16)
+end
+
+function SeraphimM5IslandWestBaseNavalAttacks()
+    local Temp = {
+        'SeraM5NavalT1WestAttackTemp1',
+        'NoPlan',
+        { 'xss0103', 1, 8, 'Attack', 'AttackFormation' },   # Frigate
+        { 'xss0203', 1, 4, 'Attack', 'AttackFormation' },   # T1 Sub
+    }
+    local Builder = {
+        BuilderName = 'SeraM5NavyT1WestAttackBuilder1',
+        PlatoonTemplate = Temp,
+        InstanceCount = 3,
+        Priority = 250,
+        PlatoonType = 'Sea',
+        RequiresConstruction = true,
+        LocationType = 'M5_Sera_Island_West_Base',
+        PlatoonAIFunction = {SPAIFileName, 'PatrolThread'},
+        PlatoonData = {
+            PatrolChain = 'M5_Sera_Island_West_Naval_AttackUEF_Chain',
+        },
+    }
+    ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
+
+    Temp = {
+        'SeraM5NavalT2WestAttackTemp1',
+        'NoPlan',
+        { 'xss0201', 1, 4, 'Attack', 'AttackFormation' },   # Destroyers
+        { 'xss0202', 1, 2, 'Attack', 'AttackFormation' },   # Cruisers
+    }
+    Builder = {
+        BuilderName = 'SeraM5NavyT2WestAttackBuilder1',
+        PlatoonTemplate = Temp,
+        InstanceCount = 1,
+        Priority = 180,
+        PlatoonType = 'Sea',
+        RequiresConstruction = true,
+        LocationType = 'M5_Sera_Island_West_Base_T2_Naval',
+        PlatoonAIFunction = {SPAIFileName, 'PatrolThread'},
+        PlatoonData = {
+            PatrolChain = 'M5_Sera_Island_West_Navat_AttackPlayer_Chain',
+        },
+    }
+    ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
+
+    Temp = {
+        'SeraM5NavalT2WestAttackTemp2',
+        'NoPlan',
+        { 'xss0201', 1, 4, 'Attack', 'AttackFormation' },   # Destroyers
+    }
+    Builder = {
+        BuilderName = 'SeraM5NavyT2WestAttackBuilder2',
+        PlatoonTemplate = Temp,
+        InstanceCount = 1,
+        Priority = 200,
+        PlatoonType = 'Sea',
+        RequiresConstruction = true,
+        LocationType = 'M5_Sera_Island_West_Base_T2_Naval',
+        PlatoonAIFunction = {SPAIFileName, 'PatrolThread'},
+        PlatoonData = {
+            PatrolChain = 'M5_Sera_Island_West_Navat_AttackPlayer_Chain',
+        },
+    }
+    ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
+end
+
 function SeraphimM5IslandMiddleBaseAI()
 
     # ------------------------------
@@ -712,8 +1020,6 @@ function SeraphimM5IslandMiddleBaseAI()
     SeraphimM5IslandMiddleBase:Initialize(ArmyBrains[Seraphim], 'M5_Sera_Island_Middle_Base', 'M5_Sera_Island_Middle_Base_Marker', 60, {M5_Sera_Island_Middle_Base = 100})
     SeraphimM5IslandMiddleBase:StartNonZeroBase({20, 16})
     SeraphimM5IslandMiddleBase:SetActive('AirScouting', true)
-    # SeraphimM5IslandMiddleBase:SetMaximumConstructionEngineers(4)
-    # SeraphimM5IslandMiddleBase:SetPermanentAssistCount(16)
 
     SeraphimM5IslandMiddleT1NavalBase:Initialize(ArmyBrains[Seraphim], 'M5_Sera_Island_Middle_Base_T1_Naval', 'M5_Sera_Island_Middle_Base_T1_Naval_Marker', 40, {M5_Sera_Island_Middle_Base_T1_Naval = 100})
     SeraphimM5IslandMiddleT1NavalBase:StartNonZeroBase({8, 7})
@@ -809,7 +1115,7 @@ function SeraphimM5IslandMiddleBaseLandAttacks()
     opai:SetChildActive('T2Transports', true)
     opai:SetChildQuantity({'T2Transports'}, 4)
     opai:AddBuildCondition('/lua/editor/unitcountbuildconditions.lua',
-        'HaveLessThanUnitsWithCategory', {'default_brain', 4, categories.xsa0104})   # T2 Transport
+        'HaveLessThanUnitsWithCategory', {'default_brain', 8, categories.xsa0104})   # T2 Transport
 
     for i = 1, 2 do
         opai = SeraphimM5IslandMiddleBase:AddOpAI('BasicLandAttack', 'M5_Sera_Middle_TransportAttack1_' .. i,

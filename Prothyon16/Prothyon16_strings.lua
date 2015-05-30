@@ -44,22 +44,22 @@ sACUDie = {
 
 # Intro Sequence 1 / Actor: Gyle / Update 22/05/2015 / VO Ready
 intro1 = {
-  {text = '[Gyle]: Welcome commander – My name is Gyle and I’ll be your Liason officer for the forthcoming scenario. In this mission you will be giving a demonstration to our newest recruits by fighting against a training AI. Your first objective will be to destroy this outpost. ', vid = 'UEF_Logo.sfd', bank = 'G_VO1', cue = '1intro1', faction = 'UEF'},
+  {text = '[Gyle]: Welcome commander – My name is Gyle and I’ll be your Liason officer for the forthcoming scenario. In this mission you will be giving a demonstration to our newest recruits by fighting against a training AI. Your first objective will be to destroy this outpost. ', vid = 'Pro_16_intro1.sfd', bank = 'G_VO1', cue = '1intro1', faction = 'UEF'},
 }
 
 # Intro Sequence 2 / Actor: Gyle / Update 22/05/2015 / VO Ready
 intro2 = {
-  {text = '[Gyle]: There are tech centers positioned around the map - capture them to unlock additional units.', vid = 'UEF_Logo.sfd', bank = 'G_VO1', cue = '2intro2', faction = 'UEF'},
+  {text = '[Gyle]: There are tech centers positioned around the map - capture them to unlock additional units.', vid = 'Pro_16_intro2.sfd', bank = 'G_VO1', cue = '2intro2', faction = 'UEF'},
 }
 
 # Intro Sequence 3 / Actor: Gyle / Update 22/05/2015 / VO Ready
 intro3 = {
-  {text = '[Gyle]: Your next objective will then be to secure the beach by destroying this base.  ', vid = 'UEF_Logo.sfd', bank = 'G_VO1', cue = '3intro3', faction = 'UEF'},
+  {text = '[Gyle]: Your next objective will then be to secure the beach by destroying this base.  ', vid = 'Pro_16_intro3.sfd', bank = 'G_VO1', cue = '3intro3', faction = 'UEF'},
 }
 
 # Good luck! / Actor: Gyle / Update 22/05/2015 / VO Ready
 postintro = {
-  {text = '[Gyle]: The training AI has been activated – Good Luck Commander! ', vid = 'UEF_Logo.sfd', bank = 'G_VO1', cue = '4postintro', faction = 'UEF'},
+  {text = '[Gyle]: The training AI has been activated – Good Luck Commander! ', vid = 'Pro_16_postintro.sfd', bank = 'G_VO1', cue = '4postintro', faction = 'UEF'},
 }
 
 # First Base Killed / Actor: Gyle / Update 22/05/2015 / VO Ready
@@ -243,6 +243,18 @@ M5MainReminder2 = {
 
 
 
+# Sera ACU Defeated / Actor: Gyle / Update / VO TODO
+M5SereDefeated = {
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# Sera ACU Defeated Base remains / Actor: Gyle / Update / VO TODO
+M5SereBaseRemains = {
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+
+
 # Protect sACU / Actor: Gyle / Update / VO TODO
 ProtectsACU = {
   {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
@@ -292,8 +304,24 @@ IslandBaseAllKilled = {
 }
 
 
+
 # Secondary Obj Protect Civs / Actor:  / Update / VO TODO
-M5EProtectCivs = {
+M5ProtectCivs = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# Secondary Obj Protect Civs Failed / Actor:  / Update / VO TODO
+M5CivsDied = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# 4 buildings above min / Actor:  / Update / VO TODO
+LosingCivs1 = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# 1 buildings above min / Actor:  / Update / VO TODO
+LosingCivs2 = {
   {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
