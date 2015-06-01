@@ -28,6 +28,8 @@ function UEFM5IslandBaseAI()
     UEFM5IslandBase:SetActive('AirScouting', true)
     UEFM5IslandBase:SetSupportACUCount(1)
 
+    UEFM5IslandBase:AddBuildGroup('M5_UEF_Island_Base_Defences', 90, true)
+
     UEFM5IslandBaseAirAttacks()
     UEFM5IslandBaseLandAttacks()
     UEFM5IslandBaseNavalAttacks()

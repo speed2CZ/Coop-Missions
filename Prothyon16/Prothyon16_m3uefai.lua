@@ -305,7 +305,7 @@ function UEFM3AirBaseAirAttacks()
     local Temp = {
         'ComabtFighetTemp2',
         'NoPlan',
-        { 'dea0202', 1, 5, 'Attack', 'GrowthFormation' },   # T2 CombatFighter
+        { 'dea0202', 1, 10, 'Attack', 'GrowthFormation' },   # T2 CombatFighter
     }
     local Builder = {
         BuilderName = 'CombatFighterAttackBuilder2',
@@ -394,7 +394,7 @@ function UEFM3LandBaseLandAttacks()
     # Drops
     #------
     # Transport Builder
-    local opai = UEFM3LandBase:AddOpAI('EngineerAttack', 'M3_UEF_TransportBuilder',
+    opai = UEFM3LandBase:AddOpAI('EngineerAttack', 'M3_UEF_TransportBuilder',
     {
         MasterPlatoonFunction = {'/lua/ScenarioPlatoonAI.lua', 'LandAssaultWithTransports'},
         PlatoonData = {
@@ -421,7 +421,6 @@ function UEFM3LandBaseLandAttacks()
             Priority = 110,
         })
         opai:SetChildQuantity({'HeavyTanks'}, 6)
-        # opai:SetLockingStyle('BuildTimer', {LockTimer = 180})
     end
 
     for i = 1, 2 do
@@ -436,7 +435,6 @@ function UEFM3LandBaseLandAttacks()
             Priority = 110,
         })
         opai:SetChildQuantity({'LightArtillery'}, 14)
-        # opai:SetLockingStyle('BuildTimer', {LockTimer = 180})
     end
 
     for i = 1, 2 do
@@ -452,7 +450,6 @@ function UEFM3LandBaseLandAttacks()
             Priority = 110,
         })
         opai:SetChildQuantity({'HeavyTanks'}, 6)
-        # opai:SetLockingStyle('BuildTimer', {LockTimer = 180})
     end
 
     for i = 1, 2 do
@@ -468,7 +465,6 @@ function UEFM3LandBaseLandAttacks()
             Priority = 110,
         })
         opai:SetChildQuantity({'LightArtillery'}, 14)
-        # opai:SetLockingStyle('BuildTimer', {LockTimer = 180})
     end
 
     #-------------

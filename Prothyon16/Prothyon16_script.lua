@@ -57,15 +57,16 @@ local ReminderTaunts = {
 # -----------
 # Debug only!
 # -----------
-local SkipNIS1 = true
-local SkipNIS2 = true
-local SkipNIS3 = true
+local SkipNIS1 = false
+local SkipNIS2 = false
+local SkipNIS3 = false
 local SkipNIS5 = true
 
 # --------------
 # Taunt Managers
 # --------------
 local ZottooWestTM = TauntManager.CreateTauntManager('ZottooWestTM', '/maps/Prothyon16/Prothyon16_strings.lua')
+# local SACUTM = TauntManager.CreateTauntManager('SACUTM', '/maps/Prothyon16/Prothyon16_strings.lua')
 
 # How long should we wait at the beginning of the NIS to allow slower machines to catch up?
 local NIS1InitialDelay = 3
@@ -80,8 +81,8 @@ function OnPopulate(scenario)
     # Sets Army Colors
     ScenarioFramework.SetUEFPlayerColor(Player)
 	ScenarioFramework.SetUEFAllyColor(UEF)
-    ScenarioFramework.SetCoalitionColor(UEFAlly)
-    ScenarioFramework.SetCoalitionColor(Objective)
+    SetArmyColor('UEFAlly', 71, 134, 226)
+    SetArmyColor('Objective', 71, 134, 226)
     ScenarioFramework.SetSeraphimColor(Seraphim)
 
     # Unit cap
@@ -138,19 +139,19 @@ function OnPopulate(scenario)
     # --------------------
     # Objective Structures
     # --------------------
-    ScenarioInfo.M1_Eco_Unlock_Center = ScenarioUtils.CreateArmyUnit('Objective', 'M1_Eco_Unlock Center')
-    ScenarioInfo.M1_Eco_Unlock_Center:SetDoNotTarget(true)
-    ScenarioInfo.M1_Eco_Unlock_Center:SetCanTakeDamage(false)
-    ScenarioInfo.M1_Eco_Unlock_Center:SetCanBeKilled(false)
-    ScenarioInfo.M1_Eco_Unlock_Center:SetReclaimable(false)
-    ScenarioInfo.M1_Eco_Unlock_Center:SetCustomName("T2 Economy Unlock Center")
+    ScenarioInfo.M1_Eco_Tech_Centre = ScenarioUtils.CreateArmyUnit('Objective', 'M1_Eco_Tech_Centre')
+    ScenarioInfo.M1_Eco_Tech_Centre:SetDoNotTarget(true)
+    ScenarioInfo.M1_Eco_Tech_Centre:SetCanTakeDamage(false)
+    ScenarioInfo.M1_Eco_Tech_Centre:SetCanBeKilled(false)
+    ScenarioInfo.M1_Eco_Tech_Centre:SetReclaimable(false)
+    ScenarioInfo.M1_Eco_Tech_Centre:SetCustomName("T2 Economy Tech Centre")
 
-    ScenarioInfo.M1_T2_Land_Unlock_Center = ScenarioUtils.CreateArmyUnit('Objective', 'M1_T2_Land_Unlock_Center')
-    ScenarioInfo.M1_T2_Land_Unlock_Center:SetDoNotTarget(true)
-    ScenarioInfo.M1_T2_Land_Unlock_Center:SetCanTakeDamage(false)
-    ScenarioInfo.M1_T2_Land_Unlock_Center:SetCanBeKilled(false)
-    ScenarioInfo.M1_T2_Land_Unlock_Center:SetReclaimable(false)
-    ScenarioInfo.M1_T2_Land_Unlock_Center:SetCustomName("T2 Land Unlock Center")
+    ScenarioInfo.M1_T2_Land_Tech_Centre = ScenarioUtils.CreateArmyUnit('Objective', 'M1_T2_Land_Tech_Centre')
+    ScenarioInfo.M1_T2_Land_Tech_Centre:SetDoNotTarget(true)
+    ScenarioInfo.M1_T2_Land_Tech_Centre:SetCanTakeDamage(false)
+    ScenarioInfo.M1_T2_Land_Tech_Centre:SetCanBeKilled(false)
+    ScenarioInfo.M1_T2_Land_Tech_Centre:SetReclaimable(false)
+    ScenarioInfo.M1_T2_Land_Tech_Centre:SetCustomName("T2 Land Tech Centre")
 
     # Other Structures
     ScenarioInfo.M1_Other_Buildings = ScenarioUtils.CreateArmyGroup('Objective', 'M1_Other_Buildings')
@@ -230,7 +231,7 @@ function PlayerLoseToAI()
                 v:ManualResult(false)
             end
         end
-        ScenarioFramework.Dialogue(OpStrings.PlayerLosetoAI, KillGame, true)
+        ScenarioFramework.Dialogue(OpStrings.PlayerLoseToAI, KillGame, true)
     end
 end
 
@@ -445,15 +446,15 @@ function StartMission1()
         categories.UEF * categories.FACTORY, true, true, ArmyBrains[UEF])
 
     # ---------------------------------------------
-    # Secondary Objective 1 - Capture Unlock Center
+    # Secondary Objective 1 - Capture Tech Centre
     # ---------------------------------------------
     ScenarioInfo.M1S1 = Objectives.Capture(
         'secondary',                      # type
         'incomplete',                   # complete
-        'Capture Economy Unlock Center',  # title
+        'Capture Economy Tech Centre',  # title
         'Capture this building to gain access to T2 Economy.',  # description
         {
-            Units = {ScenarioInfo.M1_Eco_Unlock_Center},
+            Units = {ScenarioInfo.M1_Eco_Tech_Centre},
             FlashVisible = true,
         }
     )
@@ -489,15 +490,15 @@ function StartMission1()
     ScenarioFramework.CreateTimerTrigger(M1S1Reminder, 20*60)
 
     # ---------------------------------------------
-    # Secondary Objective 2 - Capture Unlock Center
+    # Secondary Objective 2 - Capture Tech Centre
     # ---------------------------------------------
     ScenarioInfo.M1S2 = Objectives.Capture(
         'secondary',                      # type
         'incomplete',                   # complete
-        'Capture Unlock Center',  # title
+        'Capture T2 Land Tech Centre',  # title
         'Capture this building to gain access to T2 Land units.',  # description
         {
-            Units = {ScenarioInfo.M1_T2_Land_Unlock_Center},
+            Units = {ScenarioInfo.M1_T2_Land_Tech_Centre},
             FlashVisible = true,
         }
     )
@@ -584,12 +585,12 @@ function IntroMission2()
             # --------------------
             # Objective Structures
             # --------------------
-            ScenarioInfo.M2_T2_Air_Unlock_Center = ScenarioUtils.CreateArmyUnit('Objective', 'M2_T2_Air_Unlock_Center')
-            ScenarioInfo.M2_T2_Air_Unlock_Center:SetDoNotTarget(true)
-            ScenarioInfo.M2_T2_Air_Unlock_Center:SetCanTakeDamage(false)
-            ScenarioInfo.M2_T2_Air_Unlock_Center:SetCanBeKilled(false)
-            ScenarioInfo.M2_T2_Air_Unlock_Center:SetReclaimable(false)
-            ScenarioInfo.M2_T2_Air_Unlock_Center:SetCustomName("T2 Air Unlock Center")
+            ScenarioInfo.M2_T2_Air_Tech_Centre = ScenarioUtils.CreateArmyUnit('Objective', 'M2_T2_Air_Tech_Centre')
+            ScenarioInfo.M2_T2_Air_Tech_Centre:SetDoNotTarget(true)
+            ScenarioInfo.M2_T2_Air_Tech_Centre:SetCanTakeDamage(false)
+            ScenarioInfo.M2_T2_Air_Tech_Centre:SetCanBeKilled(false)
+            ScenarioInfo.M2_T2_Air_Tech_Centre:SetReclaimable(false)
+            ScenarioInfo.M2_T2_Air_Tech_Centre:SetCustomName("T2 Air Tech Centre")
 
             #-----------------
             # Other Structures
@@ -717,8 +718,8 @@ function StartMission2()
     ScenarioInfo.M2P1 = Objectives.CategoriesInArea(
         'primary',                      # type
         'incomplete',                   # complete
-        'Destroy T2 Land Base',                 # title
-        'Eliminate the marked UEF structures.',  # description
+        'Eliminate Southern Base',                 # title
+        'Destroy the marked UEF structures.',  # description
         'kill',                         # action
         {                               # target
             MarkUnits = true,
@@ -736,29 +737,30 @@ function StartMission2()
     ScenarioInfo.M2P1:AddResultCallback(
         function(result)
             if(result) then
-                # ScenarioFramework.Dialogue(OpStrings.airbase1, IntroMission3)
-                IntroMission3 ()
+                ScenarioFramework.Dialogue(OpStrings.airbase1, IntroMission3)
+                # IntroMission3 ()
             end
         end
     )
     table.insert(AssignedObjectives, ScenarioInfo.M2P1)
     ScenarioFramework.CreateTimerTrigger(M2P1Reminder1, 15*60)
 
-    # ScenarioFramework.Dialogue(OpStrings.airhqtechcentre, M2SecondaryCaptureTech)
-
+    # Secondary Objectives
+    ScenarioFramework.CreateArmyIntelTrigger(M2SecondaryTitans, ArmyBrains[Player], 'LOSNow', false, true, categories.uel0303, true, ArmyBrains[UEF])
+    ScenarioFramework.Dialogue(OpStrings.airhqtechcentre, M2SecondaryCaptureTech)
 end
 
 function M2SecondaryCaptureTech()
-    # ---------------------------------------------
-    # Secondary Objective 3 - Capture Unlock Center
-    # ---------------------------------------------
+    # -------------------------------------------
+    # Secondary Objective 3 - Capture Tech Centre
+    # -------------------------------------------
     ScenarioInfo.M2S1 = Objectives.Capture(
         'secondary',                      # type
         'incomplete',                   # complete
-        'Capture T2 Air Unlock Center',  # title
+        'Capture T2 Air Tech Centre',  # title
         'Capture this building to gain access to T2 Air units.',  # description
         {
-            Units = {ScenarioInfo.M2_T2_Air_Unlock_Center},
+            Units = {ScenarioInfo.M2_T2_Air_Tech_Centre},
             FlashVisible = true,
         }
     )
@@ -777,6 +779,32 @@ function M2SecondaryCaptureTech()
     )
     table.insert(AssignedObjectives, ScenarioInfo.M2S1)
     ScenarioFramework.CreateTimerTrigger(M2S1Reminder, 20*60)
+end
+
+function M2SecondaryTitans()
+    ScenarioFramework.Dialogue(OpStrings.titankill)
+    local units = ScenarioFramework.GetCatUnitsInArea(categories.uel0303, 'M2_Area', ArmyBrains[UEF])
+    # -----------------------------------
+    # Secondary Objective 4 - Kill Titans
+    # -----------------------------------
+    ScenarioInfo.M2S2 = Objectives.KillOrCapture(
+        'secondary',                      # type
+        'incomplete',                   # complete
+        'Dispatch Titan Squad',                 # title
+        'Destroy the Titan patrol around the southern base.',  # description
+        {                               # target
+            Units = units,
+            MarkUnits = true,
+        }
+   )
+    ScenarioInfo.M2S2:AddResultCallback(
+        function(result)
+            if(result) then
+                ScenarioFramework.Dialogue(OpStrings.titankilled)
+            end
+        end
+    )
+    table.insert(AssignedObjectives, ScenarioInfo.M2S2)
 end
 
 function UEFBattleships()
@@ -1019,7 +1047,7 @@ function StartMission3()
     ScenarioInfo.M3P1 = Objectives.CategoriesInArea(
         'primary',                      # type
         'incomplete',                   # complete
-        'Destroy Air Base',                 # title
+        'Destroy The Island Air Base',                 # title
         'Eliminate the marked UEF structures.',  # description
         'kill',                         # action
         {                               # target
@@ -1038,8 +1066,8 @@ function StartMission3()
     ScenarioInfo.M3P1:AddResultCallback(
         function(result)
             if(result) then
-                # ScenarioFramework.Dialogue(OpStrings.epicEprop, IntroMission5)
-                IntroMission5()
+                ScenarioFramework.Dialogue(OpStrings.epicEprop, IntroMission5)
+                # IntroMission5()
             end
         end
     )
@@ -1303,9 +1331,9 @@ function M5InitialAttack()
 end
 
 function StartMission5()
-    # ----------------------------------------
-    # Secondary Objective 1 - Protect UEF sACU
-    # ----------------------------------------
+    # --------------------------------------
+    # Primary Objective 1 - Protect UEF sACU
+    # --------------------------------------
     # ScenarioFramework.Dialogue(OpStrings.X05_M02_210)   #Assist sacu, vo
     ScenarioInfo.M5P1 = Objectives.Protect(
         'primary',                      # type
@@ -1324,6 +1352,8 @@ function StartMission5()
         end
    )
     table.insert(AssignedObjectives, ScenarioInfo.M5P1)
+    # SetupSACUM5Warnings()
+    # ScenarioFramework.CreateUnitDamagedTrigger(M5sACUTakingDamage1, ScenarioInfo.UEFSACU, .01)  #guanranteed first-damaged warning
 
     # -----------------------------------------
     # Primary Objective 2 - Defeat Seraphim ACU
@@ -1384,13 +1414,56 @@ function StartMission5()
         end
     )
     table.insert(AssignedObjectives, ScenarioInfo.M5S1)
-    --[[ # Test once done
+    --[[ # Test once vo done
     ScenarioInfo.M5CivBuildingCount = table.getn(units)
     ScenarioInfo.M5BuildingFailLimit = math.ceil(table.getn(units)/1.25)
     for i = 1, ScenarioInfo.M5CivBuildingCount do
         ScenarioFramework.CreateUnitDeathTrigger(M5S1Warnings, units[i])
     end
     ]]--
+    # -------------------------------------------------
+    # Secondary Objective 2 - Destroy Sera Island Bases
+    # -------------------------------------------------
+    ScenarioInfo.M5S2 = Objectives.CategoriesInArea(
+        'secondary',                              # type
+        'incomplete',                           # complete
+        'Eliminate Seraphim Forces on the Island',          # title
+        'Secure island by destroying Seraphim bases located on island so evacuation can begin.',          # description
+        'kill',                         # action
+        {                                       # target
+            MarkUnits = true,
+            Requirements = {
+                {   
+                    Area = 'M5_Sera_Island_West_Base_Area',
+                    Category = categories.FACTORY + (categories.TECH2 * categories.ECONOMIC),
+                    CompareOp = '<=',
+                    Value = 0,
+                    ArmyIndex = Seraphim
+                },
+                {   
+                    Area = 'M5_Sera_Island_Middle_Base_Area',
+                    Category = categories.FACTORY + (categories.TECH2 * categories.ECONOMIC),
+                    CompareOp = '<=',
+                    Value = 0,
+                    ArmyIndex = Seraphim
+                },
+            },
+        }
+    )
+    ScenarioInfo.M5S2:AddResultCallback(
+        function(result)
+            if(result) then
+                if ScenarioInfo.M5S1.Active then
+                    ScenarioFramework.Dialogue(OpStrings.obj5postintro, Mission5Secondary2, true)     # temporary
+                    # ScenarioFramework.Dialogue(OpStrings.IslandBaseAllKilled, Mission5Secondary2, true)
+                else
+                    ScenarioFramework.Dialogue(OpStrings.obj5postintro, nil, true)     # temporary
+                    # ScenarioFramework.Dialogue(OpStrings.IslandBaseAllKilledNoCiv, nil, true)
+                end
+            end
+        end
+    )
+    table.insert(AssignedObjectives, ScenarioInfo.M5S2)
     SetupWestM5Taunts()
 end
 
@@ -1403,7 +1476,12 @@ function SeraACUWarp()
         end
     )  
     ScenarioInfo.M5P2:ManualResult(true)
-    
+end
+
+function M5sACUTakingDamage1()
+    if not ScenarioInfo.UEFSACU:IsDead() then
+        ScenarioFramework.Dialogue(OpStrings.sACUTakesDmg)
+    end
 end
 
 function M5S1Warnings()
@@ -1421,7 +1499,6 @@ function M5S1Warnings()
 end
 
 function Mission5Part2()
-    
     # ----------------------------------------
     # Primary Objective 3 - Destroy Enemy Base
     # ----------------------------------------
@@ -1452,6 +1529,10 @@ function Mission5Part2()
         end
     )
     table.insert(AssignedObjectives, ScenarioInfo.M5P3)
+end
+
+function Mission5Secondary2()
+
 
 end
 
@@ -1557,6 +1638,13 @@ function SetupWestM5Taunts()
     ZottooWestTM:AddUnitsKilledTaunt('TAUNT3', ArmyBrains[UEF], categories.NAVAL * categories.MOBILE, 20)
     ZottooWestTM:AddUnitsKilledTaunt('TAUNT4', ArmyBrains[Player], categories.TECH2 * categories.NAVAL, 10)
     ZottooWestTM:AddDamageTaunt('TAUNT5', ScenarioInfo.PlayerCDR, .02)
+end
+
+function SetupSACUM5Warnings()
+    SACUTM:AddDamageTaunt('sACUDamaged25', ScenarioInfo.UEFSACU, .25)            #SACU damaged to x
+    SACUTM:AddDamageTaunt('sACUDamaged50', ScenarioInfo.UEFSACU, .50)
+    SACUTM:AddDamageTaunt('sACUDamaged75', ScenarioInfo.UEFSACU, .75)
+    SACUTM:AddDamageTaunt('sACUDamaged90', ScenarioInfo.UEFSACU, .90)
 end
 
 # ---------------
