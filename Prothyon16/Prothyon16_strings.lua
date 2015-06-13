@@ -350,15 +350,58 @@ LosingCivs2 = {
   {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Secondary Obj Evacuate Civs 1 / Actor:  / Update / VO TODO
-M5EvacCivs1 = {
+
+
+# Secondary obj 3 Evacuate Civs / Actor:  / Update / VO TODO
+M5TrucksReady = {
   {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Secondary Obj Evacuate Civs from Island / Actor:  / Update / VO TODO
-M5EvacCivs2 = {
+# Trucks taking damage 1 / Actor:  / Update / VO TODO
+M5TruckDamaged1 = {
   {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
+
+# Trucks taking damage 2 / Actor:  / Update / VO TODO
+M5TruckDamaged2 = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# 1 truck destroyed / Actor:  / Update / VO TODO
+M5TruckDestroyed1 = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# 2 trucks destroyed / Actor:  / Update / VO TODO
+M5TruckDestroyed2 = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# 3 trucks destroyed / Actor:  / Update / VO TODO
+M5TruckDestroyed3 = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# All trucks destroyed, objective failed / Actor:  / Update / VO TODO
+M5AllTrucksDestroyed = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# objective complete / Actor:  / Update / VO TODO
+M5AllTruckRescued = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# 1 truck rescued / Actor:  / Update / VO TODO
+M5TruckRescued1 = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# 2 trucks rescued / Actor:  / Update / VO TODO
+M5TruckRescued2 = {
+  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
 ]]--
 
 

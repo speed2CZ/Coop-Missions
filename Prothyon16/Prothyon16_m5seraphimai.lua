@@ -1020,6 +1020,7 @@ function SeraphimM5IslandMiddleBaseAI()
     SeraphimM5IslandMiddleBase:Initialize(ArmyBrains[Seraphim], 'M5_Sera_Island_Middle_Base', 'M5_Sera_Island_Middle_Base_Marker', 60, {M5_Sera_Island_Middle_Base = 100})
     SeraphimM5IslandMiddleBase:StartNonZeroBase({20, 16})
     SeraphimM5IslandMiddleBase:SetActive('AirScouting', true)
+    SeraphimM5IslandMiddleBase:SetConstructionAlwaysAssist(false)
 
     SeraphimM5IslandMiddleT1NavalBase:Initialize(ArmyBrains[Seraphim], 'M5_Sera_Island_Middle_Base_T1_Naval', 'M5_Sera_Island_Middle_Base_T1_Naval_Marker', 40, {M5_Sera_Island_Middle_Base_T1_Naval = 100})
     SeraphimM5IslandMiddleT1NavalBase:StartNonZeroBase({8, 7})

@@ -57,9 +57,9 @@ local ReminderTaunts = {
 # -----------
 # Debug only!
 # -----------
-local SkipNIS1 = false
-local SkipNIS2 = false
-local SkipNIS3 = false
+local SkipNIS1 = true
+local SkipNIS2 = true
+local SkipNIS3 = true
 local SkipNIS5 = true
 
 # --------------
@@ -70,6 +70,12 @@ local ZottooWestTM = TauntManager.CreateTauntManager('ZottooWestTM', '/maps/Prot
 
 # How long should we wait at the beginning of the NIS to allow slower machines to catch up?
 local NIS1InitialDelay = 3
+
+# -----------------------
+# UEF Secondary variables
+# -----------------------
+local MaxTrucks = 20
+local RequiredTrucks = 15
 
 # -------
 # Startup
@@ -157,6 +163,9 @@ function OnPopulate(scenario)
     ScenarioInfo.M1_Other_Buildings = ScenarioUtils.CreateArmyGroup('Objective', 'M1_Other_Buildings')
     for k,v in ScenarioInfo.M1_Other_Buildings do
         v:SetCapturable(false)
+        v:SetReclaimable(false)
+        v:SetCanTakeDamage(false)
+        v:SetCanBeKilled(false)
     end
 end
 
@@ -341,6 +350,8 @@ function IntroMission1NIS()
                 IssueMove({ScenarioInfo.CoopCDR[coop]}, ScenarioUtils.MarkerToPosition('Commander_Walk_1'))
             	#ScenarioInfo.CoopCDR[coop]:PlayCommanderWarpInEffect()
             	ScenarioFramework.FakeGateInUnit(ScenarioInfo.CoopCDR[coop])
+                ScenarioFramework.CreateUnitDamagedTrigger(PlayerLoseToAI, ScenarioInfo.CoopCDR[coop], .99)
+                ScenarioInfo.CoopCDR[coop]:SetCanBeKilled(false)
             	coop = coop + 1
             	WaitSeconds(0.5)
         	end
@@ -377,6 +388,8 @@ function IntroMission1NIS()
                 IssueMove({ScenarioInfo.CoopCDR[coop]}, ScenarioUtils.MarkerToPosition('Commander_Walk_1'))
             	#ScenarioInfo.CoopCDR[coop]:PlayCommanderWarpInEffect()
             	ScenarioFramework.FakeGateInUnit(ScenarioInfo.CoopCDR[coop])
+                ScenarioFramework.CreateUnitDamagedTrigger(PlayerLoseToAI, ScenarioInfo.CoopCDR[coop], .99)
+                ScenarioInfo.CoopCDR[coop]:SetCanBeKilled(false)
             	coop = coop + 1
             	WaitSeconds(0.5)
         	end
@@ -469,11 +482,7 @@ function StartMission1()
                                                                                     - categories.ueb0203    # T2 NAval HQ
                                                                                     - categories.ueb2301    # T2 PD
                                                                                     - categories.ueb0202)   # T2 Air HQ
-                end
-                for _, player in ScenarioInfo.HumanPlayers do
                     ScenarioFramework.RemoveRestriction(player, categories.uel0208 + categories.xel0209)    # T2 Engineer and Sparky
-                end
-                for _, player in ScenarioInfo.HumanPlayers do
                     ScenarioFramework.RestrictEnhancements({'ResourceAllocation',
                                                             'DamageStablization',
                                                             'T3Engineering',
@@ -598,11 +607,17 @@ function IntroMission2()
             ScenarioInfo.M2_Other_Buildings = ScenarioUtils.CreateArmyGroup('Objective', 'M2_Other_Buildings')
             for k,v in ScenarioInfo.M2_Other_Buildings do
                 v:SetCapturable(false)
+                v:SetReclaimable(false)
+                v:SetCanTakeDamage(false)
+                v:SetCanBeKilled(false)
             end
 
             ScenarioInfo.UEFGate = ScenarioUtils.CreateArmyGroup('Objective', 'Quantum_Gate_Prebuild')
             for k,v in ScenarioInfo.UEFGate do
                 v:SetCapturable(false)
+                v:SetReclaimable(false)
+                v:SetCanTakeDamage(false)
+                v:SetCanBeKilled(false)
             end
 
             # ------------------------
@@ -1085,19 +1100,23 @@ function IntroMission5()
             # New Alliances
             for _, player in ScenarioInfo.HumanPlayers do
                 SetAlliance(player, UEF, 'Ally')
-            end
-            for _, player in ScenarioInfo.HumanPlayers do
                 SetAlliance(UEF, player, 'Ally')
-            end
-            for _, player in ScenarioInfo.HumanPlayers do
                 SetAlliance(player, Objective, 'Ally')
-            end
-            for _, player in ScenarioInfo.HumanPlayers do
                 SetAlliance(Objective, player, 'Ally')
             end
 
             # No invincible ACU anymore
             ScenarioInfo.PlayerCDR:SetCanBeKilled(true)
+            ScenarioFramework.CreateUnitDeathTrigger(PlayerDeath, ScenarioInfo.PlayerCDR)
+
+            coop = 1
+            for iArmy, strArmy in pairs(ListArmies()) do
+                if iArmy >= ScenarioInfo.Coop1 then
+                    ScenarioInfo.CoopCDR[coop]:SetCanBeKilled(true)
+                    # ScenarioFramework.CreateUnitDeathTrigger(PlayerDeath, ScenarioInfo.CoopCDR[coop])
+                    coop = coop + 1
+                end
+            end
             
             --------
             # UEF AI
@@ -1172,6 +1191,20 @@ function IntroMission5()
             ScenarioInfo.M5_Other_Buildings = ScenarioUtils.CreateArmyGroup('Objective', 'M5_Other_Buildings')
             for k,v in ScenarioInfo.M5_Other_Buildings do
                 v:SetCapturable(false)
+                v:SetReclaimable(false)
+            end
+            # No more invincible civilian buildings
+            for k,v in ScenarioInfo.M1_Other_Buildings do
+                v:SetCanTakeDamage(true)
+                v:SetCanBeKilled(true)
+            end
+            for k,v in ScenarioInfo.M2_Other_Buildings do
+                v:SetCanTakeDamage(true)
+                v:SetCanBeKilled(true)
+            end
+            for k,v in ScenarioInfo.UEFGate do
+                v:SetCanTakeDamage(true)
+                v:SetCanBeKilled(true)
             end
 
             # ------------------------
@@ -1194,8 +1227,8 @@ function IntroMission5()
             end
 
             for _, player in ScenarioInfo.HumanPlayers do
-                    ScenarioFramework.RemoveRestriction(player, categories.TECH2)
-                end
+                ScenarioFramework.RemoveRestriction(player, categories.TECH2)
+            end
             
             ForkThread(IntroMission5NIS)
         end
@@ -1454,6 +1487,13 @@ function StartMission5()
         function(result)
             if(result) then
                 if ScenarioInfo.M5S1.Active then
+                    ScenarioInfo.TrucksCreated = 0
+                    ScenarioInfo.TrucksDestroyed = 0
+                    ScenarioInfo.TrucksEscorted = 0
+                    ScenarioInfo.Trucks = {}
+
+                    ScenarioInfo.M5S1:ManualResult(true)
+
                     ScenarioFramework.Dialogue(OpStrings.obj5postintro, Mission5Secondary2, true)     # temporary
                     # ScenarioFramework.Dialogue(OpStrings.IslandBaseAllKilled, Mission5Secondary2, true)
                 else
@@ -1532,8 +1572,112 @@ function Mission5Part2()
 end
 
 function Mission5Secondary2()
+    local watchCommands = {}
+    # ScenarioFramework.Dialogue(OpStrings.M5TrucksReady)
+    ScenarioInfo.AllowTruckWarning = true
+    ScenarioInfo.M5TruckWarningDialogue = 0
+    for i = 1, MaxTrucks do
+        ScenarioInfo.TrucksCreated = i
+        local unit = ScenarioUtils.CreateArmyUnit('Player', 'M5_Truck_'..ScenarioInfo.TrucksCreated)
+        # ScenarioFramework.CreateUnitDamagedTrigger(M5TruckDamageWarning, unit, .01)
+        # ScenarioFramework.CreateUnitDestroyedTrigger(TruckDestroyed, unit)
+        ScenarioFramework.CreateUnitToMarkerDistanceTrigger(TruckRescued, unit, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'), 20)
+        ScenarioFramework.CreateUnitToMarkerDistanceTrigger(TruckInBuilding, unit, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'), 10)
+        table.insert(ScenarioInfo.Trucks, unit)
+
+        IssueMove({unit}, ScenarioUtils.MarkerToPosition('M5_Truck_ParkSpot_' .. i))
+    end
+
+    # ---------------------------------------------------
+    # Mission 5 Secondary 3 - Evacuate Civilians - Part 1
+    # ---------------------------------------------------
+    ScenarioInfo.M5S3 = Objectives.Basic(
+        'secondary',                                        # type
+        'incomplete',                                       # complete
+        'Evacuate Cicilians',                      # title
+        'Transport all civilian trucks to Quantum Gateway',                      # description
+        Objectives.GetActionIcon('move'),
+        {                                                   # target
+            Area = 'UEF_Evac_Area',
+            MarkArea = true,
+        }
+    )
+    table.insert(AssignedObjectives, ScenarioInfo.M5S3)
+    # ScenarioFramework.CreateTimerTrigger(M5S5Reminder1, 10*60)
 
 
+end
+
+function M5TruckDamageWarning()
+    if ScenarioInfo.AllowTruckWarning then
+        ScenarioInfo.M5TruckWarningDialogue = ScenarioInfo.M2TruckWarningDialogue + 1
+        if ScenarioInfo.M5TruckWarningDialogue == 1 then
+            ScenarioFramework.Dialogue(OpStrings.M5TruckDamaged1)
+            ScenarioInfo.AllowTruckWarning = false
+            ScenarioFramework.CreateTimerTrigger(M5TruckWarningUnlock, 30)
+        end
+        if ScenarioInfo.M5TruckWarningDialogue == 2 then
+            ScenarioFramework.Dialogue(OpStrings.M5TruckDamaged2)
+            ScenarioInfo.AllowTruckWarning = false
+            ScenarioFramework.CreateTimerTrigger(M5TruckWarningUnlock, 30)
+        end
+    end
+end
+
+function M5TruckWarningUnlock()
+    ScenarioInfo.AllowTruckWarning = true
+end
+
+function TruckDestroyed()
+    ScenarioInfo.TrucksDestroyed = ScenarioInfo.TrucksDestroyed + 1
+    if(ScenarioInfo.TrucksDestroyed == 1) then
+        ScenarioFramework.Dialogue(OpStrings.M5TruckDestroyed1)
+    elseif(ScenarioInfo.TrucksDestroyed == 2) then
+        ScenarioFramework.Dialogue(OpStrings.M5TruckDestroyed2)
+    elseif(ScenarioInfo.TrucksDestroyed == 3) then
+        ScenarioFramework.Dialogue(OpStrings.M5TruckDestroyed3)
+    end
+    if((MaxTrucks - ScenarioInfo.TrucksDestroyed) < RequiredTrucks and ScenarioInfo.M5S3) then
+        ScenarioInfo.M5S3:ManualResult(false)
+        # ScenarioFramework.Dialogue(OpStrings.M5AllTrucksDestroyed)
+    end
+end
+
+function TruckRescued(unit)
+    for k,v in ScenarioInfo.Trucks do
+        if(v == unit) then
+            table.remove(ScenarioInfo.Trucks, k)
+        end
+    end
+    unit:SetCanBeKilled(false)
+    IssueStop({unit})
+    IssueMove({unit}, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'))
+    ScenarioInfo.TrucksEscorted = ScenarioInfo.TrucksEscorted + 1
+
+    if(ScenarioInfo.TrucksEscorted == RequiredTrucks) then
+        ScenarioInfo.M5S3:ManualResult(true)
+        # ScenarioFramework.Dialogue(OpStrings.M5AllTruckRescued)
+    --[[
+    elseif(not ScenarioInfo.TruckArriveLock) then
+        if(ScenarioInfo.TrucksEscorted == 1) then
+            ScenarioInfo.TruckArriveLock = true
+            # ScenarioFramework.Dialogue(OpStrings.M5TruckRescued1)
+            ScenarioFramework.CreateTimerTrigger(M5UnlockTruckArriveDialogue, 15)
+        elseif(ScenarioInfo.TrucksEscorted == 2) then
+            ScenarioInfo.TruckArriveLock = true
+            # ScenarioFramework.Dialogue(OpStrings.M5TruckRescued2)
+            ScenarioFramework.CreateTimerTrigger(M5UnlockTruckArriveDialogue, 15)
+        end
+    ]]--
+    end
+end
+
+function M5UnlockTruckArriveDialogue()
+    ScenarioInfo.TruckArriveLock = false
+end
+
+function TruckInBuilding(unit)
+    ScenarioFramework.FakeTeleportUnit(unit, true)
 end
 
 # -------------------

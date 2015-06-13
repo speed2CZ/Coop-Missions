@@ -34,6 +34,7 @@ function UEFM3AirBaseAI()
 
     local opai = UEFM3AirBase:AddReactiveAI('MassedAir', 'AirRetaliation', 'UEFM3AirBase_MassedAir')
     opai:SetChildActive('AirSuperiority', false)
+    opai:SetChildActive('CombatFighters', false)
 
     UEFM3AirBase:AddBuildGroup('M3_Air_Base_Rest', 100, true)
 
@@ -172,11 +173,11 @@ function UEFM3AirBaseAirAttacks()
             Priority = 100,
         }
     )
-    opai:SetChildQuantity({'Bombers', 'Interceptors'}, 10)
+    opai:SetChildQuantity({'Bombers', 'Interceptors'}, 20)
     opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
         {'default_brain', 'Player', 5, categories.ANTIAIR + categories.dea0202})
 
-    # sends 6 [gunships, interceptors] if player has >= 8 AA + Janus
+    # sends 8 [gunships, interceptors] if player has >= 8 AA + Janus
     opai = UEFM3AirBase:AddOpAI('AirAttacks', 'M3_AirAttack6',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
@@ -186,7 +187,7 @@ function UEFM3AirBaseAirAttacks()
             Priority = 100,
         }
     )
-    opai:SetChildQuantity({'Gunships', 'Interceptors'}, 8)
+    opai:SetChildQuantity({'Gunships', 'Interceptors'}, 16)
     opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
         {'default_brain', 'Player', 8, categories.ANTIAIR + categories.dea0202})
 
@@ -200,7 +201,7 @@ function UEFM3AirBaseAirAttacks()
             Priority = 100,
         }
     )
-    opai:SetChildQuantity({'Gunships', 'Interceptors'}, 12)
+    opai:SetChildQuantity({'Gunships', 'Interceptors'}, 24)
     opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
         {'default_brain', 'Player', 25, categories.ALLUNITS - categories.WALL})
 
@@ -232,7 +233,7 @@ function UEFM3AirBaseAirAttacks()
     opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
         {'default_brain', 'Player', 10, categories.TECH2 * categories.MOBILE})
 
-    # sends 12 [gunships] if player has >= 75, 60, 40 mobile land units
+    # sends 20 [gunships] if player has >= 75, 60, 40 mobile land units
     opai = UEFM3AirBase:AddOpAI('AirAttacks', 'M3_AirAttack9',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
@@ -242,7 +243,7 @@ function UEFM3AirBaseAirAttacks()
             Priority = 110,
         }
     )
-    opai:SetChildQuantity('Gunships', 12)
+    opai:SetChildQuantity('Gunships', 20)
     opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
         {'default_brain', 'Player', 40, (categories.MOBILE * categories.LAND) - categories.CONSTRUCTION})
 
@@ -367,7 +368,7 @@ function UEFM3LandBaseLandAttacks()
             PlatoonData = {
                 PatrolChains = {'M3_Air_Hover_Chain1', 'M3_Air_Hover_Chain2'},
             },
-            Priority = 120,
+            Priority = 100,
         }
     )
     opai:SetChildQuantity('AmphibiousTanks', 20)
@@ -382,7 +383,7 @@ function UEFM3LandBaseLandAttacks()
             PlatoonData = {
                 PatrolChains = {'M3_Air_Hover_Chain1', 'M3_Air_Hover_Chain2'},
             },
-            Priority = 120,
+            Priority = 100,
         }
     )
     opai:SetChildQuantity('AmphibiousTanks', 10)
@@ -421,6 +422,7 @@ function UEFM3LandBaseLandAttacks()
             Priority = 110,
         })
         opai:SetChildQuantity({'HeavyTanks'}, 6)
+        opai:SetLockingStyle('BuildTimer', {LockTimer = 300})
     end
 
     for i = 1, 2 do
@@ -435,6 +437,7 @@ function UEFM3LandBaseLandAttacks()
             Priority = 110,
         })
         opai:SetChildQuantity({'LightArtillery'}, 14)
+        opai:SetLockingStyle('BuildTimer', {LockTimer = 300})
     end
 
     for i = 1, 2 do
@@ -450,6 +453,7 @@ function UEFM3LandBaseLandAttacks()
             Priority = 110,
         })
         opai:SetChildQuantity({'HeavyTanks'}, 6)
+        opai:SetLockingStyle('BuildTimer', {LockTimer = 300})
     end
 
     for i = 1, 2 do
@@ -465,6 +469,7 @@ function UEFM3LandBaseLandAttacks()
             Priority = 110,
         })
         opai:SetChildQuantity({'LightArtillery'}, 14)
+        opai:SetLockingStyle('BuildTimer', {LockTimer = 300})
     end
 
     #-------------
@@ -477,7 +482,7 @@ function UEFM3LandBaseLandAttacks()
             PlatoonData = {
                 PatrolChains = {'M3_Air_Base_Land_Defence_Chain1', 'M3_Air_Base_Land_Defence_Chain2'},
             },
-            Priority = 100,
+            Priority = 120,
         }
     )
     opai:SetChildQuantity('MobileMissiles', 8)
@@ -488,7 +493,7 @@ function UEFM3LandBaseLandAttacks()
             PlatoonData = {
                 PatrolChains = {'M3_Air_Base_Land_Defence_Chain1', 'M3_Air_Base_Land_Defence_Chain2'},
             },
-            Priority = 100,
+            Priority = 120,
         }
     )
     opai:SetChildQuantity('HeavyTanks', 12)
@@ -499,7 +504,7 @@ function UEFM3LandBaseLandAttacks()
             PlatoonData = {
                 PatrolChains = {'M3_Air_Base_Land_Defence_Chain1', 'M3_Air_Base_Land_Defence_Chain2'},
             },
-            Priority = 100,
+            Priority = 120,
         }
     )
     opai:SetChildQuantity('MobileFlak', 8)
@@ -510,7 +515,7 @@ function UEFM3LandBaseLandAttacks()
             PlatoonData = {
                 PatrolChains = {'M3_Air_Base_Land_Defence_Chain1', 'M3_Air_Base_Land_Defence_Chain2'},
             },
-            Priority = 100,
+            Priority = 120,
         }
     )
     opai:SetChildQuantity('HeavyTanks', 16)

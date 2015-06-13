@@ -208,6 +208,20 @@ function UEFM1EastBaseAirAttacks()
     opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
         {'default_brain', 'Player', 20, categories.AIR * categories.MOBILE})
 
+    # Builds platoon of 12 Interceptor when Player has 2+ Transports
+    opai = UEFM1EastBase:AddOpAI('AirAttacks', 'M1_EastAirAttack5',
+        {
+            MasterPlatoonFunction = { '/lua/ScenarioPlatoonAI.lua', 'CategoryHunterPlatoonAI' },
+            PlatoonData = {
+                    CategoryList = { categories.uea0107 },
+            },
+            Priority = 170,
+        }
+    )
+    opai:SetChildQuantity('Interceptors', 12)
+    opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
+        {'default_brain', 'Player', 2, categories.uea0107})
+
     # Air Defense
     # Maintains 12 Interceptors
     for i = 1, 3 do

@@ -482,6 +482,7 @@ function UEFM2SouthBaseLandAttacks()
         Priority = 110,
     })
     opai:SetChildQuantity('LightArtillery', 12)
+    opai:SetLockingStyle('BuildTimer', {LockTimer = 240})
 
     opai = UEFM2T1Base:AddOpAI('BasicLandAttack', 'M3_UEFTransportAttack2',
     {
@@ -495,5 +496,6 @@ function UEFM2SouthBaseLandAttacks()
         Priority = 110,
     })
     opai:SetChildQuantity('LightArtillery', 12)
+    opai:SetLockingStyle('BuildTimer', {LockTimer = 240})
 
 end
