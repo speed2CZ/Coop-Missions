@@ -341,7 +341,7 @@ function SeraphimM5MainBaseLandAttacks()
     Temp = {
         'M5SeraEngineerAttackTemp1',
         'NoPlan',
-        { 'xsl0105', 1, 1, 'Attack', 'None' },   # T1 Engies
+        { 'xsl0208', 1, 1, 'Attack', 'None' },   # T2 Engies
     }
     Builder = {
         BuilderName = 'M5SeraEngineerAttackBuilder1',
@@ -361,7 +361,7 @@ function SeraphimM5MainBaseLandAttacks()
     Temp = {
         'M5SeraEngineerAttackTemp2',
         'NoPlan',
-        { 'xsl0105', 1, 1, 'Attack', 'None' },   # T1 Engies
+        { 'xsl0208', 1, 1, 'Attack', 'None' },   # T2 Engies
     }
     Builder = {
         BuilderName = 'M5SeraEngineerAttackBuilder2',
@@ -729,6 +729,8 @@ function SeraphimM5IslandWestBaseAI()
     # ---------------------
     # Seraphim M5 West Base
     # ---------------------
+    SeraphimM5AirDefBase:AddBuildGroup('M5_Sera_Island_West_Base', 90)
+
     SeraphimM5IslandWestBase:Initialize(ArmyBrains[Seraphim], 'M5_Sera_Island_West_Base', 'M5_Sera_Island_West_Base_Marker', 80, {M5_Sera_Island_West_Base = 100})
     SeraphimM5IslandWestBase:StartNonZeroBase({32, 27})
     SeraphimM5IslandWestBase:SetActive('AirScouting', true)
@@ -739,7 +741,7 @@ function SeraphimM5IslandWestBaseAI()
     # SeraphimM5NavDefBase:Initialize(ArmyBrains[Seraphim], 'M5_Sera_Main_NavDef_Base', 'M5_Sera_Main_NavDef_Base_Marker', 30, {M5_Sera_Main_NavDef_Base = 100})
     # SeraphimM5NavDefBase:StartNonZeroBase({4, 3})
 
-    SeraphimM5IslandWestBase:AddBuildGroup('M5_Sera_Island_West_BaseUnfinished', 90)
+    SeraphimM5IslandWestBase:AddBuildGroup('M5_Sera_Island_West_BaseUnfinished', 95)
     
     SeraphimM5IslandWestBaseAirAttacks()
     SeraphimM5IslandWestBaseLandAttacks()
@@ -1015,12 +1017,11 @@ function SeraphimM5IslandMiddleBaseAI()
     # ------------------------------
     # Seraphim M5 Island Middle Base
     # ------------------------------
-    SeraphimM5AirDefBase:AddBuildGroup('M5_Sera_Island_Middle_Base', 90)
+    # SeraphimM5IslandWestBase:AddBuildGroup('M5_Sera_Island_Middle_Base', 85)
 
     SeraphimM5IslandMiddleBase:Initialize(ArmyBrains[Seraphim], 'M5_Sera_Island_Middle_Base', 'M5_Sera_Island_Middle_Base_Marker', 60, {M5_Sera_Island_Middle_Base = 100})
     SeraphimM5IslandMiddleBase:StartNonZeroBase({20, 16})
     SeraphimM5IslandMiddleBase:SetActive('AirScouting', true)
-    SeraphimM5IslandMiddleBase:SetConstructionAlwaysAssist(false)
 
     SeraphimM5IslandMiddleT1NavalBase:Initialize(ArmyBrains[Seraphim], 'M5_Sera_Island_Middle_Base_T1_Naval', 'M5_Sera_Island_Middle_Base_T1_Naval_Marker', 40, {M5_Sera_Island_Middle_Base_T1_Naval = 100})
     SeraphimM5IslandMiddleT1NavalBase:StartNonZeroBase({8, 7})

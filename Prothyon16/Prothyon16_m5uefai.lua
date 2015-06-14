@@ -53,8 +53,8 @@ function UEFM5IslandBaseAirAttacks()
         opai:SetChildQuantity({'TorpedoBombers'}, 5)
     end
 
-    # Sends 2 x 5 Gunships
-    for i = 1, 2 do
+    # Sends 3 x 10 Gunships
+    for i = 1, 3 do
         opai = UEFM5IslandBase:AddOpAI('AirAttacks', 'M5_IslandAirAttack2_' .. i,
             {
                 MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
@@ -64,7 +64,7 @@ function UEFM5IslandBaseAirAttacks()
                 Priority = 100,
             }
         )
-        opai:SetChildQuantity({'Gunships'}, 5)
+        opai:SetChildQuantity({'Gunships'}, 10)
     end
 
     # Sends 3 x 5 Interceptors

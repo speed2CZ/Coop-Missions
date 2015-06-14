@@ -9,6 +9,7 @@ local M1UEFAI = import('/maps/Prothyon16/Prothyon16_m1uefai.lua')
 local M2UEFAI = import('/maps/Prothyon16/Prothyon16_m2uefai.lua')
 local M3UEFAI = import('/maps/Prothyon16/Prothyon16_m3uefai.lua')
 local M5UEFAI = import('/maps/Prothyon16/Prothyon16_m5uefai.lua')
+local M5UEFALLYAI = import('/maps/Prothyon16/Prothyon16_m5uefallyai.lua')
 local M5SeraphimAI = import('/maps/Prothyon16/Prothyon16_m5seraphimai.lua')
 local Objectives = import('/lua/ScenarioFramework.lua').Objectives
 local OpStrings = import('/maps/Prothyon16/Prothyon16_strings.lua')
@@ -1081,13 +1082,31 @@ function StartMission3()
     ScenarioInfo.M3P1:AddResultCallback(
         function(result)
             if(result) then
-                ScenarioFramework.Dialogue(OpStrings.epicEprop, IntroMission5)
+                ScenarioFramework.Dialogue(OpStrings.epicEprop, IntroMission4)
                 # IntroMission5()
             end
         end
     )
     table.insert(AssignedObjectives, ScenarioInfo.M3P1)
     ScenarioFramework.CreateTimerTrigger(M3P1Reminder1, 25*60)
+end
+
+# ---------
+# Mission 4
+# ---------
+function IntroMission4()
+    ForkThread(
+        function()
+            # Give civilian bases to 'UEFAlly' army just to make it more complicated
+            local units = ScenarioFramework.GetCatUnitsInArea((categories.ALLUNITS - categories.uec1101 - categories.uec1201 - categories.uec1301 - categories.uec1401 - categories.uec1501 - categories.xec1301 - categories.uec0001), 'M2_Area', ArmyBrains[Objective])
+            for k, v in units do
+                if v and not v:IsDead() and (v:GetAIBrain() == ArmyBrains[Objective]) then
+                    ScenarioFramework.GiveUnitToArmy( v, UEFAlly )
+                end
+            end
+            IntroMission5()
+        end
+    )
 end
 
 # ---------
@@ -1118,9 +1137,9 @@ function IntroMission5()
                 end
             end
             
-            --------
+            # ------
             # UEF AI
-            --------
+            # ------
             M5UEFAI.UEFM5IslandBaseAI()
             
             ArmyBrains[UEF]:GiveResource('MASS', 8000)
@@ -1133,9 +1152,16 @@ function IntroMission5()
             ScenarioInfo.UEFSACU:CreateEnhancement('Shield')
             ScenarioFramework.PauseUnitDeath(ScenarioInfo.UEFSACU)
 
-            -------------
+            # -----------
+            # UEF Ally AI
+            # -----------
+
+            M5UEFALLYAI.UEFAllyM5BaseAI()
+            M5UEFALLYAI.UEFAllyM5GateBaseAI()
+
+            # -----------
             # Seraphim AI
-            -------------
+            # -----------
             M5SeraphimAI.SeraphimM5MainBaseAI()
             M5SeraphimAI.SeraphimM5IslandMiddleBaseAI()
             M5SeraphimAI.SeraphimM5IslandWestBaseAI()
@@ -1145,9 +1171,9 @@ function IntroMission5()
 
             ScenarioInfo.M5SeraBase = ScenarioFramework.GetCatUnitsInArea(categories.FACTORY + categories.TECH2 * categories.ECONOMIC + categories.TECH3 * categories.ECONOMIC, 'M5_Sera_Main_Base_Area', ArmyBrains[Seraphim])
 
-            -----------------
+            # ---------------
             # Initial Patrols
-            -----------------
+            # ---------------
             local units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Sera_Main_DefGroup', 'GrowthFormation')
             for k, v in units:GetPlatoonUnits() do
                 ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M5_Sera_Main_Base_Air_Def_Chain')))
@@ -1604,8 +1630,6 @@ function Mission5Secondary2()
     )
     table.insert(AssignedObjectives, ScenarioInfo.M5S3)
     # ScenarioFramework.CreateTimerTrigger(M5S5Reminder1, 10*60)
-
-
 end
 
 function M5TruckDamageWarning()

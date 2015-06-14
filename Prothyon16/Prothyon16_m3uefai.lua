@@ -327,6 +327,16 @@ function UEFM3AirBaseAirAttacks()
     }
     ArmyBrains[UEF]:PBMAddPlatoon( Builder )
 
+    # sends 10 [torpedo bombers] at Player CDR
+    opai = UEFM3AirBase:AddOpAI('AirAttacks', 'M3_AirAirAttack14',
+        {
+            MasterPlatoonFunction = {'/maps/Prothyon16/Prothyon16_m3uefai.lua', 'M3AttackCDRWaterAI'},
+            Priority = 120,
+        }
+    )
+    opai:SetChildQuantity('TorpedoBombers', 10)
+    opai:AddBuildCondition('/maps/Prothyon16/Prothyon16_m3uefai.lua', 'CDROnWater', {})
+
     # Air Defense
     # Maintains 40 Interceptors
     for i = 1, 4 do
@@ -815,4 +825,26 @@ function UEFM3WestNavalAttacks()
     }
     ArmyBrains[UEF]:PBMAddPlatoon( Builder )
 
+end
+
+function CDROnWater(category)
+    local unit = ArmyBrains[Player]:GetListOfUnits(categories.COMMAND, false)
+    local result = false
+
+    if(unit[1] and not unit[1]:IsDead() and unit[1]:GetCurrentLayer() == 'Seabed') then
+        result = true
+    else
+        result = false
+    end
+
+    return result
+end
+
+function M3AttackCDRWaterAI(platoon)
+    local unit = ArmyBrains[Player]:GetListOfUnits(categories.COMMAND, false)
+    if(unit[1] and not unit[1]:IsDead() and unit[1]:GetCurrentLayer() == 'Seabed') then
+        platoon:AttackTarget(unit[1])
+    else
+        ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_Air_Base_NavalAttack_Chain1')
+    end
 end
