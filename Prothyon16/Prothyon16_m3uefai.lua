@@ -401,9 +401,9 @@ function UEFM3LandBaseLandAttacks()
         {'default_brain', 'Player', 25, categories.ALLUNITS - categories.WALL})
     opai:SetLockingStyle('None')
 
-    #------
+    # -----
     # Drops
-    #------
+    # -----
     # Transport Builder
     opai = UEFM3LandBase:AddOpAI('EngineerAttack', 'M3_UEF_TransportBuilder',
     {
@@ -482,9 +482,9 @@ function UEFM3LandBaseLandAttacks()
         opai:SetLockingStyle('BuildTimer', {LockTimer = 300})
     end
 
-    #-------------
+    # ------------
     # Land Defense
-    #-------------
+    # ------------
 
     opai = UEFM3LandBase:AddOpAI('BasicLandAttack', 'M3_Air_Base_Land_Defense1',
         {

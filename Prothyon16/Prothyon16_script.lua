@@ -11,6 +11,7 @@ local M3UEFAI = import('/maps/Prothyon16/Prothyon16_m3uefai.lua')
 local M5UEFAI = import('/maps/Prothyon16/Prothyon16_m5uefai.lua')
 local M5UEFALLYAI = import('/maps/Prothyon16/Prothyon16_m5uefallyai.lua')
 local M5SeraphimAI = import('/maps/Prothyon16/Prothyon16_m5seraphimai.lua')
+local M6SeraphimAI = import('/maps/Prothyon16/Prothyon16_m6seraphimai.lua')
 local Objectives = import('/lua/ScenarioFramework.lua').Objectives
 local OpStrings = import('/maps/Prothyon16/Prothyon16_strings.lua')
 local ScenarioFramework = import('/lua/ScenarioFramework.lua')
@@ -753,8 +754,8 @@ function StartMission2()
     ScenarioInfo.M2P1:AddResultCallback(
         function(result)
             if(result) then
-                ScenarioFramework.Dialogue(OpStrings.airbase1, IntroMission3)
-                # IntroMission3 ()
+                # ScenarioFramework.Dialogue(OpStrings.airbase1, IntroMission3)
+                IntroMission3 ()
             end
         end
     )
@@ -762,8 +763,8 @@ function StartMission2()
     ScenarioFramework.CreateTimerTrigger(M2P1Reminder1, 15*60)
 
     # Secondary Objectives
-    ScenarioFramework.CreateArmyIntelTrigger(M2SecondaryTitans, ArmyBrains[Player], 'LOSNow', false, true, categories.uel0303, true, ArmyBrains[UEF])
-    ScenarioFramework.Dialogue(OpStrings.airhqtechcentre, M2SecondaryCaptureTech)
+    # ScenarioFramework.CreateArmyIntelTrigger(M2SecondaryTitans, ArmyBrains[Player], 'LOSNow', false, true, categories.uel0303, true, ArmyBrains[UEF])
+    # ScenarioFramework.Dialogue(OpStrings.airhqtechcentre, M2SecondaryCaptureTech)
 end
 
 function M2SecondaryCaptureTech()
@@ -1082,8 +1083,8 @@ function StartMission3()
     ScenarioInfo.M3P1:AddResultCallback(
         function(result)
             if(result) then
-                ScenarioFramework.Dialogue(OpStrings.epicEprop, IntroMission4)
-                # IntroMission5()
+                # ScenarioFramework.Dialogue(OpStrings.epicEprop, IntroMission4)
+                IntroMission4()
             end
         end
     )
@@ -1232,6 +1233,11 @@ function IntroMission5()
                 v:SetCanTakeDamage(true)
                 v:SetCanBeKilled(true)
             end
+
+            # --------
+            # Wreckage
+            # --------
+            ScenarioUtils.CreateArmyGroup('UEFAlly', 'M5_Wrecks', true)
 
             # ------------------------
             # Cheat Economy/Buildpower
@@ -1530,6 +1536,9 @@ function StartMission5()
         end
     )
     table.insert(AssignedObjectives, ScenarioInfo.M5S2)
+
+    ScenarioFramework.CreateTimerTrigger(SecondSeraACU, 30)
+
     SetupWestM5Taunts()
 end
 
@@ -1704,6 +1713,78 @@ function TruckInBuilding(unit)
     ScenarioFramework.FakeTeleportUnit(unit, true)
 end
 
+# ----------
+# Final Part
+# ----------
+function SecondSeraACU()
+    ScenarioFramework.SetPlayableArea('M6_Area', true)
+    # ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Island_Base')
+
+    # ----------
+    # Second ACU
+    # ----------
+    ScenarioInfo.EastSeraCDR = ScenarioUtils.CreateArmyUnit('Seraphim', 'M6_SeraACU')
+    # ScenarioInfo.EastSeraCDR:PlayCommanderWarpInEffect()
+    ScenarioInfo.EastSeraCDR:CreateEnhancement('ResourceAllocationAdvanced')
+    ScenarioInfo.EastSeraCDR:CreateEnhancement('T3Engineering')
+    ScenarioInfo.EastSeraCDR:CreateEnhancement('RateOfFire')
+    
+    # ScenarioFramework.CreateUnitDamagedTrigger(FletcherWarp, ScenarioInfo.FletcherCDR, .8)
+    # FletcherTM:AddTauntingCharacter(ScenarioInfo.FletcherCDR)
+    ScenarioInfo.EastSeraCDR:SetCustomName( "Evil One" )
+
+    M6SeraphimAI.SeraphimM6IslandBaseAI()
+
+    # ScenarioFramework.CreateArmyStatTrigger(M6T1FactoryBuilt, ArmyBrains[Seraphim], 'M6T1FactoryBuilt',
+        # {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 3, Category = categories.FACTORY * categories.TECH1 * categories.AIR}})
+
+    # ScenarioFramework.CreateArmyStatTrigger(M6T3FactoryBuilt, ArmyBrains[Seraphim], 'M6T3FactoryBuilt',
+        # {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 4, Category = categories.xsl0309}})
+
+    ScenarioFramework.CreateArmyStatTrigger(M6SeraphimAI.NewEngineerCount, ArmyBrains[Seraphim], 'NewEngCount',
+        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 6, Category = categories.FACTORY * categories.AIR}})
+
+    ScenarioFramework.CreateArmyStatTrigger(   M6SeraphimAI.SeraphimM6IslandBaseAirAttacks, ArmyBrains[Seraphim], '3+T3AirFacs',
+        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 3, Category = categories.xsb0302}})
+
+    ScenarioFramework.CreateArmyStatTrigger(   M6SeraphimAI.SeraphimM6IslandBaseNavalAttacks, ArmyBrains[Seraphim], '3+T3NavalFacs',
+        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 1, Category = categories.xsb0303}})
+end
+
+function M6T1FactoryBuilt()
+    local factory = ArmyBrains[Seraphim]:GetListOfUnits(categories.FACTORY * categories.AIR, false)
+    IssueGuard({ScenarioInfo.EastSeraCDR}, factory[1])
+end
+
+function M6T3FactoryBuilt()
+    local factory = ArmyBrains[Seraphim]:GetListOfUnits(categories.FACTORY * categories.AIR, false)
+    
+    IssueStop({ScenarioInfo.EastSeraCDR})
+    IssueClearCommands({ScenarioInfo.EastSeraCDR})
+    
+    IssueGuard({ScenarioInfo.EastSeraCDR}, factory[2])
+
+    ScenarioFramework.CreateArmyStatTrigger(M6T3AirFactory2Built, ArmyBrains[Seraphim], 'M6T3AirFactory2Built',
+        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 2, Category = categories.xsb0302}})
+end
+
+function M6T3AirFactory2Built()
+    local factory = ArmyBrains[Seraphim]:GetListOfUnits(categories.FACTORY * categories.AIR, false)
+    
+    IssueStop({ScenarioInfo.EastSeraCDR})
+    IssueClearCommands({ScenarioInfo.EastSeraCDR})
+    
+    IssueGuard({ScenarioInfo.EastSeraCDR}, factory[3])
+
+    ScenarioFramework.CreateArmyStatTrigger(M6T3AirFactory3Built, ArmyBrains[Seraphim], 'M6T3AirFactory3Built',
+        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 3, Category = categories.xsb0302}})
+end
+
+function M6T3AirFactory3Built()
+    IssueStop({ScenarioInfo.EastSeraCDR})
+    IssueClearCommands({ScenarioInfo.EastSeraCDR})
+end
+
 # -------------------
 # Objective Reminders
 # -------------------
@@ -1820,7 +1901,7 @@ end
 # ---------------
 
 function OnShiftF4()
-    IntroMission5()
+    IntroMission4()
 end
 
 function OnCtrlF4()
