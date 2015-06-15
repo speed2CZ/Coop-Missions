@@ -1,6 +1,31 @@
-# Dear Retard you arent here to complain but to work.
-# Grey = To Do
-# Need to find name and voice for sACU
+# Grey = --[[To Do]]--
+
+
+# During third main objective (UEF Air Base) Seraphim will attack, marked 'Mission 4' here, it is not done yet. 
+# Player will spot first seraphim units, first attacks. There will be some dialogues with Gyle, investigating whats going on.
+# There will be objective to protect civilians.
+# ----------------------------
+# Now beginning of 'Mission 5'
+# Intro: Morax(sACU) is under Seraphim attack asking for help, some dialogue with Gyle, giving player task to help him (Main objective to protect sACU), 
+# also during intro Gyle should come up with info that there is Sera ACU, giving player task to kill it (second main objective).
+# Soon after intro there will be secondary objective assigned, protect civilians on the island and get ready for evacuation.
+# For that player has to kill 3 seraphim bases on the island (secondary objective).
+# Sovietpride as civil guy should say something that they cant evacuate until those bases are destroyed
+# Info about destroying those bases, that should be obvious = classis info voiceovers, there will be more of thoses, they should be marked clearly.
+# After these 3 bases are destroyed, evacuation from island will start, objective to transport civ trucks to Quantum Gate
+# Some VOs when trucks are under attack, losing some, arriving to gate etc...
+
+# When Sera ACU is killed/warped away some VO that ge got away + assigning objective to destroy rest of the base.
+# Once base is gone, Morax(sACU) is ready to evacuate as well
+# Also several VO when sACU is under attack, losing structures, etc
+
+# Final Part:
+# During 'Mission 5', after some time, I ll set it on 30 minutes +- Second Sera ACU will gate in on the small east island. Gyle should inform player. Map will expand.
+# 5 minutes later Gyle will inform player about huge incoming attack that will arrive in 30 minues. Player has to finish all objectives until that.
+# Some warnings like last 10 min, 5 min, 1 min. 
+
+# This is what will +- happen, it might change. There might not be template ready to everything, but Im sure you can do it easily Retard, write down everything you can.
+# Everything doesnt need to be said by Gyle, use Morax and Soviet as well, its up to you to make it good.
 
 
 # --------
@@ -24,11 +49,6 @@ PlayerLoseToAI = {
 }
 --[[
 # sACU Die / Actor: Gyle / Update / VO TODO
-sACUDie = {
-  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
-}
-
-# HQ Lost / Actor: Gyle / Update / VO TODO
 sACUDie = {
   {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
@@ -402,6 +422,12 @@ M5TruckRescued2 = {
   {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
+
+
+# Second Sera ACU gates in / Actor:  / Update / VO TODO
+M6SecondSeraACU = {
+  {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
 ]]--
 
 
