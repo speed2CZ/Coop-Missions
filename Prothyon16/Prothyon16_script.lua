@@ -1747,8 +1747,8 @@ function SecondSeraACU()
     ScenarioFramework.CreateArmyStatTrigger(   M6SeraphimAI.SeraphimM6IslandBaseAirAttacks, ArmyBrains[Seraphim], '3+T3AirFacs',
         {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 3, Category = categories.xsb0302}})
 
-    ScenarioFramework.CreateArmyStatTrigger(   M6SeraphimAI.SeraphimM6IslandBaseNavalAttacks, ArmyBrains[Seraphim], '3+T3NavalFacs',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 1, Category = categories.xsb0303}})
+    # ScenarioFramework.CreateArmyStatTrigger(   M6SeraphimAI.SeraphimM6IslandBaseNavalAttacks, ArmyBrains[Seraphim], '3+T3NavalFacs',
+        # {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 1, Category = categories.xsb0303}})
 end
 
 function M6T1FactoryBuilt()

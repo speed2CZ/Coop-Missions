@@ -49,3 +49,66 @@ function NewEngineerCount()
     SeraphimM6IslandBase:SetEngineerCount({25, 20})
     SeraphimM6IslandBase:SetMaximumConstructionEngineers(5)
 end
+
+function SeraphimM6IslandBaseAirAttacks()
+	local opai = nil
+
+	# -----------
+	# Air Defense
+	# -----------
+	# maintains 3 x 6 [air superiority]
+    for i = 1, 3 do
+        opai = SeraphimM6IslandBase:AddOpAI('AirAttacks', 'M6_Sera_Island_AirDefense1_' .. i,
+            {
+                MasterPlatoonFunction = {SPAIFileName, 'RandomDefensePatrolThread'},
+                PlatoonData = {
+                    PatrolChain = 'M6_Sera_Island_Base_AirDef_Chain',
+                },
+                Priority = 110,
+            }
+        )
+        opai:SetChildQuantity('AirSuperiority', 6)
+    end
+
+    # maintains 6 x 4 [gunships]
+    for i = 1, 6 do
+        opai = SeraphimM6IslandBase:AddOpAI('AirAttacks', 'M6_Sera_Island_AirDefense2_' .. i,
+            {
+                MasterPlatoonFunction = {SPAIFileName, 'RandomDefensePatrolThread'},
+                PlatoonData = {
+                    PatrolChain = 'M6_Sera_Island_Base_AirDef_Chain',
+                },
+                Priority = 110,
+            }
+        )
+        opai:SetChildQuantity('Gunships', 4)
+    end
+
+    # maintains 5 x 5 [torp bombers]
+    for i = 1, 5 do
+        opai = SeraphimM6IslandBase:AddOpAI('AirAttacks', 'M6_Sera_Island_AirDefense3_' .. i,
+            {
+                MasterPlatoonFunction = {SPAIFileName, 'RandomDefensePatrolThread'},
+                PlatoonData = {
+                    PatrolChain = 'M6_Sera_Island_Base_AirDef_Chain',
+                },
+                Priority = 110,
+            }
+        )
+        opai:SetChildQuantity('TorpedoBombers', 5)
+    end
+
+    # maintains 3 x 3 [torp bombers]
+    for i = 1, 3 do
+        opai = SeraphimM6IslandBase:AddOpAI('AirAttacks', 'M6_Sera_Island_AirDefense4_' .. i,
+            {
+                MasterPlatoonFunction = {SPAIFileName, 'RandomDefensePatrolThread'},
+                PlatoonData = {
+                    PatrolChain = 'M6_Sera_Island_Base_AirDef_Chain',
+                },
+                Priority = 110,
+            }
+        )
+        opai:SetChildQuantity('StratBombers', 3)
+    end
+end
