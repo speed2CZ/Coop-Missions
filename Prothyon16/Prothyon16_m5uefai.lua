@@ -26,7 +26,7 @@ function UEFM5IslandBaseAI()
     UEFM5IslandBase:StartNonZeroBase({30, 26})
     UEFM5IslandBase:SetMaximumConstructionEngineers(4)
     UEFM5IslandBase:SetActive('AirScouting', true)
-    UEFM5IslandBase:SetSupportACUCount(1)
+    # UEFM5IslandBase:SetSupportACUCount(1)
 
     UEFM5IslandBase:AddBuildGroup('M5_UEF_Island_Base_Defences', 90, true)
 
@@ -274,4 +274,28 @@ function UEFM5IslandBaseNavalAttacks()
     }
     ArmyBrains[UEF]:PBMAddPlatoon( Builder )
 
+end
+
+function EscapeTransportBuilder()
+    opai = UEFM5IslandBase:AddOpAI('EngineerAttack', 'M5_UEF_TransportBuilder',
+    {
+        MasterPlatoonFunction = {'/lua/ScenarioPlatoonAI.lua', 'LandAssaultWithTransports'},
+        PlatoonData = {
+            LandingChain = 'M3_Init_Landing_Chain',
+            TransportReturn = 'M3_Land_Base_Marker',
+        },
+        Priority = 1000,
+    })
+    opai:SetChildActive('All', false)
+    opai:SetChildActive('T2Transports', true)
+    opai:SetChildQuantity({'T2Transports'}, 1)
+    opai:AddBuildCondition('/lua/editor/unitcountbuildconditions.lua',
+        'HaveLessThanUnitsWithCategory', {'default_brain', 1, categories.uea0104})
+end
+
+function DisableBase()
+    if(UEFM5IslandBase) then
+        UEFM5IslandBase:BaseActive(false)
+        UEFM5IslandBase:RemoveConstructionEngineer(ScenarioInfo.UEFSACU)
+    end
 end
