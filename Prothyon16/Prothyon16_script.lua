@@ -59,7 +59,7 @@ local ReminderTaunts = {
 # -----------
 # Debug only!
 # -----------
-local SkipNIS1 = true
+local SkipNIS1 = false
 local SkipNIS2 = true
 local SkipNIS3 = true
 local SkipNIS5 = true
@@ -312,10 +312,54 @@ function IntroMission1NIS()
         ScenarioFramework.Dialogue(OpStrings.intro2, nil, true)
         Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('Cam_1_3'), 3)
         WaitSeconds(3)
+
+        ForkThread(function()
+            ForkThread(function()
+                ScenarioInfo.PlayerCDR = ScenarioUtils.CreateArmyUnit('Player', 'Commander')
+                #ScenarioInfo.PlayerCDR:PlayCommanderWarpInEffect()
+                #ScenarioFramework.FakeGateInUnit(ScenarioInfo.PlayerCDR)
+                #ScenarioFramework.PauseUnitDeath(ScenarioInfo.PlayerCDR)
+                #ScenarioFramework.CreateUnitDeathTrigger(PlayerDeath, ScenarioInfo.PlayerCDR)
+                ScenarioFramework.CreateUnitDamagedTrigger(PlayerLoseToAI, ScenarioInfo.PlayerCDR, .99)
+                ScenarioInfo.PlayerCDR:SetCanBeKilled(false)
+
+                ScenarioInfo.Transport = ScenarioUtils.CreateArmyUnit('Player', 'Transport')
+
+                IssueTransportLoad({ScenarioInfo.PlayerCDR}, ScenarioInfo.Transport)
+                IssueTransportUnload({ScenarioInfo.Transport}, ScenarioUtils.MarkerToPosition('M3_UEF_Landing_1'))
+
+                WaitSeconds(8)
+
+                while(not ScenarioInfo.PlayerCDR:IsDead() and ScenarioInfo.PlayerCDR:IsUnitState('Attached')) do
+                    WaitSeconds(.5)
+                end
+
+                IssueMove({ScenarioInfo.Transport}, ScenarioUtils.MarkerToPosition('Transport_Delete'))
+                IssueMove({ScenarioInfo.PlayerCDR}, ScenarioUtils.MarkerToPosition('Commander_Walk_1'))
+
+                WaitSeconds(1)
+
+                while(not ScenarioInfo.Transport:IsDead() and ScenarioInfo.Transport:IsUnitState('Moving')) do
+                    WaitSeconds(.5)
+                end
+                ScenarioInfo.Transport:Destroy()
+            end)
+
+            -- spawn coop players too
+            ScenarioInfo.CoopCDR = {}
+            local tblArmy = ListArmies()
+            coop = 1
+            for iArmy, strArmy in pairs(tblArmy) do
+                if iArmy >= ScenarioInfo.Coop1 then
+                    ForkThread(createAndMoveCDRByTransport, strArmy, coop, ScenarioUtils.MarkerToPosition('M3_UEF_Landing_1'))
+                    coop = coop + 1
+                end
+            end
+        end)
+        
         ScenarioFramework.Dialogue(OpStrings.intro3, nil, true)
         Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('Cam_1_4'), 7)
         WaitSeconds(3)
-        Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('Cam_1_5'), 3)
 
         ForkThread(
             function()
@@ -329,37 +373,10 @@ function IntroMission1NIS()
                 ScenarioFramework.ClearIntel(ScenarioUtils.MarkerToPosition('M1_Vis_1_3'), 30)
             end
        )
-
-        ScenarioInfo.PlayerCDR = ScenarioUtils.CreateArmyUnit('Player', 'Commander')
-    	#ScenarioInfo.PlayerCDR:PlayCommanderWarpInEffect()
-    	#ScenarioFramework.FakeGateInUnit(ScenarioInfo.PlayerCDR)
-        #ScenarioFramework.PauseUnitDeath(ScenarioInfo.PlayerCDR)
-        #ScenarioFramework.CreateUnitDeathTrigger(PlayerDeath, ScenarioInfo.PlayerCDR)
-        ScenarioFramework.CreateUnitDamagedTrigger(PlayerLoseToAI, ScenarioInfo.PlayerCDR, .99)
-        ScenarioInfo.PlayerCDR:SetCanBeKilled(false)
-
-        local cmd = IssueMove({ScenarioInfo.PlayerCDR}, ScenarioUtils.MarkerToPosition('Commander_Walk_1'))
-        ScenarioFramework.FakeGateInUnit(ScenarioInfo.PlayerCDR)
-
-        -- spawn coop players too
-    	ScenarioInfo.CoopCDR = {}
-    	local tblArmy = ListArmies()
-    	coop = 1
-    	for iArmy, strArmy in pairs(tblArmy) do
-        	if iArmy >= ScenarioInfo.Coop1 then
-            	ScenarioInfo.CoopCDR[coop] = ScenarioUtils.CreateArmyUnit(strArmy, 'Commander')
-                IssueMove({ScenarioInfo.CoopCDR[coop]}, ScenarioUtils.MarkerToPosition('Commander_Walk_1'))
-            	#ScenarioInfo.CoopCDR[coop]:PlayCommanderWarpInEffect()
-            	ScenarioFramework.FakeGateInUnit(ScenarioInfo.CoopCDR[coop])
-                ScenarioFramework.CreateUnitDamagedTrigger(PlayerLoseToAI, ScenarioInfo.CoopCDR[coop], .99)
-                ScenarioInfo.CoopCDR[coop]:SetCanBeKilled(false)
-            	coop = coop + 1
-            	WaitSeconds(0.5)
-        	end
-    	end
-
-        Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('Cam_1_6'), 3)
-        WaitSeconds(1)
+        Cinematics.CameraTrackEntity( ScenarioInfo.PlayerCDR, 80, 3 )
+        WaitSeconds(6)
+        Cinematics.CameraTrackEntity( ScenarioInfo.PlayerCDR, 30, 0 )
+        WaitSeconds(6)
         ScenarioFramework.Dialogue(OpStrings.postintro, nil, true)
         Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('Cam_1_7'), 2)
 
@@ -368,38 +385,36 @@ function IntroMission1NIS()
     else
         Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('Cam_1_7'), 0)
 
-        ScenarioInfo.PlayerCDR = ScenarioUtils.CreateArmyUnit('Player', 'Commander')
-    	#ScenarioInfo.PlayerCDR:PlayCommanderWarpInEffect()
-    	#ScenarioFramework.FakeGateInUnit(ScenarioInfo.PlayerCDR)
-        #ScenarioFramework.PauseUnitDeath(ScenarioInfo.PlayerCDR)
-        #ScenarioFramework.CreateUnitDeathTrigger(PlayerDeath, ScenarioInfo.PlayerCDR)
-        ScenarioFramework.CreateUnitDamagedTrigger(PlayerLoseToAI, ScenarioInfo.PlayerCDR, .99)
-        ScenarioInfo.PlayerCDR:SetCanBeKilled(false)
+        ForkThread(function()
+            ScenarioInfo.PlayerCDR = ScenarioUtils.CreateArmyUnit('Player', 'Commander')
+            #ScenarioInfo.PlayerCDR:PlayCommanderWarpInEffect()
+            #ScenarioFramework.FakeGateInUnit(ScenarioInfo.PlayerCDR)
+            #ScenarioFramework.PauseUnitDeath(ScenarioInfo.PlayerCDR)
+            #ScenarioFramework.CreateUnitDeathTrigger(PlayerDeath, ScenarioInfo.PlayerCDR)
+            ScenarioFramework.CreateUnitDamagedTrigger(PlayerLoseToAI, ScenarioInfo.PlayerCDR, .99)
+            ScenarioInfo.PlayerCDR:SetCanBeKilled(false)
 
-        ScenarioInfo.Transport = ScenarioUtils.CreateArmyUnit('Player', 'Transport')
+            ScenarioInfo.Transport = ScenarioUtils.CreateArmyUnit('Player', 'Transport')
 
-        IssueTransportLoad({ScenarioInfo.PlayerCDR}, ScenarioInfo.Transport)
-        IssueTransportUnload({ScenarioInfo.Transport}, ScenarioUtils.MarkerToPosition('M3_UEF_Landing_1'))
+            IssueTransportLoad({ScenarioInfo.PlayerCDR}, ScenarioInfo.Transport)
+            IssueTransportUnload({ScenarioInfo.Transport}, ScenarioUtils.MarkerToPosition('M3_UEF_Landing_1'))
 
-        WaitSeconds(5)
+            WaitSeconds(8)
 
-        while(not ScenarioInfo.PlayerCDR:IsDead() and ScenarioInfo.PlayerCDR:IsUnitState('Attached')) do
-            WaitSeconds(.5)
-        end
+            while(not ScenarioInfo.PlayerCDR:IsDead() and ScenarioInfo.PlayerCDR:IsUnitState('Attached')) do
+                WaitSeconds(.5)
+            end
 
-        IssueMove({ScenarioInfo.Transport}, ScenarioUtils.MarkerToPosition('Transport_Delete'))
+            IssueMove({ScenarioInfo.Transport}, ScenarioUtils.MarkerToPosition('Transport_Delete'))
+            IssueMove({ScenarioInfo.PlayerCDR}, ScenarioUtils.MarkerToPosition('Commander_Walk_1'))
 
-        WaitSeconds(1)
+            WaitSeconds(1)
 
-        while(not ScenarioInfo.Transport:IsDead() and ScenarioInfo.Transport:IsUnitState('Moving')) do
-            WaitSeconds(.5)
-        end
-        ScenarioInfo.Transport:Destroy()
-        
-        --[[
-        local cmd = IssueMove({ScenarioInfo.PlayerCDR}, ScenarioUtils.MarkerToPosition('Commander_Walk_1'))
-        ScenarioFramework.FakeGateInUnit(ScenarioInfo.PlayerCDR)
-        ]]--
+            while(not ScenarioInfo.Transport:IsDead() and ScenarioInfo.Transport:IsUnitState('Moving')) do
+                WaitSeconds(.5)
+            end
+            ScenarioInfo.Transport:Destroy()
+        end)
 
         -- spawn coop players too
     	ScenarioInfo.CoopCDR = {}
@@ -407,14 +422,8 @@ function IntroMission1NIS()
     	coop = 1
     	for iArmy, strArmy in pairs(tblArmy) do
         	if iArmy >= ScenarioInfo.Coop1 then
-            	ScenarioInfo.CoopCDR[coop] = ScenarioUtils.CreateArmyUnit(strArmy, 'Commander')
-                IssueMove({ScenarioInfo.CoopCDR[coop]}, ScenarioUtils.MarkerToPosition('Commander_Walk_1'))
-            	#ScenarioInfo.CoopCDR[coop]:PlayCommanderWarpInEffect()
-            	ScenarioFramework.FakeGateInUnit(ScenarioInfo.CoopCDR[coop])
-                ScenarioFramework.CreateUnitDamagedTrigger(PlayerLoseToAI, ScenarioInfo.CoopCDR[coop], .99)
-                ScenarioInfo.CoopCDR[coop]:SetCanBeKilled(false)
+                ForkThread(createAndMoveCDRByTransport, strArmy, coop, ScenarioUtils.MarkerToPosition('M3_UEF_Landing_1'))
             	coop = coop + 1
-            	WaitSeconds(0.5)
         	end
     	end
 
@@ -424,9 +433,41 @@ function IntroMission1NIS()
     IntroMission1()
 end
 
+
+function createAndMoveCDRByTransport(brain, coop, position)
+    ScenarioInfo.CoopCDR[coop] = ScenarioUtils.CreateArmyUnit(brain, 'Commander')
+    #ScenarioInfo.CoopCDR[coop]:PlayCommanderWarpInEffect()
+    ScenarioFramework.FakeGateInUnit(ScenarioInfo.CoopCDR[coop])
+    ScenarioFramework.CreateUnitDamagedTrigger(PlayerLoseToAI, ScenarioInfo.CoopCDR[coop], .99)
+    ScenarioInfo.CoopCDR[coop]:SetCanBeKilled(false)
+
+    ScenarioInfo.Transport[coop] = ScenarioUtils.CreateArmyUnit(brain, 'Transport')
+
+    IssueTransportLoad({ScenarioInfo.CoopCDR[coop]}, ScenarioInfo.Transport[coop])
+    IssueTransportUnload({ScenarioInfo.Transport[coop]}, ScenarioUtils.MarkerToPosition('M3_UEF_Landing_1'))
+
+    WaitSeconds(8)
+
+    while(not ScenarioInfo.CoopCDR[coop]:IsDead() and ScenarioInfo.CoopCDR[coop]:IsUnitState('Attached')) do
+        WaitSeconds(.5)
+    end
+
+    IssueMove({ScenarioInfo.Transport[coop]}, ScenarioUtils.MarkerToPosition('Transport_Delete'))
+    IssueMove({ScenarioInfo.CoopCDR[coop]}, ScenarioUtils.MarkerToPosition('Commander_Walk_1'))
+
+    WaitSeconds(1)
+
+    while(not ScenarioInfo.Transport[coop]:IsDead() and ScenarioInfo.Transport[coop]:IsUnitState('Moving')) do
+        WaitSeconds(.5)
+    end
+    ScenarioInfo.Transport[coop]:Destroy()
+end
+
+
 function KillTransport()
     ScenarioInfo.Transport:Destroy()
 end
+
 
 # ---------
 # Mission 1
