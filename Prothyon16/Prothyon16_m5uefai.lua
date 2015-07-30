@@ -296,6 +296,6 @@ end
 function DisableBase()
     if(UEFM5IslandBase) then
         UEFM5IslandBase:BaseActive(false)
-        UEFM5IslandBase:RemoveConstructionEngineer(ScenarioInfo.UEFSACU)
+        UEFM5IslandBase:RemoveConstructionEngineer(ScenarioInfo.UEFSACU:GetEntityId())
     end
 end

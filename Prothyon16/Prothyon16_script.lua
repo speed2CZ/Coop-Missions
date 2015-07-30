@@ -33,7 +33,7 @@ ScenarioInfo.Seraphim = 5
 ScenarioInfo.Coop1 = 6
 ScenarioInfo.Coop2 = 7
 ScenarioInfo.Coop3 = 8
-ScenarioInfo.HumanPlayers = {ScenarioInfo.Player}
+ScenarioInfo.HumanPlayers = {}
 
 # ------
 # Locals
@@ -59,10 +59,10 @@ local ReminderTaunts = {
 # -----------
 # Debug only!
 # -----------
-local SkipNIS1 = false
+local SkipNIS1 = true
 local SkipNIS2 = true
 local SkipNIS3 = true
-local SkipNIS5 = true
+local SkipNIS5 = false
 
 # --------------
 # Taunt Managers
@@ -84,7 +84,6 @@ local RequiredTrucks = 15
 # -------
 function OnPopulate(scenario)
     ScenarioUtils.InitializeScenarioArmies()
-    ScenarioFramework.fillCoop()
 
     # Sets Army Colors
     ScenarioFramework.SetUEFPlayerColor(Player)
@@ -115,17 +114,17 @@ function OnPopulate(scenario)
     -----------------
     # Initial Patrols
     -----------------
-    local units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'EastBaseAirDef', 'GrowthFormation')
+    local units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'EastBaseAirDef', 'GrowthFormation')
     for k, v in units:GetPlatoonUnits() do
         ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M1_East_Base_Air_Defence_Chain')))
     end
 
-    units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'EastBaseLandDef', 'GrowthFormation')
+    units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'EastBaseLandDef', 'GrowthFormation')
     for k, v in units:GetPlatoonUnits() do
         ScenarioFramework.GroupPatrolChain({v}, 'M1_East_Defence_Chain1')
     end
 
-    units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'WestBaseAirDef', 'GrowthFormation')
+    units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'WestBaseAirDef', 'GrowthFormation')
     for k, v in units:GetPlatoonUnits() do
         ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M1_WestBase_Air_Def_Chain')))
     end
@@ -196,14 +195,6 @@ function OnStart(scenario)
                                             	'TacticalMissile',
                                             	'TacticalNukeMissile',
                                             	'Teleporter'})
-    end
-
-    # Hide all but the player army score
-    for i = 2, table.getn(ArmyBrains) do
-        if i < ScenarioInfo.Coop1 then
-            SetArmyShowScore(i, false)
-            SetIgnorePlayableRect(i, true)
-        end
     end
 
     Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('Cam_1_1'), 0)
@@ -433,7 +424,6 @@ function IntroMission1NIS()
     IntroMission1()
 end
 
-
 function createAndMoveCDRByTransport(brain, coop, position)
     ScenarioInfo.CoopCDR[coop] = ScenarioUtils.CreateArmyUnit(brain, 'Commander')
     #ScenarioInfo.CoopCDR[coop]:PlayCommanderWarpInEffect()
@@ -463,11 +453,9 @@ function createAndMoveCDRByTransport(brain, coop, position)
     ScenarioInfo.Transport[coop]:Destroy()
 end
 
-
 function KillTransport()
     ScenarioInfo.Transport:Destroy()
 end
-
 
 # ---------
 # Mission 1
@@ -621,22 +609,22 @@ function IntroMission2()
             -----------------
             # Initial Patrols
             -----------------
-            local units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'M2_SouthBaseAirDef', 'GrowthFormation')
+            local units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_SouthBaseAirDef', 'GrowthFormation')
             for k, v in units:GetPlatoonUnits() do
                 ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M2_SouthBase_Air_Def_Chain')))
             end
 
-            units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'M2_SouthBaseLandDef1', 'GrowthFormation')
+            units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_SouthBaseLandDef1', 'GrowthFormation')
             for k, v in units:GetPlatoonUnits() do
                 ScenarioFramework.GroupPatrolChain({v}, 'M2_SouthBase_Land_Def_Chain1')
             end
 
-            units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'M2_SouthBaseLandDef2', 'GrowthFormation')
+            units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_SouthBaseLandDef2', 'GrowthFormation')
             for k, v in units:GetPlatoonUnits() do
                 ScenarioFramework.GroupPatrolChain({v}, 'M2_SouthBase_Land_Def_Chain2')
             end
 
-            units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'M2_SouthBaseLandDef3', 'GrowthFormation')
+            units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_SouthBaseLandDef3', 'GrowthFormation')
             for k, v in units:GetPlatoonUnits() do
                 ScenarioFramework.GroupPatrolChain({v}, 'M2_SouthBase_Land_Def_Chain2')
             end
@@ -653,7 +641,7 @@ function IntroMission2()
             -----------------
             # Land Attacks - spawning now because it takes a while for land units to move
             for i = 1, 6 do
-                units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'M2_SouthBaseInitAttack' .. i, 'AttackFormation')
+                units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_SouthBaseInitAttack' .. i, 'AttackFormation')
                 ScenarioFramework.PlatoonPatrolChain(units, 'M2_SouthBase_Land_Attack_Chain' .. i)
             end
 
@@ -770,7 +758,7 @@ function M2InitialAirAttack()
                 num = 6
             end
             for i = 1, num do
-                units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalancedVeteran('UEF', 'M2_UEF_Adapt_Bombers', 'GrowthFormation', 5)
+                units = ScenarioUtils.CreateArmyGroupAsPlatoonVeteran('UEF', 'M2_UEF_Adapt_Bombers', 'GrowthFormation', 5)
                 ScenarioFramework.PlatoonPatrolChain(units, 'M2_SouthBase_Land_Attack_Chain' .. Random(1,6))
             end
         end
@@ -788,7 +776,7 @@ function M2InitialAirAttack()
             num = 5
         end
         for i = 1, num do
-            units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalancedVeteran('UEF', 'M2_UEF_Adapt_Intie', 'GrowthFormation', 5)
+            units = ScenarioUtils.CreateArmyGroupAsPlatoonVeteran('UEF', 'M2_UEF_Adapt_Intie', 'GrowthFormation', 5)
             ScenarioFramework.PlatoonPatrolChain(units, 'M2_SouthBase_Land_Attack_Chain' .. Random(1,6))
         end
     end
@@ -938,7 +926,7 @@ function IntroMission3()
             # Initial Patrols
             -----------------
 
-            local units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'M3_AirBaseAirDef', 'GrowthFormation')
+            local units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M3_AirBaseAirDef', 'GrowthFormation')
             for k, v in units:GetPlatoonUnits() do
                 ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M3_Air_Base_Defense_Chain')))
             end
@@ -1023,10 +1011,10 @@ function M3InitialAttack()
     local units = nil
 
     # Hover Attacks
-    units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'M3_UEF_InitAttack_Hover1', 'AttackFormation')
+    units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M3_UEF_InitAttack_Hover1', 'AttackFormation')
     ScenarioFramework.PlatoonPatrolChain(units, 'M3_Air_Hover_Chain1')
 
-    units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'M3_UEF_InitAttack_Hover2', 'AttackFormation')
+    units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M3_UEF_InitAttack_Hover2', 'AttackFormation')
     ScenarioFramework.PlatoonPatrolChain(units, 'M3_Air_Hover_Chain2')
 
     # Spawns transport attacks for every 8 defensive structures, up to 4 x 5 groups
@@ -1042,7 +1030,7 @@ function M3InitialAttack()
         end
         for i = 1, num do
             for j = 1, 4 do
-                units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'M3_UEF_InitAttack_Trans' .. j, 'AttackFormation')
+                units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M3_UEF_InitAttack_Trans' .. j, 'AttackFormation')
                 for k,v in units:GetPlatoonUnits() do
                     if(v:GetUnitId() == 'uea0104') then
                         local interceptors = ScenarioUtils.CreateArmyGroup('UEF', 'M3_UEF_Trans_Interceptors')
@@ -1056,10 +1044,10 @@ function M3InitialAttack()
     end
 
     # Air Attacks
-    units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'M3_UEF_InitAttack_AirNorth', 'GrowthFormation')
+    units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M3_UEF_InitAttack_AirNorth', 'GrowthFormation')
     ScenarioFramework.PlatoonPatrolChain(units, 'M3_Air_Attack_Chain3')
 
-    units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'M3_UEF_InitAttack_AirSouth', 'GrowthFormation')
+    units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M3_UEF_InitAttack_AirSouth', 'GrowthFormation')
     ScenarioFramework.PlatoonPatrolChain(units, 'M3_Air_Attack_Chain6')
 
     # If player > 250 units, spawns gunships for every 40 land units, up to 7 groups
@@ -1080,7 +1068,7 @@ function M3InitialAttack()
                 num = 7
             end
             for i = 1, num do
-                units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalancedVeteran('UEF', 'M3_UEF_Adapt_Gunships', 'GrowthFormation', 5)
+                units = ScenarioUtils.CreateArmyGroupAsPlatoonVeteran('UEF', 'M3_UEF_Adapt_Gunships', 'GrowthFormation', 5)
                 ScenarioFramework.PlatoonPatrolChain(units, 'M3_Air_Attack_Chain' .. Random(1,6))
             end
         end
@@ -1098,7 +1086,7 @@ function M3InitialAttack()
             num = 10
         end
         for i = 1, num do
-            units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalancedVeteran('UEF', 'M3_UEF_Adapt_Intie', 'GrowthFormation', 5)
+            units = ScenarioUtils.CreateArmyGroupAsPlatoonVeteran('UEF', 'M3_UEF_Adapt_Intie', 'GrowthFormation', 5)
             ScenarioFramework.PlatoonPatrolChain(units, 'M3_Air_Attack_Chain' .. Random(1,6))
         end
     end
@@ -1116,7 +1104,7 @@ function M3InitialAttack()
         end
         for i = 1, num do
             for j = 1, 2 do
-                units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalancedVeteran('UEF', 'M3_UEF_Adapt_Destr' .. j, 'AttackFormation', 5)
+                units = ScenarioUtils.CreateArmyGroupAsPlatoonVeteran('UEF', 'M3_UEF_Adapt_Destr' .. j, 'AttackFormation', 5)
                 ScenarioFramework.PlatoonPatrolChain(units, 'M3_Air_Base_NavalAttack_Chain' .. Random(1,2))
             end
         end
@@ -1244,35 +1232,35 @@ function IntroMission5()
             # Initial Patrols
             # ---------------
             # Seraphim
-            local units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Sera_Main_DefGroup', 'GrowthFormation')
+            local units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M5_Sera_Main_DefGroup', 'GrowthFormation')
             for k, v in units:GetPlatoonUnits() do
                 ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M5_Sera_Main_Base_Air_Def_Chain')))
             end
-            units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Sera_West_DefGroup', 'GrowthFormation')
+            units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M5_Sera_West_DefGroup', 'GrowthFormation')
             for k, v in units:GetPlatoonUnits() do
                 ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M5_Sera_Island_West_AirDef_Chain')))
             end
-            units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Sera_Middle_DefGroup', 'GrowthFormation')
+            units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M5_Sera_Middle_DefGroup', 'GrowthFormation')
             for k, v in units:GetPlatoonUnits() do
                 ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M5_Sera_Island_Middle_AirDef_Chain')))
             end
-            units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Attack_UEF', 'AttackFormation')
+            units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M5_Attack_UEF', 'AttackFormation')
                 ScenarioFramework.PlatoonPatrolChain(units, 'M5_UEF_Island_Naval_Defense_Chain1')
 
-            units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Attack_UEF2', 'GrowthFormation')
+            units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M5_Attack_UEF2', 'GrowthFormation')
                 ScenarioFramework.PlatoonPatrolChain(units, 'M5_Sera_Init_Attack_UEF')
             for i = 1, 3 do
-                units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Air_Attack_UEF' .. i, 'AttackFormation')
+                units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M5_Air_Attack_UEF' .. i, 'AttackFormation')
                 ScenarioFramework.PlatoonPatrolChain(units, 'M5_Sera_Init_Attack_UEF')
             end
             
             # UEF
-            units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'M5_Init_UEF_Air', 'GrowthFormation')
+            units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M5_Init_UEF_Air', 'GrowthFormation')
             for k, v in units:GetPlatoonUnits() do
                 ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M5_UEF_Island_Air_Defense_Chain')))
             end
             for i = 1, 2 do
-                units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('UEF', 'M5_Init_UEF_Naval_' .. i, 'AttackFormation')
+                units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M5_Init_UEF_Naval_' .. i, 'AttackFormation')
                 ScenarioFramework.PlatoonPatrolChain(units, 'M5_UEF_Island_Naval_Defense_Chain' ..i)
             end
             
@@ -1418,33 +1406,33 @@ function M5InitialAttack()
 
     # Land Attacks
     for i = 1, 2 do
-        units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Init_Land_Attack_' .. i, 'GrowthFormation')
+        units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M5_Init_Land_Attack_' .. i, 'GrowthFormation')
         ScenarioFramework.PlatoonPatrolChain(units, 'M5_Sera_Island_West_Land_Attack_Chain')
     end
 
     # Naval Attacks
     for i = 1, 2 do
-        units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Init_Destroyers' .. i, 'AttackFormation')
+        units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M5_Init_Destroyers' .. i, 'AttackFormation')
         ScenarioFramework.PlatoonPatrolChain(units, 'M5_Sera_Init_Naval_Attack_Chain1')
     end
 
-    units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Init_Destroyers3', 'AttackFormation')
+    units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M5_Init_Destroyers3', 'AttackFormation')
     ScenarioFramework.PlatoonPatrolChain(units, 'M5_Sera_Init_Naval_Attack_Chain2')
 
     for i = 1, 2 do
-        units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Init_Frigates' .. i, 'AttackFormation')
+        units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M5_Init_Frigates' .. i, 'AttackFormation')
         ScenarioFramework.PlatoonPatrolChain(units, 'M5_Sera_Init_Naval_Attack_Chain2')
     end
 
-    units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Init_Frigates3', 'AttackFormation')
+    units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M5_Init_Frigates3', 'AttackFormation')
     ScenarioFramework.PlatoonPatrolChain(units, 'M5_Sera_Init_Naval_Attack_Chain1')
 
-    units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Init_Battleship', 'AttackFormation')
+    units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M5_Init_Battleship', 'AttackFormation')
     ScenarioFramework.PlatoonPatrolChain(units, 'M5_Sera_Init_Naval_Attack_Chain1')
 
     # Naval Attacks on UEF
     for i = 1, 2 do
-        units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalanced('Seraphim', 'M5_Init_AttackUEF_' .. i, 'AttackFormation')
+        units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M5_Init_AttackUEF_' .. i, 'AttackFormation')
         ScenarioFramework.PlatoonPatrolChain(units, 'M5_Sera_Main_Naval_AttackUEF_Chain2')
     end
 
@@ -1463,7 +1451,7 @@ function M5InitialAttack()
         end
         for i = 1, num do
             for j = 1, 2 do
-                units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalancedVeteran('Seraphim', 'M5_Sera_Adapt_Intie' .. j, 'GrowthFormation', 5)
+                units = ScenarioUtils.CreateArmyGroupAsPlatoonVeteran('Seraphim', 'M5_Sera_Adapt_Intie' .. j, 'GrowthFormation', 5)
                 ScenarioFramework.PlatoonPatrolChain(units, 'M5_Sera_Init_AirAttack_Chain' .. Random(1,3))
             end
         end
@@ -1482,7 +1470,7 @@ function M5InitialAttack()
         end
         for i = 1, num do
             for j = 1, 3 do
-                units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalancedVeteran('Seraphim', 'M5_Sera_Adapt_Bombers' .. j, 'GrowthFormation', 5)
+                units = ScenarioUtils.CreateArmyGroupAsPlatoonVeteran('Seraphim', 'M5_Sera_Adapt_Bombers' .. j, 'GrowthFormation', 5)
                 ScenarioFramework.PlatoonPatrolChain(units, 'M5_Sera_Init_AirAttack_Chain' .. Random(1,3))
             end
         end
@@ -1501,7 +1489,7 @@ function M5InitialAttack()
         end
         for i = 1, num do
             for j = 1, 2 do
-                units = ScenarioUtils.CreateArmyGroupAsPlatoonCoopBalancedVeteran('Seraphim', 'M5_Sera_Adapt_Gunships' .. j, 'GrowthFormation', 5)
+                units = ScenarioUtils.CreateArmyGroupAsPlatoonVeteran('Seraphim', 'M5_Sera_Adapt_Gunships' .. j, 'GrowthFormation', 5)
                 ScenarioFramework.PlatoonPatrolChain(units, 'M5_Sera_Init_AirAttack_Chain' .. Random(1,3))
             end
         end
@@ -1838,6 +1826,7 @@ end
 function SACUescape()
     if ScenarioInfo.M5P1.Active then
         M5UEFAI.DisableBase()
+        WaitSeconds(3)
         # ScenarioInfo.Transport = ScenarioFramework.GetCatUnitsInArea((categories.uea0104), 'M5_UEF_Island_Base_Area', ArmyBrains[UEF])
         ScenarioInfo.Transport = ScenarioUtils.CreateArmyUnit('UEF', 'Transport')
         # ScenarioFramework.AttachUnitsToTransports(ScenarioInfo.UEFSACU, {transport})
