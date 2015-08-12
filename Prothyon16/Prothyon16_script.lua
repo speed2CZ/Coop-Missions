@@ -62,7 +62,7 @@ local ReminderTaunts = {
 local SkipNIS1 = true
 local SkipNIS2 = true
 local SkipNIS3 = true
-local SkipNIS5 = false
+local SkipNIS5 = true
 
 # --------------
 # Taunt Managers
@@ -1138,6 +1138,7 @@ function StartMission3()
         function(result)
             if(result) then
                 # ScenarioFramework.Dialogue(OpStrings.epicEprop, IntroMission4)
+                # SeraphimReveal()
                 IntroMission4()
             end
         end
@@ -1149,6 +1150,22 @@ end
 # ---------
 # Mission 4
 # ---------
+function SeraphimReveal()
+    for i = 1, 5 do
+        ForkThread(function(i)
+            local unit = ScenarioUtils.CreateArmyUnit('Seraphim', 'Sera_Scout_' .. i)
+            IssueMove({unit}, ScenarioUtils.MarkerToPosition('ScoutsDeath_' .. i))
+            WaitSeconds(1)
+            while(not unit:IsDead() and unit:IsUnitState('Moving')) do
+                WaitSeconds(.5)
+            end
+            unit:Destroy()
+        end, i)
+    end
+    WaitSeconds(30)
+    IntroMission4()
+end
+
 function IntroMission4()
     ForkThread(
         function()
@@ -1843,6 +1860,11 @@ end
 function SecondSeraACU()
     ScenarioFramework.SetPlayableArea('M6_Area', true)
     # ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Island_Base')
+    ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Sera_MEX1')
+    ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Sera_FACT1')
+    ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Sera_FACT2')
+    ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Sera_FACN')
+    ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Sera_MEX2')
 
     # ----------
     # Second ACU
@@ -1858,30 +1880,30 @@ function SecondSeraACU()
     ScenarioInfo.EastSeraCDR:SetCustomName( "Evil One" )
 
     M6SeraphimAI.SeraphimM6IslandBaseAI()
+--[[
+    ScenarioFramework.CreateArmyStatTrigger(M6T1FactoryBuilt, ArmyBrains[Seraphim], 'M6T1FactoryBuilt',
+        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 1, Category = categories.FACTORY * categories.TECH1 * categories.NAVAL}})
 
-    # ScenarioFramework.CreateArmyStatTrigger(M6T1FactoryBuilt, ArmyBrains[Seraphim], 'M6T1FactoryBuilt',
-        # {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 3, Category = categories.FACTORY * categories.TECH1 * categories.AIR}})
-
-    # ScenarioFramework.CreateArmyStatTrigger(M6T3FactoryBuilt, ArmyBrains[Seraphim], 'M6T3FactoryBuilt',
-        # {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 4, Category = categories.xsl0309}})
-
+    ScenarioFramework.CreateArmyStatTrigger(M6T3FactoryBuilt, ArmyBrains[Seraphim], 'M6T3FactoryBuilt',
+        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 1, Category = categories.FACTORY * categories.TECH2 * categories.NAVAL}})
+]]--
     ScenarioFramework.CreateArmyStatTrigger(M6SeraphimAI.NewEngineerCount, ArmyBrains[Seraphim], 'NewEngCount',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 6, Category = categories.FACTORY * categories.AIR}})
+        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 6, Category = categories.FACTORY * categories.AIR * categories.TECH3}})
 
-    ScenarioFramework.CreateArmyStatTrigger(   M6SeraphimAI.SeraphimM6IslandBaseAirAttacks, ArmyBrains[Seraphim], '3+T3AirFacs',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 3, Category = categories.xsb0302}})
+    ScenarioFramework.CreateArmyStatTrigger(M6SeraphimAI.SeraphimM6IslandBaseAirAttacks, ArmyBrains[Seraphim], '3+T3AirFacs',
+        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 3, Category = categories.xsb0302}})
 
-    ScenarioFramework.CreateArmyStatTrigger(   M6SeraphimAI.SeraphimM6IslandBaseNavalAttacks, ArmyBrains[Seraphim], '3+T3NavalFacs',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 1, Category = categories.xsb0303}})
+    ScenarioFramework.CreateArmyStatTrigger(M6SeraphimAI.SeraphimM6IslandBaseNavalAttacks, ArmyBrains[Seraphim], '3+T3NavalFacs',
+        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 1, Category = categories.xsb0303}})
 end
-
+--[[
 function M6T1FactoryBuilt()
-    local factory = ArmyBrains[Seraphim]:GetListOfUnits(categories.FACTORY * categories.AIR, false)
+    local factory = ScenarioFramework.GetCatUnitsInArea((categories.FACTORY * categories.NAVAL), 'M6_Sera_Base_Area', ArmyBrains[Seraphim])
     IssueGuard({ScenarioInfo.EastSeraCDR}, factory[1])
 end
 
 function M6T3FactoryBuilt()
-    local factory = ArmyBrains[Seraphim]:GetListOfUnits(categories.FACTORY * categories.AIR, false)
+    local factory = ScenarioFramework.GetCatUnitsInArea((categories.FACTORY * categories.AIR), 'M6_Sera_Base_Area', ArmyBrains[Seraphim])
     
     IssueStop({ScenarioInfo.EastSeraCDR})
     IssueClearCommands({ScenarioInfo.EastSeraCDR})
@@ -1889,26 +1911,26 @@ function M6T3FactoryBuilt()
     IssueGuard({ScenarioInfo.EastSeraCDR}, factory[2])
 
     ScenarioFramework.CreateArmyStatTrigger(M6T3AirFactory2Built, ArmyBrains[Seraphim], 'M6T3AirFactory2Built',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 2, Category = categories.xsb0302}})
+        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 1, Category = categories.xsb0302}})
 end
 
 function M6T3AirFactory2Built()
-    local factory = ArmyBrains[Seraphim]:GetListOfUnits(categories.FACTORY * categories.AIR, false)
+    local factory = ScenarioFramework.GetCatUnitsInArea((categories.FACTORY * categories.AIR), 'M6_Sera_Base_Area', ArmyBrains[Seraphim])
     
     IssueStop({ScenarioInfo.EastSeraCDR})
     IssueClearCommands({ScenarioInfo.EastSeraCDR})
     
-    IssueGuard({ScenarioInfo.EastSeraCDR}, factory[3])
+    IssueGuard({ScenarioInfo.EastSeraCDR}, factory[2])
 
     ScenarioFramework.CreateArmyStatTrigger(M6T3AirFactory3Built, ArmyBrains[Seraphim], 'M6T3AirFactory3Built',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 3, Category = categories.xsb0302}})
+        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 2, Category = categories.xsb0302}})
 end
 
 function M6T3AirFactory3Built()
     IssueStop({ScenarioInfo.EastSeraCDR})
     IssueClearCommands({ScenarioInfo.EastSeraCDR})
 end
-
+]]--
 # -------------------
 # Objective Reminders
 # -------------------
@@ -2029,5 +2051,5 @@ function OnShiftF4()
 end
 
 function OnCtrlF4()
-    IntroMission3()
+    SeraphimReveal()
 end
