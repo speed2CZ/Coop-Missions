@@ -221,12 +221,13 @@ airbaseremind2 = {
 epicEprop = {
   {text = '[Gyle]: Thank you for playing this scenario. This experience has been brought to you courtesy of empire clan. Mission made by speed2, some other useless things were made by Exotic_Retard, and I was responsible for your lovely voiceovers. This is Gyle, Signing out.', vid = 'Pro_16_epicEprop.sfd', bank = 'G_VO1', cue = '27epicEprop', faction = 'UEF'},
 }
-# Gortonthinksthisshouldhappen  Actor: Gyle / Update 30/07/2015 / VO not ready
 
-{text = '[Gyle]: Excellent work Commander. Clean up the rest of the base, and then - 
+# Gortonthinksthisshouldhappen  Actor: Gyle / Update 30/07/2015 / VO not ready
+Something = {}
+  {text = '[Gyle]: Excellent work Commander. Clean up the rest of the base, and then - ', vid = '', bank = '', cue = '', faction = 'UEF'},
 } 
-(end transmission, it should cut out) (reopen trans)
-{text = '[Gyle]: Commander, halt all attack on the AI. Regroup your forces and prepare for an attack. Our radar are picking up unidenti- Scratch that. You have hostiles inbound, Seraphim signatures.
+--(end transmission, it should cut out) (reopen trans)
+  {text = '[Gyle]: Commander, halt all attack on the AI. Regroup your forces and prepare for an attack. Our radar are picking up unidenti- Scratch that. You have hostiles inbound, Seraphim signatures.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
