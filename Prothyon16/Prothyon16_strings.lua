@@ -62,9 +62,9 @@ sACUDie = {
 
 
 
-# Intro Sequence 1 / Actor: Gyle / Update 22/05/2015 / VO Ready
+# Intro Sequence 1 / Actor: Gyle / Update 30/07/2015 / VO not ready
 intro1 = {
-  {text = '[Gyle]: Welcome commander – My name is Gyle and I’ll be your Liason officer for the forthcoming scenario. In this mission you will be giving a demonstration to our newest recruits by fighting against a training AI. Your first objective will be to destroy this outpost. ', vid = 'Pro_16_intro1.sfd', bank = 'G_VO1', cue = '1intro1', faction = 'UEF'},
+  {text = '[Gyle]: Welcome commander – My name is Gyle and I’ll be your intel officer for the forthcoming scenario. In this mission you will be giving a demonstration to our newest recruits by fighting against a training AI. Your first objective will be to destroy this outpost. ', vid = 'Pro_16_intro1.sfd', bank = 'G_VO1', cue = '1intro1', faction = 'UEF'},
 }
 
 # Intro Sequence 2 / Actor: Gyle / Update 22/05/2015 / VO Ready
@@ -84,29 +84,29 @@ postintro = {
 
 # First Base Killed / Actor: Gyle / Update 22/05/2015 / VO Ready
 base1killed = {
-  {text = '[Gyle]: The outpost has been destroyed, secure the area and push forward. HQ Out', vid = 'Pro_16_base1killed.sfd', bank = 'G_VO1', cue = '5base1killed', faction = 'UEF'},
+  {text = '[Gyle]: The outpost has been destroyed, secure the area and push forward. HQ, Out', vid = 'Pro_16_base1killed.sfd', bank = 'G_VO1', cue = '5base1killed', faction = 'UEF'},
 }
 
 
 
 # Tech building reminder 1 / Actor: Gyle / Update 22/05/2015 / VO Ready
 HQcapremind1 = {
-  {text = '[Gyle]: Commander, you need to capture the tech centre to gain access to additional units. HQ Out', vid = 'Pro_16_HQcapremind1.sfd', bank = 'G_VO1', cue = '6HQcapremind1', faction = 'UEF'},
+  {text = '[Gyle]: Commander, you need to capture the tech centre to gain access to additional units. HQ, Out', vid = 'Pro_16_HQcapremind1.sfd', bank = 'G_VO1', cue = '6HQcapremind1', faction = 'UEF'},
 }
 
 # Tech building reminder 2 / Actor: Gyle / Update 22/05/2015 / VO Ready
 HQcapremind2 = {
-  {text = '[Gyle]: A tech centre is still in enemy hands - you need to capture it to gain an advantage in battle. HQ Out', vid = 'Pro_16_HQcapremind2.sfd', bank = 'G_VO1', cue = '7HQcapremind2', faction = 'UEF'},
+  {text = '[Gyle]: A tech centre is still in enemy hands - you need to capture it to gain an advantage in battle. HQ, Out', vid = 'Pro_16_HQcapremind2.sfd', bank = 'G_VO1', cue = '7HQcapremind2', faction = 'UEF'},
 }
 
 # Tech building reminder 3 / Actor: Gyle / Update 22/05/2015 / VO Ready
 HQcapremind3 = {
-  {text = '[Gyle]: You can only gain access to additional units if you capture a tech centre. Do so as soon as possible. HQ Out', vid = 'Pro_16_HQcapremind3.sfd', bank = 'G_VO1', cue = '8HQcapremind3', faction = 'UEF'},
+  {text = '[Gyle]: You can only gain access to additional units if you capture a tech centre. Do so as soon as possible. HQ, Out', vid = 'Pro_16_HQcapremind3.sfd', bank = 'G_VO1', cue = '8HQcapremind3', faction = 'UEF'},
 }
 
-# Tech building reminder 4 / Actor: Gyle / Update 22/05/2015 / VO Ready
+# Tech building reminder 4 / Actor: Gyle / Update 30/07/2015 / VO not ready, I think. I corrected this.
 HQcapremind4 = {
-  {text = '[Gyle]: Commander is still an uncaptured technology centre - you need it to build advanced units. HQ Out', vid = 'Pro_16_HQcapremind4.sfd', bank = 'G_VO1', cue = '9HQcapremind4', faction = 'UEF'},
+  {text = '[Gyle]: Commander there is still an uncaptured technology centre - you need it to build advanced units. HQ, Out', vid = 'Pro_16_HQcapremind4.sfd', bank = 'G_VO1', cue = '9HQcapremind4', faction = 'UEF'},
 }
 
 
@@ -118,7 +118,7 @@ base1remind1 = {
 
 # First objective reminder 2 / Actor: Gyle / Update 22/05/2015 / VO Ready
 base1remind2 = {
-  {text = '[Gyle]: The Clocks ticking commander, destroy that base. HQ Out', vid = 'Pro_16_base1remind2.sfd', bank = 'G_VO1', cue = '11base1remind2', faction = 'UEF'},
+  {text = '[Gyle]: The clock's ticking commander, destroy that base. HQ Out', vid = 'Pro_16_base1remind2.sfd', bank = 'G_VO1', cue = '11base1remind2', faction = 'UEF'},
 }
 
 # Second objective reminder 1 / Actor: Gyle / Update 22/05/2015 / VO Ready
@@ -142,24 +142,24 @@ unitmove = {
 
 # Third Objective intro 1 / Actor: Gyle / Update 22/05/2015 / VO Ready
 southbase1 = {
-  {text = '[Gyle]: Your next task is to neutralise the base in the south, the training AI has been authorised to use tech 2 land and air units, so expect heavy resistance. ', vid = 'Pro_16_southbase1.sfd', bank = 'G_VO1', cue = '14southbase1', faction = 'UEF'},
+  {text = '[Gyle]: Your next task is to neutralise the base in the south, the training AI has been authorised to use tech 2 land and air units, so expect heavy resistance.  ', vid = 'Pro_16_southbase1.sfd', bank = 'G_VO1', cue = '14southbase1', faction = 'UEF'},
 }
 
 # Third Objective intro 2 / Actor: Gyle / Update 22/05/2015 / VO Ready
 southbase2 = {
-  {text = '[Gyle]: Attack immediately and secure the whole island in preparation for phase 3 of the exercise. HQ Out', vid = 'Pro_16_southbase2.sfd', bank = 'G_VO1', cue = '15southbase2', faction = 'UEF'},
+  {text = '[Gyle]: Attack immediately and secure the whole island in preparation for phase 3 of the exercise. HQ, Out', vid = 'Pro_16_southbase2.sfd', bank = 'G_VO1', cue = '15southbase2', faction = 'UEF'},
 }
 
 
 
 # Third objective reminder 1 / Actor: Gyle / Update 22/05/2015 / VO Ready
 southbaseremind1 = {
-  {text = '[Gyle]: The complex in the south is still operational - send a force to deal with it. HQ Out', vid = 'Pro_16_southbaseremind1.sfd', bank = 'G_VO1', cue = '16southbaseremind1', faction = 'UEF'},
+  {text = '[Gyle]: The complex in the south is still operational - send a force to deal with it. HQ, Out', vid = 'Pro_16_southbaseremind1.sfd', bank = 'G_VO1', cue = '16southbaseremind1', faction = 'UEF'},
 }
 
 # Third objective reminder 2 / Actor: Gyle / Update 22/05/2015 / VO Ready
 southbaseremind2 = {
-  {text = '[Gyle]: The island is still not secure - you need to ensure there are no enemy structures remaining. HQ Out', vid = 'Pro_16_southbaseremind2.sfd', bank = 'G_VO1', cue = '17southbaseremind2', faction = 'UEF'},
+  {text = '[Gyle]: The island is still not secure - you need to ensure there are no enemy structures remaining. HQ, Out', vid = 'Pro_16_southbaseremind2.sfd', bank = 'G_VO1', cue = '17southbaseremind2', faction = 'UEF'},
 }
 
 
@@ -195,19 +195,19 @@ airbase1 = {
 
 # Third objective intro 2 / Actor: Gyle / Update 22/05/2015 / VO Ready
 airbase2 = {
-  {text = '[Gyle]: Your next objective is to land on the neighbouring island and eliminate this base. The AI has been instructed to use land, air and naval units so watch your step. HQ Out', vid = 'Pro_16_airbase2.sfd', bank = 'G_VO1', cue = '22airbase2', faction = 'UEF'},
+  {text = '[Gyle]: Your next objective is to land on the neighbouring island and eliminate this base. The AI has been instructed to use land, air and naval units so watch your step. ', vid = 'Pro_16_airbase2.sfd', bank = 'G_VO1', cue = '22airbase2', faction = 'UEF'},
 }
 
 # Third objective intro 3 / Actor: Gyle / Update 22/05/2015 / VO Ready
 postintro3 = {
-  {text = '[Gyle]: Repel the attacking forces and launch a counter-offensive. HQ out', vid = 'Pro_16_postintro3.sfd', bank = 'G_VO1', cue = '23postintro', faction = 'UEF'},
+  {text = '[Gyle]: Repel the attacking forces and launch a counter-offensive. HQ, out', vid = 'Pro_16_postintro3.sfd', bank = 'G_VO1', cue = '23postintro', faction = 'UEF'},
 }
 
 
 
 # Third objective reminder 1 / Actor: Gyle / Update 22/05/2015 / VO Ready
 airbaseremind1 = {
-  {text = '[Gyle]: The second island is still in the hands of the enemy. Send units to attack it. HQ Out', vid = 'Pro_16_airbaseremind1.sfd', bank = 'G_VO1', cue = '24airbaseremind1', faction = 'UEF'},
+  {text = '[Gyle]: The second island is still in the hands of the enemy. Send units to attack it. HQ, Out', vid = 'Pro_16_airbaseremind1.sfd', bank = 'G_VO1', cue = '24airbaseremind1', faction = 'UEF'},
 }
 
 # Third objective reminder 2 / Actor: Gyle / Update 22/05/2015 / VO Ready
@@ -220,6 +220,13 @@ airbaseremind2 = {
 # Most important part / Actor: Gyle / Update 22/05/2015 / VO Ready
 epicEprop = {
   {text = '[Gyle]: Thank you for playing this scenario. This experience has been brought to you courtesy of empire clan. Mission made by speed2, some other useless things were made by Exotic_Retard, and I was responsible for your lovely voiceovers. This is Gyle, Signing out.', vid = 'Pro_16_epicEprop.sfd', bank = 'G_VO1', cue = '27epicEprop', faction = 'UEF'},
+}
+# Gortonthinksthisshouldhappen  Actor: Gyle / Update 30/07/2015 / VO not ready
+
+{text = '[Gyle]: Excellent work Commander. Clean up the rest of the base, and then - 
+} 
+(end transmission, it should cut out) (reopen trans)
+{text = '[Gyle]: Commander, halt all attack on the AI. Regroup your forces and prepare for an attack. Our radar are picking up unidenti- Scratch that. You have hostiles inbound, Seraphim signatures.
 }
 
 
