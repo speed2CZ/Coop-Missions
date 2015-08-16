@@ -270,8 +270,12 @@ obj5intro2 = {
 obj5intro3 = {
   {text = '[]: Commander, I have issued an evacuation order to all non-combat personnel in the area. But we are cut off by enemy forces! Clear those out of our way and escort everyone to the quantum gateway for extraction as soon as you can.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
-
-
+]]--
+# Objective 5 Post Intro / Actor: Thel-Uuthow / Update: 06/28/2007 / VO Ready
+obj5postintro = {
+  {text = '[Zottoo-Zithutin]: [Language Not Recognized]', vid = 'X03_Thel-Uuthow_T01_04346.sfd', bank = 'X03_VO', cue = 'X03_Thel-Uuthow_T01_04346', faction = 'Seraphim'},
+}
+--[[
 # Main Obj Reminder 1 / Actor: Gyle / Update 12/08/2015 / VO TODO
 M5MainReminder1 = {
   {text = '[Gyle]: The seraphim still have a foothold in the area! Rectify that immediately!', vid = '', bank = '', cue = '', faction = 'UEF'},
