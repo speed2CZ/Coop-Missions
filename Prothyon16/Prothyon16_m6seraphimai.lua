@@ -38,7 +38,7 @@ function SeraphimM6IslandBaseAI()
              M6_Sera_DEF3 = 150,
          }
     )
-    SeraphimM6IslandBase:StartEmptyBase(25)
+    SeraphimM6IslandBase:StartEmptyBase(8)
     # SeraphimM6IslandBase:SetConstructionAlwaysAssist(true)
     SeraphimM6IslandBase:SetMaximumConstructionEngineers(5)
     # SeraphimM6IslandBase.SetFactoryBuildRateBuff = 'BaseManagerFactoryDefaultBuildRate'
@@ -48,12 +48,26 @@ function SeraphimM6IslandBaseAI()
 
 end
 
-function NewEngineerCount()
+function NewEngineerCount1()
+    SeraphimM6IslandBase:SetEngineerCount({13, 8})
+    SeraphimM6IslandBase:SetMaximumConstructionEngineers(5)
+    LOG('*DEBUG: Engie Count 1 Set')
+end
+
+function NewEngineerCount2()
+    SeraphimM6IslandBase:SetEngineerCount({20, 15})
+    SeraphimM6IslandBase:SetMaximumConstructionEngineers(5)
+    LOG('*DEBUG: Engie Count 2 Set')
+end
+
+function NewEngineerCount3()
     SeraphimM6IslandBase:SetEngineerCount({25, 20})
     SeraphimM6IslandBase:SetMaximumConstructionEngineers(5)
+    LOG('*DEBUG: Engie Count 3 Set')
 end
 
 function SeraphimM6IslandBaseAirAttacks()
+    ScenarioFramework.CreateTimerTrigger(SeraphimM6IslandBaseT3AirAttacks, 15*60)
 	local opai = nil
 
     for i = 1, 2 do
@@ -96,7 +110,7 @@ function SeraphimM6IslandBaseAirAttacks()
         )
         opai:SetChildQuantity('Interceptors', 30)
         opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
-        {'default_brain', 'Player', 60, categories.AIR * categories.MOBILE})
+        {'default_brain', 'Player', 50, categories.AIR * categories.MOBILE})
     end
 
     for i = 1, 3 do
@@ -111,7 +125,7 @@ function SeraphimM6IslandBaseAirAttacks()
         )
         opai:SetChildQuantity('CombatFighters', 20)
         opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
-        {'default_brain', 'Player', 100, categories.AIR * categories.MOBILE})
+        {'default_brain', 'Player', 70, categories.AIR * categories.MOBILE})
     end
 
 	# -----------
@@ -125,7 +139,7 @@ function SeraphimM6IslandBaseAirAttacks()
                 PlatoonData = {
                     PatrolChain = 'M6_Sera_Island_Base_AirDef_Chain',
                 },
-                Priority = 110,
+                Priority = 150,
             }
         )
         opai:SetChildQuantity('AirSuperiority', 6)
@@ -139,7 +153,7 @@ function SeraphimM6IslandBaseAirAttacks()
                 PlatoonData = {
                     PatrolChain = 'M6_Sera_Island_Base_AirDef_Chain',
                 },
-                Priority = 110,
+                Priority = 150,
             }
         )
         opai:SetChildQuantity('Gunships', 4)
@@ -153,13 +167,13 @@ function SeraphimM6IslandBaseAirAttacks()
                 PlatoonData = {
                     PatrolChain = 'M6_Sera_Island_Base_AirDef_Chain',
                 },
-                Priority = 110,
+                Priority = 150,
             }
         )
         opai:SetChildQuantity('TorpedoBombers', 5)
     end
 
-    # maintains 3 x 3 [torp bombers]
+    # maintains 3 x 3 [strat bombers]
     for i = 1, 3 do
         opai = SeraphimM6IslandBase:AddOpAI('AirAttacks', 'M6_Sera_Island_AirDefense4_' .. i,
             {
@@ -167,17 +181,50 @@ function SeraphimM6IslandBaseAirAttacks()
                 PlatoonData = {
                     PatrolChain = 'M6_Sera_Island_Base_AirDef_Chain',
                 },
-                Priority = 110,
+                Priority = 150,
             }
         )
         opai:SetChildQuantity('StratBombers', 3)
     end
 end
 
+function SeraphimM6IslandBaseT3AirAttacks()
+    LOG('*DEBUG: M6 Sera T3 Air Attack')
+    local opai = nil
+
+    for i = 1, 3 do
+        opai = SeraphimM6IslandBase:AddOpAI('AirAttacks', 'M6_Sera_Island_T3AirAttack1_' .. i,
+            {
+                MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+                PlatoonData = {
+                    PatrolChains = {'M6_Sera_Island_Air_Attack_Chain_1', 'M6_Sera_Island_Air_Attack_Chain_2', 'M6_Sera_Island_Air_Attack_Chain_3'},
+                },
+                Priority = 120,
+            }
+        )
+        opai:SetChildQuantity('AirSuperiority', 24)
+        opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
+        {'default_brain', 'Player', 85, categories.AIR * categories.MOBILE})
+    end
+
+    for i = 1, 3 do
+        opai = SeraphimM6IslandBase:AddOpAI('AirAttacks', 'M6_Sera_Island_T3AirAttack2_' .. i,
+            {
+                MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+                PlatoonData = {
+                    PatrolChains = {'M6_Sera_Island_Air_Attack_Chain_1', 'M6_Sera_Island_Air_Attack_Chain_2', 'M6_Sera_Island_Air_Attack_Chain_3'},
+                },
+                Priority = 120,
+            }
+        )
+        opai:SetChildQuantity('StratBombers', 12)
+    end
+end
+
 function SeraphimM6IslandBaseNavalAttacks()
 
-    ScenarioFramework.CreateTimerTrigger(SeraphimM6IslandBaseNavalT3Attacks, 10*60)
-
+    ScenarioFramework.CreateTimerTrigger(SeraphimM6IslandBaseNavalT3Attacks, 15*60)
+    LOG('*DEBUG: M6 Sera Naval Attack')
     local opai = nil
     local NavyOSB = nil
     
@@ -231,8 +278,9 @@ function SeraphimM6IslandBaseNavalT3Attacks()
 
     local opai = nil
     local NavyOSB = nil
+    LOG('*DEBUG: M6 Sera Naval Attack Begins')
     
-    NavyOSB = NavalOSB.GenerateNavalOSB('M6_Sera_Island_T3_Naval_1' , 5, 40, 60, 'S', 120, nil, nil)
+    NavyOSB = NavalOSB.GenerateNavalOSB('M6_Sera_Island_T3_Naval_1' , 5, 100, 120, 'S', 120, nil, nil)
     opai = SeraphimM6IslandBase:AddOpAI(NavyOSB, 'M6_Sera_Island_T3_Naval_1',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
@@ -243,7 +291,7 @@ function SeraphimM6IslandBaseNavalT3Attacks()
     )
     opai:SetChildActive('T1', false)
 
-    NavyOSB = NavalOSB.GenerateNavalOSB('M6_Sera_Island_T3_Naval_2' , 5, 30, 50, 'S', 120, nil, nil)
+    NavyOSB = NavalOSB.GenerateNavalOSB('M6_Sera_Island_T3_Naval_2' , 5, 50, 70, 'S', 120, nil, nil)
     opai = SeraphimM6IslandBase:AddOpAI(NavyOSB, 'M6_Sera_Island_T3_Naval_2',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
@@ -254,7 +302,7 @@ function SeraphimM6IslandBaseNavalT3Attacks()
     )
     opai:SetChildActive('T1', false)
 
-    NavyOSB = NavalOSB.GenerateNavalOSB('M6_Sera_Island_T3_Naval_3' , 5, 40, 50, 'S', 120, nil, nil)
+    NavyOSB = NavalOSB.GenerateNavalOSB('M6_Sera_Island_T3_Naval_3' , 5, 80, 100, 'S', 120, nil, nil)
     opai = SeraphimM6IslandBase:AddOpAI(NavyOSB, 'M6_Sera_Island_T3_Naval_3',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
@@ -265,7 +313,7 @@ function SeraphimM6IslandBaseNavalT3Attacks()
     )
     opai:SetChildActive('T1', false)
 
-    NavyOSB = NavalOSB.GenerateNavalOSB('M6_Sera_Island_T3_Naval_4' , 5, 35, 55, 'S', 120, nil, nil)
+    NavyOSB = NavalOSB.GenerateNavalOSB('M6_Sera_Island_T3_Naval_4' , 5, 55, 85, 'S', 120, nil, nil)
     opai = SeraphimM6IslandBase:AddOpAI(NavyOSB, 'M6_Sera_Island_T3_Naval_4',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
