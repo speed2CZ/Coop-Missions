@@ -10,7 +10,7 @@
 # also during intro Gyle should come up with info that there is Sera ACU, giving player task to kill it (second main objective).
 # Soon after intro there will be secondary objective assigned, protect civilians on the island and get ready for evacuation.
 # For that player has to kill 3 seraphim bases on the island (secondary objective).
-# Sovietpride as civil guy should say something that they cant evacuate until those bases are destroyed
+# Kalvirox as civil guy should say something that they cant evacuate until those bases are destroyed
 # Info about destroying those bases, that should be obvious = classis info voiceovers, there will be more of thoses, they should be marked clearly.
 # After these 3 bases are destroyed, evacuation from island will start, objective to transport civ trucks to Quantum Gate
 # Some VOs when trucks are under attack, losing some, arriving to gate etc...
@@ -266,7 +266,7 @@ obj5intro2 = {
   {text = '[Morax]: My garrison is in a strategically important position so the Seraphim will try to take it. I will hold off the enemy attacks as long as I can, but I will need assistance.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Objective 5 Intro 3 / Actor: Sovietpride / Update 12/08/2015 / VO TODO
+# Objective 5 Intro 3 / Actor: Kalvirox / Update 12/08/2015 / VO TODO
 obj5intro3 = {
   {text = '[]: Commander, I have issued an evacuation order to all non-combat personnel in the area. But we are cut off by enemy forces! Clear those out of our way and escort everyone to the quantum gateway for extraction as soon as you can.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
@@ -395,76 +395,76 @@ IslandBaseAllKilledNoCiv = {
 
 
 
-# Secondary Obj Protect Civs / Actor:  / Update 12/08/2015 / VO TODO
+# Secondary Obj Protect Civs / Actor: Kalvirox  / Update 12/08/2015 / VO TODO
 M5ProtectCivs = {
   {text = '[]: There is a civilian installation on this island, you need to protect it form the seraphim attacks!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Secondary Obj Protect Civs Failed / Actor:  / Update 12/08/2015 / VO TODO
+# Secondary Obj Protect Civs Failed / Actor: Kalvirox  / Update 12/08/2015 / VO TODO
 M5CivsDied = {
   {text = '[]: The Seraphim have wiped out the civilian installation on the island, there is nothing left.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# 4 buildings above min / Actor:  / Update 12/08/2015 / VO TODO
+# 4 buildings above min / Actor: Kalvirox  / Update 12/08/2015 / VO TODO
 LosingCivs1 = {
   {text = '[]: Only a few critical buildings remain, they must be protected!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# 1 buildings above min / Actor:  / Update 12/08/2015 / VO TODO
+# 1 buildings above min / Actor:  Kalvirox / Update 12/08/2015 / VO TODO
 LosingCivs2 = {
   {text = '[]: We cannot afford to lose anymore civilian structures commander!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
 
-# Secondary obj 3 Evacuate Civs / Actor:  / Update 12/08/2015 / VO TODO
+# Secondary obj 3 Evacuate Civs / Actor: Kalvirox / Update 12/08/2015 / VO TODO
 M5TrucksReady = {
   {text = '[]: Commander, there are a number of civilian trucks in need of evacuation. You need to get them to the quantum gate as soon as possible.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Trucks taking damage 1 / Actor:  / Update 12/08/2015 / VO TODO
+# Trucks taking damage 1 / Actor: Kalvirox / Update 12/08/2015 / VO TODO
 M5TruckDamaged1 = {
   {text = '[]: The civilian trucks are taking damage! Protect the civilians!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Trucks taking damage 2 / Actor:  / Update 12/08/2015 / VO TODO
+# Trucks taking damage 2 / Actor: Kalvirox / Update 12/08/2015 / VO TODO
 M5TruckDamaged2 = {
   {text = '[]: The civilians are under attack, you need to get them out of here safely!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
-# 1 truck destroyed / Actor:  / Update 12/08/2015 / VO TODO
+# 1 truck destroyed / Actor: Kalvirox / Update 12/08/2015 / VO TODO
 M5TruckDestroyed1 = {
   {text = '[]: We\'ve lost contact with a civilian truck! The rest need to be evacuated immediately!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# 2 trucks destroyed / Actor:  / Update 12/08/2015 / VO TODO
+# 2 trucks destroyed / Actor: Kalvirox / Update 12/08/2015 / VO TODO
 M5TruckDestroyed2 = {
   {text = '[]: Another truck has been destroyed! We need to rescue the civilians!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# 3 trucks destroyed / Actor:  / Update 12/08/2015 / VO TODO
+# 3 trucks destroyed / Actor: Kalvirox / Update 12/08/2015 / VO TODO
 M5TruckDestroyed3 = {
   {text = '[]: A third truck has been destroyed! Send aid at once!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
-# All trucks destroyed, objective failed / Actor:  / Update 12/08/2015 / VO TODO
+# All trucks destroyed, objective failed / Actor: Kalvirox / Update 12/08/2015 / VO TODO
 M5AllTrucksDestroyed = {
   {text = '[]: Commander, there are no more trucks remaining, all of the civilians have been killed.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# objective complete / Actor:  / Update 12/08/2015 / VO TODO
+# objective complete / Actor: Kalvirox / Update 12/08/2015 / VO TODO
 M5AllTruckRescued = {
   {text = '[]: All civilians have been evacuated, good work commander!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# 1 truck rescued / Actor:  / Update 12/08/2015 / VO TODO
+# 1 truck rescued / Actor: Kalvirox / Update 12/08/2015 / VO TODO
 M5TruckRescued1 = {
   {text = '[]: The first convoy has successfully left the operation area.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# 2 trucks rescued / Actor:  / Update 12/08/2015 / VO TODO
+# 2 trucks rescued / Actor: Kalvirox / Update 12/08/2015 / VO TODO
 M5TruckRescued2 = {
   {text = '[]: Another civilian truck has been successfully evacuated!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
@@ -474,29 +474,29 @@ M5TruckRescued2 = {
 # ------------
 
 
-# Second Sera ACU gates in / Actor:  / Update 12/08/2015 / VO TODO
+# Second Sera ACU gates in / Actor: Gyle / Update 12/08/2015 / VO TODO
 M6SecondSeraACU = {
   {text = '[Gyle]: Commander, we\'re detecting a second ACU signature in the area, an enemy commander has just gated in!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
-# invasion announcement / Actor:  / Update 12/08/2015 / VO TODO
+# invasion announcement / Actor: Gyle / Update 12/08/2015 / VO TODO
 M6InvCount1 = {
   {text = '[Gyle]: The Seraphim are planning a massive attack, our intel tells us that you have no more than 30 minutes before its launched!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# First invasion countdown / Actor:  / Update 12/08/2015 / VO TODO
+# First invasion countdown / Actor: Gyle / Update 12/08/2015 / VO TODO
 M6InvCount1 = {
   {text = '[Gyle]: The activity of the enemy bases suggests you have no more than 15 minutes before all hell breaks lose! Get a move on!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# First invasion countdown / Actor:  / Update 12/08/2015 / VO TODO
+# First invasion countdown / Actor: Gyle / Update 12/08/2015 / VO TODO
 M6InvCount1 = {
   {text = '[Gyle]: The enemy attack is imminent! You have less than 5 minutes left!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
-# Massive sera attacks / Actor:  / Update 12/08/2015 / VO TODO
+# Massive sera attacks / Actor: Gyle / Update 12/08/2015 / VO TODO
 M6SeraAttack = {
   {text = '[Gyle]: Hostile Signatures are off the charts! The full scale invasion has just been launched, you need to get off planet, now!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
