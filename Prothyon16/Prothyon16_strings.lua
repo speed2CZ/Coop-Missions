@@ -263,7 +263,7 @@ obj5intro1 = {
 
 # Objective 5 Intro 2 / Actor: Morax / Update 12/08/2015 / VO TODO
 obj5intro2 = {
-  {text = '[Morax]: My garrison is in a strategically important position so the Seraphim will try to take it. I will hold off the enemy attacks as long as I can, but I will need assistance.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: My garrison is in the middle of a warzone and the Seraphim are after me! I will hold off the enemy attacks as long as I can, but I will need assistance!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 # Objective 5 Intro 3 / Actor: Kalvirox / Update 12/08/2015 / VO TODO
@@ -365,7 +365,15 @@ sACUDamaged90 = {
   {text = '[Morax]: Systems report critical damage! I can\'t hold out much longer!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
+# sACU Rescued1 / Actor: Gyle / Update 30/08/2015 / VO TODO
+sACURescued1 = {
+  {text = '[Gyle]: The Seraphim base has been destroyed and the path to Morax is clear. We're extracting him immediately.', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
 
+# sACU Rescued2 / Actor: Morax / Update 30/08/2015 / VO TODO
+sACURescued1 = {
+  {text = '[Morax]: Thanks for helping me out commander, I wouldn't have made it on my own.', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
 
 # Secondary Obj Destroy Seraphim Island Bases / Actor: Gyle / Update 12/08/2015 / VO TODO
 IslandBasesKill = {
