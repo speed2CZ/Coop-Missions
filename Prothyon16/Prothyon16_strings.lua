@@ -265,6 +265,8 @@ obj5intro1 = {
 obj5intro2 = {
   {text = '[Morax]: My garrison is in the middle of a warzone and the Seraphim are after me! I will hold off the enemy attacks as long as I can, but I will need assistance!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
+# Still need to record/find this
+
 
 # Objective 5 Intro 3 / Actor: Kalvirox / Update 12/08/2015 / VO TODO
 obj5intro3 = {
@@ -320,49 +322,49 @@ M5KillSeraACU = {
 
 # sACU on Losing Defences / Actor: Morax / Update 12/08/2015 / VO TODO
 sACULoseDef = {
-  {text = '[Morax]: My defenses are crumbling! The Seraphim are going to destroy my base!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: My defenses are crumbling! The Seraphim are going to destroy my base if we don't act now!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
 
 # sACU on Losing Factory / Actor: Morax / Update 12/08/2015 / VO TODO
 sACULoseFac = {
-  {text = '[Morax]: One of my factories has been destroyed!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: One of my factories has been destroyed; it's going to be hard for me to keep up with the seraphim forces. Lets get moving!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
 
 # sACU on Taking Damage / Actor: Morax / Update 12/08/2015 / VO TODO
 sACUTakesDmg = {
-  {text = '[Morax]: I\'m getting incoming fire!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: Incoming fire commander, I'm taking damage here!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
 
-# sACU Damaged 25% / Actor: Morax / Update 12/08/2015 / VO TODO
+# sACU Damaged 25% / Actor: Morax / Update 12/08/2015 / VO IN PROGRESS
 sACUDamaged25 = {
-  {text = '[Morax]: Commander, I have received some light fire, but everything is still fully operational.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: Light fire has been recieved, but everything's operational commander.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
 
-# sACU Damaged 50% / Actor: Morax / Update 12/08/2015 / VO TODO
+# sACU Damaged 50% / Actor: Morax / Update 12/08/2015 / VO IN PROGRESS
 sACUDamaged50 = {
-  {text = '[Morax]: My armour has suffered minor damage, but I\'m fine.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: My armour has suffered some minor damage, but I\'m fine for now.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
 
-# sACU Damaged 75% / Actor: Morax / Update 12/08/2015 / VO TODO
+# sACU Damaged 75% / Actor: Morax / Update 12/08/2015 / VO IN PROGRESS
 sACUDamaged75 = {
-  {text = '[Morax]: I have received heavy damage! I need support!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: Heavy damage sustained commander! I'm down by 75%!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
 
-# sACU Damaged 90% / Actor: Morax / Update 12/08/2015 / VO TODO
+# sACU Damaged 90% / Actor: Morax / Update 12/08/2015 / VO IN PROGRESS
 sACUDamaged90 = {
-  {text = '[Morax]: Systems report critical damage! I can\'t hold out much longer!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: Systems critical Commander! I'm not going to be able to take much more of this!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 # sACU Rescued1 / Actor: Gyle / Update 30/08/2015 / VO TODO
@@ -370,9 +372,9 @@ sACURescued1 = {
   {text = '[Gyle]: The Seraphim base has been destroyed and the path to Morax is clear. We're extracting him immediately.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# sACU Rescued2 / Actor: Morax / Update 30/08/2015 / VO TODO
+# sACU Rescued2 / Actor: Morax / Update 30/08/2015 / VO IN PROGRESS
 sACURescued1 = {
-  {text = '[Morax]: Thanks for helping me out commander, I wouldn't have made it on my own.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: Commander, thanks for helping me out here, I wouldn't have made it on my own.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 # Secondary Obj Destroy Seraphim Island Bases / Actor: Gyle / Update 12/08/2015 / VO TODO
