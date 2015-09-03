@@ -322,7 +322,7 @@ M5KillSeraACU = {
 
 # sACU on Losing Defences / Actor: Morax / Update 12/08/2015 / VO TODO
 sACULoseDef = {
-  {text = '[Morax]: My defenses are crumbling! The Seraphim are going to destroy my base if we don't act now!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: Commander my defenses are crumbling! The Seraphim are going to destroy my base if we don't act now!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
