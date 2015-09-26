@@ -811,7 +811,7 @@ function StartMission2()
         function(result)
             if(result) then
                 --ScenarioFramework.Dialogue(OpStrings.airbase1, IntroMission3)
-                IntroMission3 ()
+                IntroMission3()
             end
         end
     )
@@ -926,6 +926,11 @@ function IntroMission3()
             M3UEFAI.UEFM3WestNavalBaseAI()
             ArmyBrains[UEF]:GiveResource('MASS', 12000)
             ArmyBrains[UEF]:GiveResource('ENERGY', 10000)
+
+            -- Allow player to build Destroyers (T2 Naval Factory + Support Factory)
+            for _, player in ScenarioInfo.HumanPlayers do
+                ScenarioFramework.RemoveRestriction(player, categories.ues0201 + categories.ueb0203 + categories.zeb9503)
+            end
 
             -----------------
             -- Initial Patrols
@@ -1670,7 +1675,8 @@ function StartMission5()
     )
     table.insert(AssignedObjectives, ScenarioInfo.M5S2)
 
-    ScenarioFramework.CreateTimerTrigger(SecondSeraACU, 30*60)
+    ScenarioFramework.CreateTimerTrigger(SecondSeraACU, 30)
+    ScenarioFramework.CreateTimerTrigger(FinalNavalAttacks, 15)
 
     SetupWestM5Taunts()
 end
@@ -1886,9 +1892,9 @@ function SACUescape()
             ScenarioInfo.UEFSACU2:CreateEnhancement('HighExplosiveOrdnance')
             ScenarioInfo.UEFSACU2:CreateEnhancement('Shield')
             ScenarioInfo.UEFSACU2:AdjustHealth(ScenarioInfo.UEFSACU2, healthValue)
-            --ScenarioInfo.NISCrab:SetCanBeKilled(false)
-            --ScenarioInfo.NISCrab:SetDoNotTarget(true)
-            --ScenarioInfo.NISCrab:SetCanTakeDamage(false)
+            --ScenarioInfo.UEFSACU2:SetCanBeKilled(false)
+            --ScenarioInfo.UEFSACU2:SetDoNotTarget(true)
+            --ScenarioInfo.UEFSACU2:SetCanTakeDamage(false)
 
             ScenarioInfo.sACUTransport = ScenarioUtils.CreateArmyUnit('UEF', 'Transport')
             IssueTransportLoad({ScenarioInfo.UEFSACU2}, ScenarioInfo.sACUTransport)
@@ -1971,7 +1977,7 @@ function SecondSeraACU()
         {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 12, Category = categories.FACTORY * categories.AIR * categories.TECH3}})
 
     ScenarioFramework.CreateArmyStatTrigger(M6SeraphimAI.NewEngineerCount3, ArmyBrains[Seraphim], 'NewEngCount3',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 6, Category = categories.FACTORY * categories.NAVAL * categories.TECH3}})
+        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 18, Category = categories.FACTORY * categories.TECH3}})
 
     ScenarioFramework.CreateArmyStatTrigger(M6SeraphimAI.SeraphimM6IslandBaseAirAttacks, ArmyBrains[Seraphim], '3+T3AirFacs',
         {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 3, Category = categories.xsb0302}})
@@ -2042,6 +2048,124 @@ function FinalObjective()
         end
    )
     table.insert(AssignedObjectives, ScenarioInfo.M3P1)
+end
+
+function FinalNavalAttacks()
+    -- function for continuous attacks that very nicely replaces time limit. If you dont finish the mission before this function kicks in, too bad.
+    -- Spawns random attack group sends on patrol. Waits a bit and repeat. Strenght of groups is from 1 to 3 where 3 has the most fire power.
+    -- North Naval Attacks
+    ForkThread(
+        function()      
+            local NorthNavalGroups = {
+                "FA_NavalN1_P1",
+                "FA_NavalN1_P2",
+                "FA_NavalN1_P3",
+                "FA_NavalN2_P1",
+                "FA_NavalN2_P2",
+                "FA_NavalN2_P3",
+                "FA_NavalN3_P1",
+                "FA_NavalN3_P2",
+                "FA_NavalN3_P3",
+            }
+             
+            local NorthNavalChains = {
+                "FA_North_Naval_Chain_1",
+                "FA_North_Naval_Chain_2",
+                "FA_North_Naval_Chain_3",
+            }
+            --[[
+            while true do
+                local units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', NorthNavalGroups[math.random(1, table.getn(NorthNavalGroups))], 'AttackFormation')
+                for k, v in EntityCategoryFilterDown(categories.xss0201, units:GetPlatoonUnits()) do
+                    IssueDive({v})
+                end
+                ScenarioFramework.PlatoonPatrolChain(units, NorthNavalChains[math.random(1, table.getn(NorthNavalChains))])
+                WaitSeconds(Random(20, 60))
+            end
+            ]]--
+            local N_units = nil
+            while true do
+                local N_group = NorthNavalGroups[math.random(1, table.getn(NorthNavalGroups))]
+                local N_chain = NorthNavalChains[math.random(1, table.getn(NorthNavalChains))]
+         
+                local N_units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', N_group, 'GrowthFormation')
+                for k, v in EntityCategoryFilterDown(categories.xss0201, N_units:GetPlatoonUnits()) do
+                    IssueDive({v})
+                end
+                ScenarioFramework.PlatoonPatrolChain(N_units, N_chain)
+                LOG('*DEBUG: Spawned units of group "'..N_group..'" for chain "'..N_chain..'"')
+                WaitSeconds(Random(80, 120))
+            end
+        end
+    )
+    ForkThread(
+        function()      
+            -- West Naval Attacks
+            local WestNavalGroups = {
+                "FA_NavalW1_P1",
+                "FA_NavalW1_P2",
+                "FA_NavalW1_P3",
+                "FA_NavalW2_P1",
+                "FA_NavalW2_P2",
+                "FA_NavalW2_P3",
+            }
+             
+            local WestNavalChains = {
+                "M5_Sera_Main_Naval_AttackPlayer_Chain1",
+                "M5_Sera_Main_Naval_AttackPlayer_Chain2",
+                "M5_Sera_Main_Naval_AttackPlayer_Chain3",
+            }
+
+            local W_units = nil
+            while true do
+                local W_group = WestNavalGroups[math.random(1, table.getn(WestNavalGroups))]
+                local W_chain = WestNavalChains[math.random(1, table.getn(WestNavalChains))]
+         
+                local W_units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', W_group, 'GrowthFormation')
+                for k, v in EntityCategoryFilterDown(categories.xss0201, W_units:GetPlatoonUnits()) do
+                    IssueDive({v})
+                end
+                ScenarioFramework.PlatoonPatrolChain(W_units, W_chain)
+                LOG('*DEBUG: Spawned units of group "'..W_group..'" for chain "'..W_chain..'"')
+                WaitSeconds(Random(90, 115))
+            end
+        end
+    )
+    ForkThread(
+        function()
+            -- East Naval Attacks
+            local EastNavalGroups = {
+                "FA_NavalE1_P1",
+                "FA_NavalE1_P2",
+                "FA_NavalE1_P3",
+                "FA_NavalE2_P1",
+                "FA_NavalE2_P2",
+                "FA_NavalE2_P3",
+                "FA_NavalE3_P1",
+                "FA_NavalE3_P2",
+                "FA_NavalE3_P3",
+            }
+             
+            local EastNavalChains = {
+                "FA_East_Naval_Chain_1",
+                "FA_East_Naval_Chain_2",
+            }
+
+            local E_units = nil
+            while true do
+                local E_group = EastNavalGroups[math.random(1, table.getn(EastNavalGroups))]
+                local E_chain = EastNavalChains[math.random(1, table.getn(EastNavalChains))]
+         
+                local E_units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', E_group, 'GrowthFormation')
+                for k, v in EntityCategoryFilterDown(categories.xss0201, E_units:GetPlatoonUnits()) do
+                    IssueDive({v})
+                end
+                ScenarioFramework.PlatoonPatrolChain(E_units, E_chain)
+                LOG('*DEBUG: Spawned units of group "'..E_group..'" for chain "'..E_chain..'"')
+                WaitSeconds(Random(75, 125))
+            end
+        end
+    )
 end
 
 ----------------------
@@ -2164,5 +2288,5 @@ function OnShiftF4()
 end
 
 function OnCtrlF4()
-    SeraphimReveal()
+    FinalNavalAttacks()
 end

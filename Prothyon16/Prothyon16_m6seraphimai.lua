@@ -223,9 +223,10 @@ end
 
 function SeraphimM6IslandBaseNavalAttacks()
 
-    ScenarioFramework.CreateTimerTrigger(SeraphimM6IslandBaseNavalT3Attacks, 15*60)
+    --ScenarioFramework.CreateTimerTrigger(SeraphimM6IslandBaseNavalT3Attacks, 15*60)
     LOG('*DEBUG: M6 Sera Naval Attack')
     local opai = nil
+    --[[
     local NavyOSB = nil
     
     NavyOSB = NavalOSB.GenerateNavalOSB('M6_Sera_Island_Naval_1' , 5, 40, 60, 'S', 100, nil, nil)
@@ -271,7 +272,47 @@ function SeraphimM6IslandBaseNavalAttacks()
         }
     )
     opai:SetChildActive('T3', false)
+    ]]--
+    opai = SeraphimM6IslandBase:AddNavalAI('M6_Sera_Island_Naval_1',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M6_Sera_Island_Naval_Attack_Chain_1',
+            },
+            MaxFrigates = 30,
+            MinFrigates = 30,
+            Priority = 120,
+        }
+    )
+    opai:SetChildActive('T3', false)
 
+    opai = SeraphimM6IslandBase:AddNavalAI('M6_Sera_Island_Naval_2',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M6_Sera_Island_Naval_Attack_Chain_1',
+            },
+            MaxFrigates = 40,
+            MinFrigates = 40,
+            Priority = 110,
+        }
+    )
+    opai:SetChildActive('T1', false)
+    opai:SetChildActive('T3', false)
+
+    opai = SeraphimM6IslandBase:AddNavalAI('M6_Sera_Island_Naval_3',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M6_Sera_Island_Naval_Attack_Chain_1',
+            },
+            MaxFrigates = 40,
+            MinFrigates = 40,
+            Priority = 100,
+        }
+    )
+    opai:SetChildActive('T1', false)
+    
 end
 
 function SeraphimM6IslandBaseNavalT3Attacks()

@@ -6,27 +6,27 @@ local SPAIFileName = '/lua/scenarioplatoonai.lua'
 
 ScenarioInfo.Player = 1
 
-# ------
-# Locals
-# ------
+--------
+-- Locals
+--------
 local UEF = 2
 local Player = ScenarioInfo.Player
 
-# -------------
-# Base Managers
-# -------------
+---------------
+-- Base Managers
+---------------
 local UEFM5IslandBase = BaseManager.CreateBaseManager()
 
 function UEFM5IslandBaseAI()
 
-    # ------------------
-    # UEF M5 Island Base
-    # ------------------
+    --------------------
+    -- UEF M5 Island Base
+    --------------------
     UEFM5IslandBase:Initialize(ArmyBrains[UEF], 'M5_UEF_Island_Base', 'M5_UEF_Island_Base_Marker', 100, {M5_UEF_Island_Base = 100})
     UEFM5IslandBase:StartNonZeroBase({30, 26})
     UEFM5IslandBase:SetMaximumConstructionEngineers(4)
     UEFM5IslandBase:SetActive('AirScouting', true)
-    # UEFM5IslandBase:SetSupportACUCount(1)
+    -- UEFM5IslandBase:SetSupportACUCount(1)
 
     UEFM5IslandBase:AddBuildGroup('M5_UEF_Island_Base_Defences', 90, true)
 
@@ -39,7 +39,7 @@ function UEFM5IslandBaseAirAttacks()
 
 	local opai = nil
 
-    # Sends 3 x 5 Torpedo Bombers
+    -- Sends 3 x 5 Torpedo Bombers
     for i = 1, 3 do
         opai = UEFM5IslandBase:AddOpAI('AirAttacks', 'M5_IslandAirAttack1_' .. i,
             {
@@ -53,7 +53,7 @@ function UEFM5IslandBaseAirAttacks()
         opai:SetChildQuantity({'TorpedoBombers'}, 5)
     end
 
-    # Sends 3 x 10 Gunships
+    -- Sends 3 x 10 Gunships
     for i = 1, 3 do
         opai = UEFM5IslandBase:AddOpAI('AirAttacks', 'M5_IslandAirAttack2_' .. i,
             {
@@ -67,7 +67,7 @@ function UEFM5IslandBaseAirAttacks()
         opai:SetChildQuantity({'Gunships'}, 10)
     end
 
-    # Sends 3 x 5 Interceptors
+    -- Sends 3 x 5 Interceptors
     for i = 1, 3 do
         opai = UEFM5IslandBase:AddOpAI('AirAttacks', 'M5_IslandAirAttack3_' .. i,
             {
@@ -81,8 +81,8 @@ function UEFM5IslandBaseAirAttacks()
         opai:SetChildQuantity({'Interceptors'}, 5)
     end
 
-	# Air Defense
-    # Maintains 30 Interceptors
+	-- Air Defense
+    -- Maintains 30 Interceptors
     for i = 1, 6 do
         opai = UEFM5IslandBase:AddOpAI('AirAttacks', 'M5_IslandAirDefense1_' .. i,
             {
@@ -96,7 +96,7 @@ function UEFM5IslandBaseAirAttacks()
         opai:SetChildQuantity({'Interceptors'}, 5)
     end
 
-    # Maintains 15 Gunships
+    -- Maintains 15 Gunships
     for i = 1, 3 do
         opai = UEFM5IslandBase:AddOpAI('AirAttacks', 'M5_IslandAirDefense2_' .. i,
             {
@@ -110,7 +110,7 @@ function UEFM5IslandBaseAirAttacks()
         opai:SetChildQuantity({'Gunships'}, 5)
     end
 
-    # Maintains 16 Tropedo Bombers
+    -- Maintains 16 Tropedo Bombers
     for i = 1, 4 do
         opai = UEFM5IslandBase:AddOpAI('AirAttacks', 'M5_IslandAirDefense3_' .. i,
             {
@@ -190,7 +190,7 @@ function UEFM5IslandBaseLandAttacks()
     }
     ArmyBrains[UEF]:PBMAddPlatoon( Builder )
 
-    # sends 12 [hover tanks] 5 times
+    -- sends 12 [hover tanks] 5 times
     for i = 1, 5 do
         opai = UEFM5IslandBase:AddOpAI('BasicLandAttack', 'M5_UEF_HoverAttack1_' .. i,
             {
@@ -208,6 +208,7 @@ function UEFM5IslandBaseLandAttacks()
 end
 
 function UEFM5IslandBaseNavalAttacks()
+    local opai = nil
 
     local Temp = {
         'UEFM5NavalAttackTemp1',
@@ -231,15 +232,15 @@ function UEFM5IslandBaseNavalAttacks()
     }
     ArmyBrains[UEF]:PBMAddPlatoon( Builder )
 
-	# Defense
-    local Temp = {
+	-- Defense
+    Temp = {
         'UEFM5NavalDefenseTemp1',
         'NoPlan',
         { 'ues0201', 1, 4, 'Attack', 'GrowthFormation' },   # Destroyers
         { 'ues0202', 1, 2, 'Attack', 'GrowthFormation' },   # Cruisers
         { 'xes0205', 1, 2, 'Attack', 'GrowthFormation' },   # Shield Boat
     }
-    local Builder = {
+    Builder = {
         BuilderName = 'UEFM5NavyDefenseBuilder1',
         PlatoonTemplate = Temp,
         InstanceCount = 1,
@@ -273,6 +274,20 @@ function UEFM5IslandBaseNavalAttacks()
         },
     }
     ArmyBrains[UEF]:PBMAddPlatoon( Builder )
+
+    opai = UEFM5IslandBase:AddOpAI('M5_UEF_Island_T3_Sonar',
+        {
+            Amount = 1,
+            KeepAlive = true,
+            PlatoonAIFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M5_UEF_Island_Sonar_Chain',
+            },
+
+            MaxAssist = 1,
+            Retry = true,
+        }
+    )
 
 end
 
