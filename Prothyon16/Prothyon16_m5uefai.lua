@@ -208,7 +208,6 @@ function UEFM5IslandBaseLandAttacks()
 end
 
 function UEFM5IslandBaseNavalAttacks()
-    local opai = nil
 
     local Temp = {
         'UEFM5NavalAttackTemp1',
@@ -274,21 +273,6 @@ function UEFM5IslandBaseNavalAttacks()
         },
     }
     ArmyBrains[UEF]:PBMAddPlatoon( Builder )
-
-    opai = UEFM5IslandBase:AddOpAI('M5_UEF_Island_T3_Sonar',
-        {
-            Amount = 1,
-            KeepAlive = true,
-            PlatoonAIFunction = {SPAIFileName, 'PatrolThread'},
-            PlatoonData = {
-                PatrolChain = 'M5_UEF_Island_Sonar_Chain',
-            },
-
-            MaxAssist = 1,
-            Retry = true,
-        }
-    )
-
 end
 
 function EscapeTransportBuilder()

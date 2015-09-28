@@ -62,13 +62,13 @@ local ReminderTaunts = {
 local SkipNIS1 = true
 local SkipNIS2 = true
 local SkipNIS3 = true
-local SkipNIS5 = true
+local SkipNIS5 = false
 
 -----------------
 -- Taunt Managers
 -----------------
 local ZottooWestTM = TauntManager.CreateTauntManager('ZottooWestTM', '/maps/Prothyon16/Prothyon16_strings.lua')
--- local SACUTM = TauntManager.CreateTauntManager('SACUTM', '/maps/Prothyon16/Prothyon16_strings.lua')
+local SACUTM = TauntManager.CreateTauntManager('SACUTM', '/maps/Prothyon16/Prothyon16_strings.lua')
 
 -- How long should we wait at the beginning of the NIS to allow slower machines to catch up?
 local NIS1InitialDelay = 3
@@ -206,7 +206,7 @@ end
 function PlayerWin()
     if(not ScenarioInfo.OpEnded) then
         ScenarioInfo.OpComplete = true
-        KillGame()
+        ScenarioFramework.Dialogue(OpStrings.PlayerWin, KillGame, true)
     end
 end
 
@@ -265,7 +265,7 @@ function PlayerLose()
             end
         end
         WaitSeconds(3)
-        KillGame()
+        ScenarioFramework.Dialogue(OpStrings.sACUDie, KillGame, true)
     end
 end
 
@@ -499,7 +499,7 @@ function StartMission1()
             if(result) then
                 ForkThread(UEFBattleships)
                 ForkThread(UEFFlyover)
-                -- ScenarioFramework.Dialogue(OpStrings., IntroMission2, true)       -- Will get added once done
+                -- ScenarioFramework.Dialogue(OpStrings.base2killed, IntroMission2, true)
                 IntroMission2()
             end
         end
@@ -1144,23 +1144,18 @@ function StartMission3()
             },
         }
    )
-    ScenarioInfo.M3P1:AddResultCallback(
-        function(result)
-            if(result) then
-                -- ScenarioFramework.Dialogue(OpStrings.epicEprop, IntroMission4)
-                --SeraphimReveal()
-                IntroMission4()
-            end
-        end
-    )
     table.insert(AssignedObjectives, ScenarioInfo.M3P1)
     ScenarioFramework.CreateTimerTrigger(M3P1Reminder1, 25*60)
+
+    ScenarioFramework.CreateArmyStatTrigger(SeraphimReveal, ArmyBrains[UEF], 'SeraphimReveal',
+        {{StatType = 'Units_Active', CompareType = 'LessThanOrEqual', Value = 5, Category = categories.FACTORY}})
 end
 
 ------------
 -- Mission 4
 ------------
 function SeraphimReveal()
+    ScenarioFramework.Dialogue(OpStrings.M4intro1, false, true)
     for i = 1, 5 do
         ForkThread(function(i)
             local unit = ScenarioUtils.CreateArmyUnit('Seraphim', 'Sera_Scout_' .. i)
@@ -1172,18 +1167,35 @@ function SeraphimReveal()
             unit:Destroy()
         end, i)
     end
-    WaitSeconds(30)
-    IntroMission4()
+    ScenarioInfo.M3P1:ManualResult(true)
+    -- WaitSeconds(30)
+    ScenarioFramework.Dialogue(OpStrings.M4intro2, IntroMission4, true)
 end
 
 function IntroMission4()
     ForkThread(
         function()
+            -- New Alliances
+            for _, player in ScenarioInfo.HumanPlayers do
+                SetAlliance(player, UEF, 'Ally')
+                SetAlliance(UEF, player, 'Ally')
+                SetAlliance(player, Objective, 'Ally')
+                SetAlliance(Objective, player, 'Ally')
+            end
+
             -- Give civilian bases to 'UEFAlly' army just to make it more complicated
             local units = ScenarioFramework.GetCatUnitsInArea((categories.ALLUNITS - categories.uec1101 - categories.uec1201 - categories.uec1301 - categories.uec1401 - categories.uec1501 - categories.xec1301 - categories.uec0001), 'M2_Area', ArmyBrains[Objective])
             for k, v in units do
                 if v and not v:IsDead() and (v:GetAIBrain() == ArmyBrains[Objective]) then
                     ScenarioFramework.GiveUnitToArmy( v, UEFAlly )
+                end
+            end
+
+            -- Give rest of the UEF base to player.
+            local UEFunits = ScenarioFramework.GetCatUnitsInArea((categories.ALLUNITS), 'M3_Area', ArmyBrains[UEF])
+            for k, v in UEFunits do
+                if v and not v:IsDead() and (v:GetAIBrain() == ArmyBrains[UEF]) then
+                    ScenarioFramework.GiveUnitToArmy( v, Player )
                 end
             end
             IntroMission5()
@@ -1197,15 +1209,6 @@ end
 function IntroMission5()
     ForkThread(
         function()
-
-            -- New Alliances
-            for _, player in ScenarioInfo.HumanPlayers do
-                SetAlliance(player, UEF, 'Ally')
-                SetAlliance(UEF, player, 'Ally')
-                SetAlliance(player, Objective, 'Ally')
-                SetAlliance(Objective, player, 'Ally')
-            end
-
             -- No invincible ACU anymore
             ScenarioInfo.PlayerCDR:SetCanBeKilled(true)
             ScenarioFramework.CreateUnitDeathTrigger(PlayerDeath, ScenarioInfo.PlayerCDR)
@@ -1223,8 +1226,6 @@ function IntroMission5()
             -- UEF AI
             ---------
             M5UEFAI.UEFM5IslandBaseAI()
-
-            -- ArmyBrains[UEF]:PBMSetCheckInterval(6)
             
             ArmyBrains[UEF]:GiveResource('MASS', 8000)
             ArmyBrains[UEF]:GiveResource('ENERGY', 30000)
@@ -1294,14 +1295,6 @@ function IntroMission5()
                 ScenarioFramework.PlatoonPatrolChain(units, 'M5_UEF_Island_Naval_Defense_Chain' ..i)
             end
             
-            --[[
-            for i = 1, 6 do
-                ScenarioInfo.Engineer = ScenarioUtils.CreateArmyUnit('UEF', 'M5_Engie' .. i)
-                local platoon = ArmyBrains[UEF]:MakePlatoon('', '')
-                ArmyBrains[UEF]:AssignUnitsToPlatoon(platoon, {ScenarioInfo.Engineer}, 'Attack', 'GrowthFormation')
-                ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_Air_Attack_Chain' .. i)
-            end
-            ]]--
             ScenarioInfo.MissionNumber = 5
 
             ---------------
@@ -1354,7 +1347,6 @@ function IntroMission5()
        
             for _, u in GetArmyBrain(UEF):GetPlatoonUniquelyNamed('ArmyPool'):GetPlatoonUnits() do
                     Buff.ApplyBuff(u, 'CheatIncome')
-                    --Buff.ApplyBuff(u, 'CheatBuildRate')
             end
 
             buffAffects.EnergyProduction.Mult = 1.5
@@ -1362,20 +1354,11 @@ function IntroMission5()
        
             for _, u in GetArmyBrain(Seraphim):GetPlatoonUniquelyNamed('ArmyPool'):GetPlatoonUnits() do
                     Buff.ApplyBuff(u, 'CheatIncome')
-                    --Buff.ApplyBuff(u, 'CheatBuildRate')
             end
 
             -- Allow player to build T2 units, T3 radar and sonar
             for _, player in ScenarioInfo.HumanPlayers do
                 ScenarioFramework.RemoveRestriction(player, categories.TECH2 + categories.ueb3104 + categories.ues0305 + categories.xsb3104)
-            end
-
-            -- Give civilian bases to 'UEFAlly' army just to make it more complicated
-            local units = ScenarioFramework.GetCatUnitsInArea((categories.ALLUNITS - categories.uec1101 - categories.uec1201 - categories.uec1301 - categories.uec1401 - categories.uec1501 - categories.xec1301 - categories.uec0001), 'M5_Area', ArmyBrains[Objective])
-            for k, v in units do
-                if v and not v:IsDead() and (v:GetAIBrain() == ArmyBrains[Objective]) then
-                    ScenarioFramework.GiveUnitToArmy( v, UEFAlly )
-                end
             end
             
             ForkThread(IntroMission5NIS)
@@ -1395,7 +1378,7 @@ function IntroMission5NIS()
         -- local VisMarker3_4 = ScenarioFramework.CreateVisibleAreaLocation(50, ScenarioUtils.MarkerToPosition('M5_Vis_4'), 0, ArmyBrains[Player])
 
         Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('Cam_5_1'), 0)
-        --ScenarioFramework.Dialogue(OpStrings.TAUNT1, nil, true)
+        ScenarioFramework.Dialogue(OpStrings.obj5intro1, nil, true)
         Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('Cam_5_2'), 5)
         Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('Cam_5_3'), 7)
         Cinematics.CameraTrackEntity( ScenarioInfo.UEFSACU, 30, 6 )
@@ -1534,10 +1517,10 @@ function M5InitialAttack()
 end
 
 function StartMission5()
+    ScenarioFramework.Dialogue(OpStrings.ProtectsACU, false, true)
     -----------------------------------------
     -- Primary Objective 1 - Protect UEF sACU
     -----------------------------------------
-    -- ScenarioFramework.Dialogue(OpStrings.X05_M02_210)   --Assist sacu, vo
     ScenarioInfo.M5P1 = Objectives.Protect(
         'primary',                      -- type
         'incomplete',                   -- complete
@@ -1555,9 +1538,20 @@ function StartMission5()
         end
    )
     table.insert(AssignedObjectives, ScenarioInfo.M5P1)
-    -- SetupSACUM5Warnings()
-    -- ScenarioFramework.CreateUnitDamagedTrigger(M5sACUTakingDamage1, ScenarioInfo.UEFSACU, .01)  --guanranteed first-damaged warning
 
+    SetupSACUM5Warnings()
+    ScenarioFramework.CreateUnitDamagedTrigger(M5sACUTakingDamage1, ScenarioInfo.UEFSACU, .01)  --guanranteed first-damaged warning
+
+    ScenarioFramework.CreateAreaTrigger(KillSeraphimCommander, ScenarioUtils.AreaToRect('M5_Sera_Main_Base_Area'), categories.ALLUNITS, true, false, ArmyBrains[Player], 1, false)
+
+    ScenarioFramework.CreateTimerTrigger(ProtectCivilians, 30)
+    ScenarioFramework.CreateTimerTrigger(SecondSeraACUIntro, 30*60)
+
+    SetupWestM5Taunts()
+end
+
+function KillSeraphimCommander()
+    ScenarioFramework.Dialogue(OpStrings.M5KillSeraACU)
     --------------------------------------------
     -- Primary Objective 2 - Defeat Seraphim ACU
     --------------------------------------------
@@ -1578,20 +1572,20 @@ function StartMission5()
                 -- while(ScenarioInfo.DialogueLock) do
                     -- WaitSeconds(0.2)
                 -- end
+                -- Checks if Seraphim main base is destroyed, if not then assign objective to kill it before we evacuate Morax
                 if not ScenarioFramework.GroupDeathCheck(ScenarioInfo.M5SeraBase) then
-                    ScenarioFramework.Dialogue(OpStrings.obj5postintro, Mission5Part2, true)            -- temporary
-                    -- ScenarioFramework.Dialogue(OpStrings.M5SereBaseRemains, Mission5Part2, true)
+                    ScenarioFramework.Dialogue(OpStrings.M5SeraDefeated, Mission5Part2, true)
                 else
-                    -- ScenarioFramework.Dialogue(OpStrings.M5SereDefeated, SACUescape, true)
-                    SACUescape()
+                    ScenarioFramework.Dialogue(OpStrings.M5SeraDefeated, SACUescape, true)
                 end
-                
             end
         end
    )
     table.insert(AssignedObjectives, ScenarioInfo.M5P2)
+end
 
-    -- ScenarioFramework.Dialogue(OpStrings.M5ProtectCivs, nil, true)
+function ProtectCivilians()
+    ScenarioFramework.Dialogue(OpStrings.M5ProtectCivs, false, true)
     local units = ScenarioFramework.GetCatUnitsInArea((categories.uec1101 + categories.uec1201 + categories.uec1301 + categories.uec1401 + categories.uec1501 + categories.xec1301), 'M5_Area', ArmyBrains[Objective])
     --------------------------------------------
     -- Secondary Objective 1 - Protect Civilians
@@ -1611,19 +1605,19 @@ function StartMission5()
     ScenarioInfo.M5S1:AddResultCallback(
         function(result)
             if(not result and not ScenarioInfo.OpEnded) then
-                ScenarioFramework.Dialogue(OpStrings.obj5postintro)     -- temporary
-                -- ScenarioFramework.Dialogue(OpStrings.M5CivsDied)
+                ScenarioFramework.Dialogue(OpStrings.M5CivsDied)
             end
         end
     )
     table.insert(AssignedObjectives, ScenarioInfo.M5S1)
-    --[[ -- Test once vo done
+
     ScenarioInfo.M5CivBuildingCount = table.getn(units)
     ScenarioInfo.M5BuildingFailLimit = math.ceil(table.getn(units)/1.25)
     for i = 1, ScenarioInfo.M5CivBuildingCount do
         ScenarioFramework.CreateUnitDeathTrigger(M5S1Warnings, units[i])
     end
-    ]]--
+
+    ScenarioFramework.Dialogue(OpStrings.obj5intro2, nil, true)
     ----------------------------------------------------
     -- Secondary Objective 2 - Destroy Sera Island Bases
     ----------------------------------------------------
@@ -1664,21 +1658,14 @@ function StartMission5()
 
                     ScenarioInfo.M5S1:ManualResult(true)
 
-                    ScenarioFramework.Dialogue(OpStrings.obj5postintro, Mission5Secondary2, true)     -- temporary
-                    -- ScenarioFramework.Dialogue(OpStrings.IslandBaseAllKilled, Mission5Secondary2, true)
+                    ScenarioFramework.Dialogue(OpStrings.IslandBaseAllKilled, Mission5Secondary2, true)
                 else
-                    ScenarioFramework.Dialogue(OpStrings.obj5postintro, nil, true)     -- temporary
-                    -- ScenarioFramework.Dialogue(OpStrings.IslandBaseAllKilledNoCiv, nil, true)
+                    ScenarioFramework.Dialogue(OpStrings.IslandBaseAllKilledNoCiv, nil, true)
                 end
             end
         end
     )
     table.insert(AssignedObjectives, ScenarioInfo.M5S2)
-
-    ScenarioFramework.CreateTimerTrigger(SecondSeraACU, 30)
-    ScenarioFramework.CreateTimerTrigger(FinalAttacks, 15)
-
-    SetupWestM5Taunts()
 end
 
 function SeraACUWarp()
@@ -1713,6 +1700,7 @@ function M5S1Warnings()
 end
 
 function Mission5Part2()
+    ScenarioFramework.Dialogue(OpStrings.M5SeraBaseRemains, false, true)
     -------------------------------------------
     -- Primary Objective 3 - Destroy Enemy Base
     -------------------------------------------
@@ -1738,8 +1726,7 @@ function Mission5Part2()
     ScenarioInfo.M5P3:AddResultCallback(
         function(result)
             if(result) then
-                -- ScenarioFramework.Dialogue(OpStrings.BaseDestroyed, SACUescape)
-                SACUescape()
+                ScenarioFramework.Dialogue(OpStrings.sACURescued1, SACUescape)
             end
         end
     )
@@ -1748,16 +1735,16 @@ end
 
 function Mission5Secondary2()
     local watchCommands = {}
-    -- ScenarioFramework.Dialogue(OpStrings.M5TrucksReady)
+    ScenarioFramework.Dialogue(OpStrings.M5TrucksReady)
     ScenarioInfo.AllowTruckWarning = true
     ScenarioInfo.M5TruckWarningDialogue = 0
     for i = 1, MaxTrucks do
         ScenarioInfo.TrucksCreated = i
         local unit = ScenarioUtils.CreateArmyUnit('Player', 'M5_Truck_'..ScenarioInfo.TrucksCreated)
-        -- ScenarioFramework.CreateUnitDamagedTrigger(M5TruckDamageWarning, unit, .01)
-        -- ScenarioFramework.CreateUnitDestroyedTrigger(TruckDestroyed, unit)
+        ScenarioFramework.CreateUnitDamagedTrigger(M5TruckDamageWarning, unit, .01)
+        ScenarioFramework.CreateUnitDestroyedTrigger(TruckDestroyed, unit)
         ScenarioFramework.CreateUnitToMarkerDistanceTrigger(TruckRescued, unit, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'), 20)
-        ScenarioFramework.CreateUnitToMarkerDistanceTrigger(TruckInBuilding, unit, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'), 10)
+        ScenarioFramework.CreateUnitToMarkerDistanceTrigger(TruckInBuilding, unit, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'), 3)
         table.insert(ScenarioInfo.Trucks, unit)
 
         IssueMove({unit}, ScenarioUtils.MarkerToPosition('M5_Truck_ParkSpot_' .. i))
@@ -1812,7 +1799,7 @@ function TruckDestroyed()
     end
     if((MaxTrucks - ScenarioInfo.TrucksDestroyed) < RequiredTrucks and ScenarioInfo.M5S3) then
         ScenarioInfo.M5S3:ManualResult(false)
-        -- ScenarioFramework.Dialogue(OpStrings.M5AllTrucksDestroyed)
+        ScenarioFramework.Dialogue(OpStrings.M5AllTrucksDestroyed)
     end
 end
 
@@ -1829,19 +1816,18 @@ function TruckRescued(unit)
 
     if(ScenarioInfo.TrucksEscorted == RequiredTrucks) then
         ScenarioInfo.M5S3:ManualResult(true)
-        -- ScenarioFramework.Dialogue(OpStrings.M5AllTruckRescued)
-    --[[
+        ScenarioFramework.Dialogue(OpStrings.M5AllTruckRescued)
+    
     elseif(not ScenarioInfo.TruckArriveLock) then
         if(ScenarioInfo.TrucksEscorted == 1) then
             ScenarioInfo.TruckArriveLock = true
-            -- ScenarioFramework.Dialogue(OpStrings.M5TruckRescued1)
+            ScenarioFramework.Dialogue(OpStrings.M5TruckRescued1)
             ScenarioFramework.CreateTimerTrigger(M5UnlockTruckArriveDialogue, 15)
         elseif(ScenarioInfo.TrucksEscorted == 2) then
             ScenarioInfo.TruckArriveLock = true
-            -- ScenarioFramework.Dialogue(OpStrings.M5TruckRescued2)
+            ScenarioFramework.Dialogue(OpStrings.M5TruckRescued2)
             ScenarioFramework.CreateTimerTrigger(M5UnlockTruckArriveDialogue, 15)
         end
-    ]]--
     end
 end
 
@@ -1931,97 +1917,11 @@ end
 
 function SACUInBuilding()
     ScenarioFramework.FakeTeleportUnit(ScenarioInfo.UEFSACU2, true)
-    -- ScenarioFramework.Dialogue(OpStrings.sACUEscaped, FinalObjective, true)
+    ScenarioFramework.Dialogue(OpStrings.sACURescued2, LeavePlanetObjective, true)
     ScenarioInfo.M5P1:ManualResult(true)
-    FinalObjective()
 end
 
--------------
--- Final Part
--------------
-function SecondSeraACU()
-    ScenarioFramework.SetPlayableArea('M6_Area', true)
-    -- ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Island_Base')
-    ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Sera_MEX1')
-    ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Sera_FACT1')
-    ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Sera_FACT2')
-    ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Sera_FACN')
-    ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Sera_MEX2')
-    LOG('*DEBUG: Second ACU Spawned')
-
-    -------------
-    -- Second ACU
-    -------------
-    ScenarioInfo.EastSeraCDR = ScenarioUtils.CreateArmyUnit('Seraphim', 'M6_SeraACU')
-    -- ScenarioInfo.EastSeraCDR:PlayCommanderWarpInEffect()
-    ScenarioInfo.EastSeraCDR:CreateEnhancement('ResourceAllocationAdvanced')
-    ScenarioInfo.EastSeraCDR:CreateEnhancement('T3Engineering')
-    ScenarioInfo.EastSeraCDR:CreateEnhancement('RateOfFire')
-    
-    -- ScenarioFramework.CreateUnitDamagedTrigger(FletcherWarp, ScenarioInfo.FletcherCDR, .8)
-    -- FletcherTM:AddTauntingCharacter(ScenarioInfo.FletcherCDR)
-    ScenarioInfo.EastSeraCDR:SetCustomName( "Evil One" )
-
-    M6SeraphimAI.SeraphimM6IslandBaseAI()
---[[
-    ScenarioFramework.CreateArmyStatTrigger(M6T1FactoryBuilt, ArmyBrains[Seraphim], 'M6T1FactoryBuilt',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 1, Category = categories.FACTORY * categories.TECH1 * categories.NAVAL}})
-
-    ScenarioFramework.CreateArmyStatTrigger(M6T3FactoryBuilt, ArmyBrains[Seraphim], 'M6T3FactoryBuilt',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 1, Category = categories.FACTORY * categories.TECH2 * categories.NAVAL}})
-]]--
-    ScenarioFramework.CreateArmyStatTrigger(M6SeraphimAI.NewEngineerCount1, ArmyBrains[Seraphim], 'NewEngCount1',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 6, Category = categories.FACTORY * categories.AIR * categories.TECH3}})
-
-    ScenarioFramework.CreateArmyStatTrigger(M6SeraphimAI.NewEngineerCount2, ArmyBrains[Seraphim], 'NewEngCount2',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 12, Category = categories.FACTORY * categories.AIR * categories.TECH3}})
-
-    ScenarioFramework.CreateArmyStatTrigger(M6SeraphimAI.NewEngineerCount3, ArmyBrains[Seraphim], 'NewEngCount3',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 18, Category = categories.FACTORY * categories.TECH3}})
-
-    ScenarioFramework.CreateArmyStatTrigger(M6SeraphimAI.SeraphimM6IslandBaseAirAttacks, ArmyBrains[Seraphim], '3+T3AirFacs',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 3, Category = categories.xsb0302}})
-
-    ScenarioFramework.CreateArmyStatTrigger(M6SeraphimAI.SeraphimM6IslandBaseNavalAttacks, ArmyBrains[Seraphim], '3+T3NavalFacs',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 1, Category = categories.xsb0303}})
-end
---[[
-function M6T1FactoryBuilt()
-    local factory = ScenarioFramework.GetCatUnitsInArea((categories.FACTORY * categories.NAVAL), 'M6_Sera_Base_Area', ArmyBrains[Seraphim])
-    IssueGuard({ScenarioInfo.EastSeraCDR}, factory[1])
-end
-
-function M6T3FactoryBuilt()
-    local factory = ScenarioFramework.GetCatUnitsInArea((categories.FACTORY * categories.AIR), 'M6_Sera_Base_Area', ArmyBrains[Seraphim])
-    
-    IssueStop({ScenarioInfo.EastSeraCDR})
-    IssueClearCommands({ScenarioInfo.EastSeraCDR})
-    
-    IssueGuard({ScenarioInfo.EastSeraCDR}, factory[2])
-
-    ScenarioFramework.CreateArmyStatTrigger(M6T3AirFactory2Built, ArmyBrains[Seraphim], 'M6T3AirFactory2Built',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 1, Category = categories.xsb0302}})
-end
-
-function M6T3AirFactory2Built()
-    local factory = ScenarioFramework.GetCatUnitsInArea((categories.FACTORY * categories.AIR), 'M6_Sera_Base_Area', ArmyBrains[Seraphim])
-    
-    IssueStop({ScenarioInfo.EastSeraCDR})
-    IssueClearCommands({ScenarioInfo.EastSeraCDR})
-    
-    IssueGuard({ScenarioInfo.EastSeraCDR}, factory[2])
-
-    ScenarioFramework.CreateArmyStatTrigger(M6T3AirFactory3Built, ArmyBrains[Seraphim], 'M6T3AirFactory3Built',
-        {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Area = 'M6_Sera_Base_Area', Value = 2, Category = categories.xsb0302}})
-end
-
-function M6T3AirFactory3Built()
-    IssueStop({ScenarioInfo.EastSeraCDR})
-    IssueClearCommands({ScenarioInfo.EastSeraCDR})
-end
-]]--
-
-function FinalObjective()
+function LeavePlanetObjective()
     ---------------------------------------
     -- Primary Objective - Leave the Planet
     ---------------------------------------
@@ -2050,10 +1950,61 @@ function FinalObjective()
     table.insert(AssignedObjectives, ScenarioInfo.M3P1)
 end
 
+-------------
+-- Final Part
+-------------
+function SecondSeraACUIntro()
+    ScenarioFramework.Dialogue(OpStrings.M6SecondSeraACU, SecondSeraACU, true)
+end
+
+function SecondSeraACU()
+    ScenarioFramework.SetPlayableArea('M6_Area', true)
+    -- ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Island_Base')
+    ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Sera_MEX1')
+    ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Sera_FACT1')
+    ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Sera_FACT2')
+    ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Sera_FACN')
+    ScenarioUtils.CreateArmyGroup('Seraphim', 'M6_Sera_MEX2')
+
+    -------------
+    -- Second ACU
+    -------------
+    ScenarioInfo.EastSeraCDR = ScenarioUtils.CreateArmyUnit('Seraphim', 'M6_SeraACU')
+    -- ScenarioInfo.EastSeraCDR:PlayCommanderWarpInEffect()
+    ScenarioInfo.EastSeraCDR:CreateEnhancement('ResourceAllocationAdvanced')
+    ScenarioInfo.EastSeraCDR:CreateEnhancement('T3Engineering')
+    ScenarioInfo.EastSeraCDR:CreateEnhancement('RateOfFire')
+    
+    -- ScenarioFramework.CreateUnitDamagedTrigger(FletcherWarp, ScenarioInfo.FletcherCDR, .8)
+    -- FletcherTM:AddTauntingCharacter(ScenarioInfo.FletcherCDR)
+    ScenarioInfo.EastSeraCDR:SetCustomName( "Evil One" )
+
+    M6SeraphimAI.SeraphimM6IslandBaseAI()
+
+    ScenarioFramework.CreateTimerTrigger(FinalAttacksIntro1, 5*60)
+end
+
+function FinalAttacksIntro1()
+    ScenarioFramework.Dialogue(OpStrings.M6InvCount1, false, true)
+    ScenarioFramework.CreateTimerTrigger(FinalAttacksIntro2, 15*60)
+end
+
+function FinalAttacksIntro2()
+    ScenarioFramework.Dialogue(OpStrings.M6InvCount2, false, true)
+    ScenarioFramework.CreateTimerTrigger(FinalAttacksIntro3, 10*60)
+end
+
+function FinalAttacksIntro3()
+    ScenarioFramework.Dialogue(OpStrings.M6InvCount3, false, true)
+    ScenarioFramework.CreateTimerTrigger(FinalAttacks, 5*60)
+end
+
 function FinalAttacks()
     -- function for continuous attacks that very nicely replaces time limit. If you dont finish the mission before this function kicks in, too bad.
     -- Spawns random attack group sends on patrol. Waits a bit and repeat. Strenght of groups is from 1 to 3 where 3 has the most fire power.
 
+    -- Tell player that he's pretty much fucked.
+    ScenarioFramework.Dialogue(OpStrings.M6SeraAttack, false, true)
     ----------------
     -- Naval Attacks
     ----------------

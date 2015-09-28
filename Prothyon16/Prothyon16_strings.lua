@@ -1,6 +1,3 @@
-# Grey = --[[To Do]]--
-
-
 # During third main objective (UEF Air Base) Seraphim will attack, marked 'Mission 4' here, it is not done yet. 
 # Player will spot first seraphim units, first attacks. There will be some dialogues with Gyle, investigating whats going on.
 # There will be objective to protect civilians.
@@ -32,28 +29,27 @@
 # Game End
 # --------
 
---[[
-# Player Win / Actor: Gyle / Update 12/08/2015 / VO TODO
+
+# Player Win / Actor: Gyle / Update 28/09/2015 / VO TODO
 PlayerWin = {
   {text = '[Gyle]: Congratulations commander, because of you we were able to retreat with minimal losses.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
-
 
 # Player Dies / Actor: Gyle / Update / VO TODO
 PlayerDies = {
   {text = '[Gyle]:', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
-]]--
+
 # Player Lose To AI / Actor: Gyle / Update 22/05/2015 / VO Ready
 PlayerLoseToAI = {
   {text = '[Gyle]: Commander, your ACU has been brought to critical health and can no longer participate in combat. You have been defeated!', vid = 'Pro_16_PlayerLose1.sfd', bank = 'G_VO1', cue = '26Playerlose', faction = 'UEF'},
 }
---[[
-# sACU Die / Actor: Gyle / Update 12/08/2015 / VO TODO
+
+# sACU Die / Actor: Gyle / Update 28/09/2015 / VO TODO
 sACUDie = {
   {text = '[Gyle]: We have lost contact with Morax, the operation has failed.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
-]]--
+
 
 
 # ----------------------------
@@ -88,6 +84,10 @@ base1killed = {
   {text = '[Gyle]: The outpost has been destroyed, secure the area and push forward. HQ, Out', vid = 'Pro_16_base1killed.sfd', bank = 'G_VO1', cue = '5base1killed', faction = 'UEF'},
 }
 
+# Both Bases Killed / Actor: Gyle / Update 22/05/2015 / VO TODO
+base2killed = {
+  {text = '[Gyle]: First part of the exercise complete. HQ, Out', vid = '', bank = '', cue = '', faction = ''},
+}
 
 
 # Tech building reminder 1 / Actor: Gyle / Update 22/05/2015 / VO Ready
@@ -222,13 +222,6 @@ airbaseremind2 = {
 epicEprop = {
   {text = '[Gyle]: Thank you for playing this scenario. This experience has been brought to you courtesy of empire clan. Mission made by speed2, some other useless things were made by Exotic_Retard, and I was responsible for your lovely voiceovers. This is Gyle, Signing out.', vid = 'Pro_16_epicEprop.sfd', bank = 'G_VO1', cue = '27epicEprop', faction = 'UEF'},
 }
---[[
-# Gortonthinksthisshouldhappen  Actor: Gyle / Update 30/07/2015 / VO not ready
-Something = {
-  {text = '[Gyle]: Excellent work Commander. Clean up the rest of the base, and then - ', vid = '', bank = '', cue = '', faction = 'UEF'},
---(end transmission, it should cut out) (reopen trans)
-  {text = '[Gyle]: Commander, halt all attack on the AI. Regroup your forces and prepare for an attack. Our radar are picking up unidenti- Scratch that. You have hostiles inbound, Seraphim signatures.', vid = '', bank = '', cue = '', faction = 'UEF'},
-}
 
 
 
@@ -237,14 +230,12 @@ Something = {
 # 
 # ---------
 
-# Seraphim arrival intro 1 / Actor: Gyle / Update 12/08/2015 / VO not ready
+# Seraphim arrival intro 1 / Actor: Gyle / Update 28/09/2015 / VO not ready
 M4intro1 = {
-  {text = '[Gyle]: Excellent work Commander. Clean up the rest of the base, and then - ', vid = '', bank = '', cue = '', faction = 'UEF'},
-#(end transmission, it should cut out) 
+  {text = '[Gyle]: Excellent work Commander. Clean up the rest of the base, and then \- ', vid = '', bank = '', cue = '', faction = 'UEF'},
 } 
 
-
-# Seraphim arrival intro 2 / Actor: Gyle / Update 12/08/2015 / VO not ready
+# Seraphim arrival intro 2 / Actor: Gyle / Update 28/09/2015 / VO not ready
 M4intro2 = {
 #(reopen trans)
   {text = '[Gyle]: Commander, halt all attacks on the AI. Regroup your forces and prepare to defend your positions. Our radars are picking up unidenti- Scratch that. You have hostiles inbound, Seraphim signatures.', vid = '', bank = '', cue = '', faction = 'UEF'},
@@ -256,261 +247,240 @@ M4intro2 = {
 # ------------------------------------------
 
 
-# Objective 5 Intro 1 / Actor: Gyle / Update 12/08/2015 / VO TODO
+# Objective 5 Intro 1 / Actor: Gyle, Morax / Update 28/09/2015 / VO TODO
 obj5intro1 = {
   {text = '[Gyle]: The Seraphim incursion is too large to be contained! Your job is to ensure that our field commander, Morax makes it off-planet in one piece. Patching you through to him.... now.', vid = '', bank = '', cue = '', faction = 'UEF'},
-}
-
-# Objective 5 Intro 2 / Actor: Morax / Update 12/08/2015 / VO TODO
-obj5intro2 = {
   {text = '[Morax]: My garrison is in the middle of a warzone and the Seraphim are after me! I will hold off the enemy attacks as long as I can, but I will need assistance!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
-# Still need to record/find this
 
-
-# Objective 5 Intro 3 / Actor: Kalvirox / Update 12/08/2015 / VO TODO
-obj5intro3 = {
-  {text = '[]: Commander, I have issued an evacuation order to all non-combat personnel in the area. But we are cut off by enemy forces! Clear those out of our way and escort everyone to the quantum gateway for extraction as soon as you can.', vid = '', bank = '', cue = '', faction = 'UEF'},
+# Objective 5 Intro 3 / Actor: Kalvirox / Update 28/09/2015 / VO TODO
+obj5intro2 = {
+  {text = '[Kalvirox]: Commander, I have issued an evacuation order to all non-combat personnel in the area. But we are cut off by enemy forces! Clear those out of our way and escort everyone to the quantum gateway for extraction as soon as you can.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
-]]--
+
 # Objective 5 Post Intro / Actor: Thel-Uuthow / Update: 06/28/2007 / VO Ready
 obj5postintro = {
   {text = '[Zottoo-Zithutin]: [Language Not Recognized]', vid = 'X03_Thel-Uuthow_T01_04346.sfd', bank = 'X03_VO', cue = 'X03_Thel-Uuthow_T01_04346', faction = 'Seraphim'},
 }
---[[
-# Main Obj Reminder 1 / Actor: Gyle / Update 12/08/2015 / VO TODO
-M5MainReminder1 = {
-  {text = '[Gyle]: The seraphim still have a foothold in the area! Rectify that immediately!', vid = '', bank = '', cue = '', faction = 'UEF'},
-}
 
-
-
-# Main Obj Reminder 2 / Actor: Gyle / Update 12/08/2015 / VO TODO
-M5MainReminder2 = {
-  {text = '[Gyle]: There are still seraphim forces in the vicinity commander,', vid = '', bank = '', cue = '', faction = 'UEF'},
-}
-
-
-
-# Sera ACU Defeated / Actor: Gyle / Update 12/08/2015 / VO TODO
-M5SereDefeated = {
-  {text = '[Gyle]: The enemy ACU is showing up as destroyed! Excellent work commander!', vid = '', bank = '', cue = '', faction = 'UEF'},
-}
-
-
-
-# Sera ACU Defeated Base remains / Actor: Gyle / Update 12/08/2015 / VO TODO
-M5SereBaseRemains = {
-  {text = '[Gyle]: The enemy base remains and is still operational. Neutralise everything in the area.', vid = '', bank = '', cue = '', faction = 'UEF'},
-}
-
-
-
-# Protect sACU / Actor: Gyle / Update 12/08/2015 / VO TODO
+# Protect sACU / Actor: Gyle / Update 28/09/2015 / VO TODO
 ProtectsACU = {
   {text = '[Gyle]: Commander, you need to defend Morax from the seraphim attacks!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-
-
-# Defeat Seraphim ACU / Actor: Gyle / Update 12/08/2015 / VO TODO
+# Defeat Seraphim ACU / Actor: Gyle / Update 28/09/2015 / VO TODO
 M5KillSeraACU = {
   {text = '[Gyle]: A hostile ACU signature has been detected, destroy that commander as soon as possible!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
 
-# sACU on Losing Defences / Actor: Morax / Update 12/08/2015 / VO TODO
+# Main Obj Reminder 1 / Actor: Gyle / Update 28/09/2015 / VO TODO
+M5MainReminder1 = {
+  {text = '[Gyle]: The seraphim still have a foothold in the area! Rectify that immediately!', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# Main Obj Reminder 2 / Actor: Gyle / Update 28/09/2015 / VO TODO
+M5MainReminder2 = {
+  {text = '[Gyle]: There are still seraphim forces in the vicinity commander,', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+
+
+# Sera ACU Defeated / Actor: Gyle / Update 28/09/2015 / VO TODO
+M5SeraDefeated = {
+  {text = '[Gyle]: The enemy ACU is showing up as destroyed! Excellent work commander!', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+# Sera ACU Defeated Base remains / Actor: Gyle / Update 28/09/2015 / VO TODO
+M5SeraBaseRemains = {
+  {text = '[Gyle]: The enemy base remains and is still operational. Neutralise everything in the area.', vid = '', bank = '', cue = '', faction = 'UEF'},
+}
+
+
+
+# sACU on Losing Defences / Actor: Morax / Update 28/09/2015 / VO TODO
 sACULoseDef = {
-  {text = '[Morax]: Commander my defenses are crumbling! The Seraphim are going to destroy my base if we don't act now!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: My defenses are crumbling! The Seraphim are going to destroy my base!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-
-
-# sACU on Losing Factory / Actor: Morax / Update 12/08/2015 / VO TODO
+# sACU on Losing Factory / Actor: Morax / Update 28/09/2015 / VO TODO
 sACULoseFac = {
-  {text = '[Morax]: One of my factories has been destroyed; it's going to be hard for me to keep up with the seraphim forces. Lets get moving!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: One of my factories has been destroyed!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-
-
-# sACU on Taking Damage / Actor: Morax / Update 12/08/2015 / VO TODO
+# sACU on Taking Damage / Actor: Morax / Update 28/09/2015 / VO TODO
 sACUTakesDmg = {
-  {text = '[Morax]: Incoming fire commander, I'm taking damage here!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: I\'m getting incoming fire!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-
-
-# sACU Damaged 25% / Actor: Morax / Update 12/08/2015 / VO IN PROGRESS
+# sACU Damaged 25% / Actor: Morax / Update 28/09/2015 / VO TODO
 sACUDamaged25 = {
-  {text = '[Morax]: Light fire has been recieved, but everything's operational commander.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: Commander, I have received some light fire, but everything is still fully operational.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-
-
-# sACU Damaged 50% / Actor: Morax / Update 12/08/2015 / VO IN PROGRESS
+# sACU Damaged 50% / Actor: Morax / Update 28/09/2015 / VO TODO
 sACUDamaged50 = {
-  {text = '[Morax]: My armour has suffered some minor damage, but I\'m fine for now.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: My armour has suffered minor damage, but I\'m fine.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-
-
-# sACU Damaged 75% / Actor: Morax / Update 12/08/2015 / VO IN PROGRESS
+# sACU Damaged 75% / Actor: Morax / Update 28/09/2015 / VO TODO
 sACUDamaged75 = {
-  {text = '[Morax]: Heavy damage sustained commander! I'm down by 75%!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: I have received heavy damage! I need support!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-
-
-# sACU Damaged 90% / Actor: Morax / Update 12/08/2015 / VO IN PROGRESS
+# sACU Damaged 90% / Actor: Morax / Update 28/09/2015 / VO TODO
 sACUDamaged90 = {
-  {text = '[Morax]: Systems critical Commander! I'm not going to be able to take much more of this!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: Systems report critical damage! I can\'t hold out much longer!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
+
+
 
 # sACU Rescued1 / Actor: Gyle / Update 30/08/2015 / VO TODO
 sACURescued1 = {
-  {text = '[Gyle]: The Seraphim base has been destroyed and the path to Morax is clear. We're extracting him immediately.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Gyle]: The Seraphim base has been destroyed and the path to Morax is clear. We\'re extracting him immediately.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# sACU Rescued2 / Actor: Morax / Update 30/08/2015 / VO IN PROGRESS
-sACURescued1 = {
-  {text = '[Morax]: Commander, thanks for helping me out here, I wouldn't have made it on my own.', vid = '', bank = '', cue = '', faction = 'UEF'},
+# sACU Rescued2 / Actor: Morax / Update 30/08/2015 / VO TODO
+sACURescued2 = {
+  {text = '[Morax]: Thanks for helping me out commander, I wouldn\'t have made it on my own.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Secondary Obj Destroy Seraphim Island Bases / Actor: Gyle / Update 12/08/2015 / VO TODO
+# Secondary Obj Destroy Seraphim Island Bases / Actor: Gyle / Update 28/09/2015 / VO TODO
 IslandBasesKill = {
   {text = '[Gyle]: A heavy seraphim naval presence has been detected on the nearby islands. You are to destroy them without delay.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Secondary Obj First Island Base Destroyed / Actor: Gyle / Update 12/08/2015 / VO TODO
+# Secondary Obj First Island Base Destroyed / Actor: Gyle / Update 28/09/2015 / VO TODO
 IslandBase1Killed = {
   {text = '[Gyle]: The first island base has been destroyed. Proceed onto the next base.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Secondary Obj Second Island Base Destroyed / Actor: Gyle / Update 12/08/2015 / VO TODO
+# Secondary Obj Second Island Base Destroyed / Actor: Gyle / Update 28/09/2015 / VO TODO
 IslandBase2Killed = {
   {text = '[Gyle]: All key structures have been eliminated, move into position and deal with the last base.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Secondary Obj All Island Base Destroyed / Actor: Gyle, sACU / Update 12/08/2015 / VO TODO
+# Secondary Obj All Island Base Destroyed / Actor: Gyle, sACU / Update 28/09/2015 / VO TODO
 IslandBaseAllKilled = {
   {text = '[Gyle]: All seraphim island bases are registering as inactive. Clean up any remaining forces and focus on your other objectives. Good work Commander!', vid = '', bank = '', cue = '', faction = 'UEF'},
-  {text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
+  --{text = '[]:', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Secondary Obj All Island Base Destroyed, no Civs left / Actor: Gyle / Update 12/08/2015 / VO TODO
+# Secondary Obj All Island Base Destroyed, no Civs left / Actor: Gyle / Update 28/09/2015 / VO TODO
 IslandBaseAllKilledNoCiv = {
   {text = '[Gyle]: We have defeated the seraphim on this island, but at the cost of many lives.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
 
-# Secondary Obj Protect Civs / Actor: Kalvirox  / Update 12/08/2015 / VO TODO
+# Secondary Obj Protect Civs / Actor: Kalvirox  / Update 28/09/2015 / VO TODO
 M5ProtectCivs = {
-  {text = '[]: There is a civilian installation on this island, you need to protect it form the seraphim attacks!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Kalvirox]: There is a civilian installation on this island, you need to protect it from the seraphim attacks!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Secondary Obj Protect Civs Failed / Actor: Kalvirox  / Update 12/08/2015 / VO TODO
+# Secondary Obj Protect Civs Failed / Actor: Kalvirox  / Update 28/09/2015 / VO TODO
 M5CivsDied = {
-  {text = '[]: The Seraphim have wiped out the civilian installation on the island, there is nothing left.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Kalvirox]: The Seraphim have wiped out the civilian installation on the island, there is nothing left.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# 4 buildings above min / Actor: Kalvirox  / Update 12/08/2015 / VO TODO
+# 4 buildings above min / Actor: Kalvirox  / Update 28/09/2015 / VO TODO
 LosingCivs1 = {
-  {text = '[]: Only a few critical buildings remain, they must be protected!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Kalvirox]: Only a few critical buildings remain, they must be protected!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# 1 buildings above min / Actor:  Kalvirox / Update 12/08/2015 / VO TODO
+# 1 buildings above min / Actor:  Kalvirox / Update 28/09/2015 / VO TODO
 LosingCivs2 = {
-  {text = '[]: We cannot afford to lose anymore civilian structures commander!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Kalvirox]: We cannot afford to lose anymore civilian structures commander!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
 
-# Secondary obj 3 Evacuate Civs / Actor: Kalvirox / Update 12/08/2015 / VO TODO
+# Secondary obj 3 Evacuate Civs / Actor: Kalvirox / Update 28/09/2015 / VO TODO
 M5TrucksReady = {
-  {text = '[]: Commander, there are a number of civilian trucks in need of evacuation. You need to get them to the quantum gate as soon as possible.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Kalvirox]: Commander, there are a number of civilian trucks in need of evacuation. You need to get them to the quantum gate as soon as possible.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Trucks taking damage 1 / Actor: Kalvirox / Update 12/08/2015 / VO TODO
+# Trucks taking damage 1 / Actor: Kalvirox / Update 28/09/2015 / VO TODO
 M5TruckDamaged1 = {
-  {text = '[]: The civilian trucks are taking damage! Protect the civilians!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Kalvirox]: The civilian trucks are taking damage! Protect the civilians!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Trucks taking damage 2 / Actor: Kalvirox / Update 12/08/2015 / VO TODO
+# Trucks taking damage 2 / Actor: Kalvirox / Update 28/09/2015 / VO TODO
 M5TruckDamaged2 = {
-  {text = '[]: The civilians are under attack, you need to get them out of here safely!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Kalvirox]: The civilians are under attack, you need to get them out of here safely!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
-# 1 truck destroyed / Actor: Kalvirox / Update 12/08/2015 / VO TODO
+# 1 truck destroyed / Actor: Kalvirox / Update 28/09/2015 / VO TODO
 M5TruckDestroyed1 = {
-  {text = '[]: We\'ve lost contact with a civilian truck! The rest need to be evacuated immediately!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Kalvirox]: We\'ve lost contact with a civilian truck! The rest need to be evacuated immediately!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# 2 trucks destroyed / Actor: Kalvirox / Update 12/08/2015 / VO TODO
+# 2 trucks destroyed / Actor: Kalvirox / Update 28/09/2015 / VO TODO
 M5TruckDestroyed2 = {
-  {text = '[]: Another truck has been destroyed! We need to rescue the civilians!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Kalvirox]: Another truck has been destroyed! We need to rescue the civilians!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# 3 trucks destroyed / Actor: Kalvirox / Update 12/08/2015 / VO TODO
+# 3 trucks destroyed / Actor: Kalvirox / Update 28/09/2015 / VO TODO
 M5TruckDestroyed3 = {
-  {text = '[]: A third truck has been destroyed! Send aid at once!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Kalvirox]: A third truck has been destroyed! Send aid at once!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
 
-# All trucks destroyed, objective failed / Actor: Kalvirox / Update 12/08/2015 / VO TODO
+# All trucks destroyed, objective failed / Actor: Kalvirox / Update 28/09/2015 / VO TODO
 M5AllTrucksDestroyed = {
-  {text = '[]: Commander, there are no more trucks remaining, all of the civilians have been killed.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Kalvirox]: Commander, there are no more trucks remaining, all of the civilians have been killed.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# objective complete / Actor: Kalvirox / Update 12/08/2015 / VO TODO
+# objective complete / Actor: Kalvirox / Update 28/09/2015 / VO TODO
 M5AllTruckRescued = {
-  {text = '[]: All civilians have been evacuated, good work commander!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Kalvirox]: All civilians have been evacuated, good work commander!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# 1 truck rescued / Actor: Kalvirox / Update 12/08/2015 / VO TODO
+# 1 truck rescued / Actor: Kalvirox / Update 28/09/2015 / VO TODO
 M5TruckRescued1 = {
-  {text = '[]: The first convoy has successfully left the operation area.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Kalvirox]: The first convoy has successfully left the operation area.', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# 2 trucks rescued / Actor: Kalvirox / Update 12/08/2015 / VO TODO
+# 2 trucks rescued / Actor: Kalvirox / Update 28/09/2015 / VO TODO
 M5TruckRescued2 = {
-  {text = '[]: Another civilian truck has been successfully evacuated!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Kalvirox]: Another civilian truck has been successfully evacuated!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
+
+
 
 # ------------
 # Mission 6
 # ------------
 
 
-# Second Sera ACU gates in / Actor: Gyle / Update 12/08/2015 / VO TODO
+
+# Second Sera ACU gates in / Actor: Gyle / Update 28/09/2015 / VO TODO
 M6SecondSeraACU = {
   {text = '[Gyle]: Commander, we\'re detecting a second ACU signature in the area, an enemy commander has just gated in!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-
-# invasion announcement / Actor: Gyle / Update 12/08/2015 / VO TODO
+# invasion announcement / Actor: Gyle / Update 28/09/2015 / VO TODO
 M6InvCount1 = {
-  {text = '[Gyle]: The Seraphim are planning a massive attack, our intel tells us that you have no more than 30 minutes before its launched!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Gyle]: The Seraphim are planning a massive attack, our intel tells us that you have no more than 30 minutes before it\'s launched!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# First invasion countdown / Actor: Gyle / Update 12/08/2015 / VO TODO
-M6InvCount1 = {
+# second invasion countdown / Actor: Gyle / Update 28/09/2015 / VO TODO
+M6InvCount2 = {
   {text = '[Gyle]: The activity of the enemy bases suggests you have no more than 15 minutes before all hell breaks lose! Get a move on!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# First invasion countdown / Actor: Gyle / Update 12/08/2015 / VO TODO
-M6InvCount1 = {
+# third invasion countdown / Actor: Gyle / Update 28/09/2015 / VO TODO
+M6InvCount3 = {
   {text = '[Gyle]: The enemy attack is imminent! You have less than 5 minutes left!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-
-# Massive sera attacks / Actor: Gyle / Update 12/08/2015 / VO TODO
+# Massive sera attacks / Actor: Gyle / Update 28/09/2015 / VO TODO
 M6SeraAttack = {
   {text = '[Gyle]: Hostile Signatures are off the charts! The full scale invasion has just been launched, you need to get off planet, now!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
-]]--
+
 
 
 # ------------
