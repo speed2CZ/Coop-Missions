@@ -1676,7 +1676,7 @@ function StartMission5()
     table.insert(AssignedObjectives, ScenarioInfo.M5S2)
 
     ScenarioFramework.CreateTimerTrigger(SecondSeraACU, 30)
-    ScenarioFramework.CreateTimerTrigger(FinalNavalAttacks, 15)
+    ScenarioFramework.CreateTimerTrigger(FinalAttacks, 15)
 
     SetupWestM5Taunts()
 end
@@ -2050,9 +2050,13 @@ function FinalObjective()
     table.insert(AssignedObjectives, ScenarioInfo.M3P1)
 end
 
-function FinalNavalAttacks()
+function FinalAttacks()
     -- function for continuous attacks that very nicely replaces time limit. If you dont finish the mission before this function kicks in, too bad.
     -- Spawns random attack group sends on patrol. Waits a bit and repeat. Strenght of groups is from 1 to 3 where 3 has the most fire power.
+
+    ----------------
+    -- Naval Attacks
+    ----------------
     -- North Naval Attacks
     ForkThread(
         function()      
@@ -2073,16 +2077,6 @@ function FinalNavalAttacks()
                 "FA_North_Naval_Chain_2",
                 "FA_North_Naval_Chain_3",
             }
-            --[[
-            while true do
-                local units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', NorthNavalGroups[math.random(1, table.getn(NorthNavalGroups))], 'AttackFormation')
-                for k, v in EntityCategoryFilterDown(categories.xss0201, units:GetPlatoonUnits()) do
-                    IssueDive({v})
-                end
-                ScenarioFramework.PlatoonPatrolChain(units, NorthNavalChains[math.random(1, table.getn(NorthNavalChains))])
-                WaitSeconds(Random(20, 60))
-            end
-            ]]--
             local N_units = nil
             while true do
                 local N_group = NorthNavalGroups[math.random(1, table.getn(NorthNavalGroups))]
@@ -2094,13 +2088,13 @@ function FinalNavalAttacks()
                 end
                 ScenarioFramework.PlatoonPatrolChain(N_units, N_chain)
                 LOG('*DEBUG: Spawned units of group "'..N_group..'" for chain "'..N_chain..'"')
-                WaitSeconds(Random(80, 120))
+                WaitSeconds(Random(90, 120))
             end
         end
     )
+    -- West Naval Attacks
     ForkThread(
         function()      
-            -- West Naval Attacks
             local WestNavalGroups = {
                 "FA_NavalW1_P1",
                 "FA_NavalW1_P2",
@@ -2127,13 +2121,13 @@ function FinalNavalAttacks()
                 end
                 ScenarioFramework.PlatoonPatrolChain(W_units, W_chain)
                 LOG('*DEBUG: Spawned units of group "'..W_group..'" for chain "'..W_chain..'"')
-                WaitSeconds(Random(90, 115))
+                WaitSeconds(Random(100, 115))
             end
         end
     )
+    -- East Naval Attacks
     ForkThread(
         function()
-            -- East Naval Attacks
             local EastNavalGroups = {
                 "FA_NavalE1_P1",
                 "FA_NavalE1_P2",
@@ -2162,7 +2156,145 @@ function FinalNavalAttacks()
                 end
                 ScenarioFramework.PlatoonPatrolChain(E_units, E_chain)
                 LOG('*DEBUG: Spawned units of group "'..E_group..'" for chain "'..E_chain..'"')
-                WaitSeconds(Random(75, 125))
+                WaitSeconds(Random(85, 125))
+            end
+        end
+    )
+
+    --------------
+    -- Air Attacks
+    --------------
+    -- North Air Attacks
+    ForkThread(
+        function()      
+            local NorthAirGroups = {
+                "FA_AirN1_P1",
+                "FA_AirN1_P2",
+                "FA_AirN1_P3",
+                "FA_AirN2_P1",
+                "FA_AirN2_P2",
+                "FA_AirN2_P3",
+                "FA_AirN3_P1",
+                "FA_AirN3_P2",
+                "FA_AirN3_P3",
+                "FA_AirN4_P1",
+                "FA_AirN4_P2",
+                "FA_AirN4_P3",
+                "FA_AirN5_P1",
+                "FA_AirN5_P2",
+                "FA_AirN5_P3",
+                "FA_AirN6_P1",
+                "FA_AirN6_P2",
+                "FA_AirN6_P3",
+            }
+             
+            local NorthAirChains = {
+                "M5_Sera_Main_AirAttackPlayer_Chain1",
+                "M5_Sera_Main_AirAttackPlayer_Chain2",
+                "M5_Sera_Main_AirAttackPlayer_Chain3",
+                "M5_Sera_Main_AirAttackPlayer_Chain4",
+                "M5_Sera_Main_Naval_AttackPlayer_Chain1",
+                "M5_Sera_Main_Naval_AttackPlayer_Chain2",
+                "M5_Sera_Main_Naval_AttackPlayer_Chain3",
+            }
+            local N_Air_units = nil
+            while true do
+                local N_Air_group = NorthAirGroups[math.random(1, table.getn(NorthAirGroups))]
+                local N_Air_chain = NorthAirChains[math.random(1, table.getn(NorthAirChains))]
+         
+                local N_Air_units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', N_Air_group, 'GrowthFormation')
+                ScenarioFramework.PlatoonPatrolChain(N_Air_units, N_Air_chain)
+                LOG('*DEBUG: Spawned units of group "'..N_Air_group..'" for chain "'..N_Air_chain..'"')
+                WaitSeconds(Random(30, 40))
+            end
+        end
+    )
+    -- West Air Attacks
+    ForkThread(
+        function()      
+            local WestAirGroups = {
+                "FA_AirW1_P1",
+                "FA_AirW1_P2",
+                "FA_AirW1_P3",
+                "FA_AirW2_P1",
+                "FA_AirW2_P2",
+                "FA_AirW2_P3",
+                "FA_AirW3_P1",
+                "FA_AirW3_P2",
+                "FA_AirW3_P3",
+                "FA_AirW4_P1",
+                "FA_AirW4_P2",
+                "FA_AirW4_P3",
+                "FA_AirW5_P1",
+                "FA_AirW5_P2",
+                "FA_AirW5_P3",
+                "FA_AirW6_P1",
+                "FA_AirW6_P2",
+                "FA_AirW6_P3",
+            }
+             
+            local WestAirChains = {
+                "M5_Sera_Main_AirAttackPlayer_Chain1",
+                "M5_Sera_Main_AirAttackPlayer_Chain2",
+                "M5_Sera_Main_AirAttackPlayer_Chain3",
+                "M5_Sera_Main_AirAttackPlayer_Chain4",
+                "M5_Sera_Main_Naval_AttackPlayer_Chain1",
+                "M5_Sera_Main_Naval_AttackPlayer_Chain2",
+                "M5_Sera_Main_Naval_AttackPlayer_Chain3",
+            }
+
+            local W_Air_units = nil
+            while true do
+                local W_Air_group = WestAirGroups[math.random(1, table.getn(WestAirGroups))]
+                local W_Air_chain = WestAirChains[math.random(1, table.getn(WestAirChains))]
+         
+                local W_Air_units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', W_Air_group, 'GrowthFormation')
+                ScenarioFramework.PlatoonPatrolChain(W_Air_units, W_Air_chain)
+                LOG('*DEBUG: Spawned units of group "'..W_Air_group..'" for chain "'..W_Air_chain..'"')
+                WaitSeconds(Random(25, 35))
+            end
+        end
+    )
+    -- East Air Attacks
+    ForkThread(
+        function()
+            local EastAirGroups = {
+                "FA_AirE1_P1",
+                "FA_AirE1_P2",
+                "FA_AirE1_P3",
+                "FA_AirE2_P1",
+                "FA_AirE2_P2",
+                "FA_AirE2_P3",
+                "FA_AirE3_P1",
+                "FA_AirE3_P2",
+                "FA_AirE3_P3",
+                "FA_AirE4_P1",
+                "FA_AirE4_P2",
+                "FA_AirE4_P3",
+                "FA_AirE5_P1",
+                "FA_AirE5_P2",
+                "FA_AirE5_P3",
+                "FA_AirE6_P1",
+                "FA_AirE6_P2",
+                "FA_AirE6_P3",
+            }
+             
+            local EastAirChains = {
+                "M6_Sera_Island_Air_Attack_Chain_1",
+                "M6_Sera_Island_Air_Attack_Chain_2",
+                "M6_Sera_Island_Air_Attack_Chain_3",
+                "M6_Sera_Island_Air_Attack_Chain_4",
+            }
+
+            local E_Air_units = nil
+            while true do
+                local E_Air_group = EastAirGroups[math.random(1, table.getn(EastAirGroups))]
+                local E_Air_chain = EastAirChains[math.random(1, table.getn(EastAirChains))]
+         
+                local E_Air_units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', E_Air_group, 'GrowthFormation')
+                ScenarioFramework.PlatoonPatrolChain(E_Air_units, E_Air_chain)
+                LOG('*DEBUG: Spawned units of group "'..E_Air_group..'" for chain "'..E_Air_chain..'"')
+                WaitSeconds(Random(20, 30))
             end
         end
     )
@@ -2288,5 +2420,5 @@ function OnShiftF4()
 end
 
 function OnCtrlF4()
-    FinalNavalAttacks()
+    FinalAttacks()
 end

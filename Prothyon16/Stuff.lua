@@ -1,11 +1,9 @@
-V1 - bez transportu
-V2 - bez T1 zenistu
-V3 - bez T1 zakladny (zenistu)
-V4 - nova zakladna
-
 druha mise primary
 druha mise vypnuty sec objective
 treti mise primary
+
+
+SetUnSelectable
 
 
     IssueAggressiveMove 
@@ -46,6 +44,14 @@ treti mise primary
     IssueTransportUnload 
     IssueTransportUnloadSpecific 
     IssueUpgrade 
+
+
+    local target = {}
+    for k, v in ScenarioInfo.OrderDefenses do
+         if(v and not v:IsDead() and EntityCategoryContains(categories.STRUCTURE - categories.WALL, v)) then
+            table.insert(target, v)
+         end
+    end
 
 
 
@@ -324,3 +330,23 @@ function attackCDRInWater(platoon)
     -- attack random one
     platoon:AttackTarget(submergedCDRs[math.random(1, table.getn(submergedCDRs))]
 end
+
+    
+
+local buffedUnits = {}
+ 
+-- your init stuff
+-- ForkThread(continuousBuffs)
+ 
+function continuousBuffs()
+    while true do
+        for _, u in allAiUnits do --get all AI units here
+            if not buffedUnits[u:GetEntityId()] then
+                    buffedUnits[u:GetEntityId()] = true
+                    -- buff unit here
+            end
+        end
+        WaitSeconds(1)
+    end
+end
+
