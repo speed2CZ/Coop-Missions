@@ -792,7 +792,7 @@ function StartMission2()
         'primary',                      -- type
         'incomplete',                   -- complete
         'Eliminate Southern Base',                 -- title
-        'Destroy the marked UEF structures',  -- description
+        'Destroy the base to your south in order to secure the entire main island',  -- description
         'kill',                         -- action
         {                               -- target
             MarkUnits = true,
@@ -1129,7 +1129,7 @@ function StartMission3()
         'primary',                      -- type
         'incomplete',                   -- complete
         'Destroy The Island Air Base',                 -- title
-        'Eliminate the marked UEF structures',  -- description
+        'Eliminate the Island Air base to your north-west',  -- description
         'kill',                         -- action
         {                               -- target
             MarkUnits = true,
@@ -1525,7 +1525,7 @@ function StartMission5()
         'primary',                      -- type
         'incomplete',                   -- complete
         'Protect sACU',                 -- title
-        'Protect the SACU at all costs',         -- description
+        'Protect Morax at all costs, until he is able to withdraw to the quantum gateway',         -- description
         {                               -- target
             Units = {ScenarioInfo.UEFSACU},
         }
@@ -1559,7 +1559,7 @@ function KillSeraphimCommander()
         'primary',                      -- type
         'incomplete',                   -- complete
         'Defeat Seraphim Commander',  -- title
-        'Kill the Seraphim Commander',  -- description
+        'Kill the Seraphim Commander in order to buy more time for your evacuation',  -- description
         {                               -- target
             Units = {ScenarioInfo.SeraACU},
             MarkUnits = true,
@@ -1594,7 +1594,7 @@ function ProtectCivilians()
         'secondary',                              -- type
         'incomplete',                           -- complete
         'Protect Civilian Cities',          -- title
-        'At least 80% of the civilian buildings must survive',          -- description
+        'At least 80% of the civilian buildings must survive the Seraphim onslaught until the planet is evacuated',          -- description
         {                                       -- target
             Units = units,
             NumRequired = math.ceil(table.getn(units)/1.25),
@@ -1708,7 +1708,7 @@ function Mission5Part2()
         'primary',                      -- type
         'incomplete',                   -- complete
         'Destroy Seraphim Base',                 -- title
-        'Eliminate the marked Seraphim structures',  -- description
+        'Eliminate the Seraphim base of operations in the area',  -- description
         'kill',                         -- action
         {                               -- target
             MarkUnits = true,
@@ -1757,7 +1757,7 @@ function Mission5Secondary2()
         'secondary',                                        -- type
         'incomplete',                                       -- complete
         'Evacuate Cicilians',                      -- title
-        'Transport all civilian trucks to Quantum Gateway',                      -- description
+        'Evacuate the civilians by transporting all the civilian trucks to the Quantum Gateway',                      -- description
         Objectives.GetActionIcon('move'),
         {                                                   -- target
             Area = 'UEF_Evac_Area',
