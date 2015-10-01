@@ -472,7 +472,7 @@ function StartMission1()
         'primary',                      -- type
         'incomplete',                   -- complete
         'Destroy UEF Forward Bases',                 -- title
-        'Eliminate the marked UEF structures to establish a foothold on the main island.',  -- description
+        'Eliminate the marked UEF structures to establish a foothold on the main island',  -- description
         'kill',                         -- action
         {                               -- target
             MarkUnits = true,
@@ -519,7 +519,7 @@ function StartMission1()
         'secondary',                      -- type
         'incomplete',                   -- complete
         'Capture Economy Tech Centre',  -- title
-        'Capture this building to gain access to T2 Economy.',  -- description
+        'Capture this building to gain access to T2 Economy',  -- description
         {
             Units = {ScenarioInfo.M1_Eco_Tech_Centre},
             FlashVisible = true,
@@ -562,7 +562,7 @@ function StartMission1()
         'secondary',                      -- type
         'incomplete',                   -- complete
         'Capture T2 Land Tech Centre',  -- title
-        'Capture this building to gain access to T2 Land units.',  -- description
+        'Capture this building to gain access to T2 Land units',  -- description
         {
             Units = {ScenarioInfo.M1_T2_Land_Tech_Centre},
             FlashVisible = true,
@@ -792,7 +792,7 @@ function StartMission2()
         'primary',                      -- type
         'incomplete',                   -- complete
         'Eliminate Southern Base',                 -- title
-        'Destroy the marked UEF structures.',  -- description
+        'Destroy the marked UEF structures',  -- description
         'kill',                         -- action
         {                               -- target
             MarkUnits = true,
@@ -831,7 +831,7 @@ function M2SecondaryCaptureTech()
         'secondary',                      -- type
         'incomplete',                   -- complete
         'Capture T2 Air Tech Centre',  -- title
-        'Capture this building to gain access to T2 Air units.',  -- description
+        'Capture this building to gain access to T2 Air units',  -- description
         {
             Units = {ScenarioInfo.M2_T2_Air_Tech_Centre},
             FlashVisible = true,
@@ -865,7 +865,7 @@ function M2SecondaryTitans()
         'secondary',                      -- type
         'incomplete',                   -- complete
         'Dispatch Titan Squad',                 -- title
-        'Destroy the Titan patrol around the southern base.',  -- description
+        'Destroy the Titan patrol around the southern base',  -- description
         {                               -- target
             Units = units,
             MarkUnits = true,
@@ -1129,7 +1129,7 @@ function StartMission3()
         'primary',                      -- type
         'incomplete',                   -- complete
         'Destroy The Island Air Base',                 -- title
-        'Eliminate the marked UEF structures.',  -- description
+        'Eliminate the marked UEF structures',  -- description
         'kill',                         -- action
         {                               -- target
             MarkUnits = true,
@@ -1525,7 +1525,7 @@ function StartMission5()
         'primary',                      -- type
         'incomplete',                   -- complete
         'Protect sACU',                 -- title
-        'Dont let his one die',         -- description
+        'Protect the SACU at all costs',         -- description
         {                               -- target
             Units = {ScenarioInfo.UEFSACU},
         }
@@ -1559,7 +1559,7 @@ function KillSeraphimCommander()
         'primary',                      -- type
         'incomplete',                   -- complete
         'Defeat Seraphim Commander',  -- title
-        'kill this one',  -- description
+        'Kill the Seraphim Commander',  -- description
         {                               -- target
             Units = {ScenarioInfo.SeraACU},
             MarkUnits = true,
@@ -1594,7 +1594,7 @@ function ProtectCivilians()
         'secondary',                              -- type
         'incomplete',                           -- complete
         'Protect Civilian Cities',          -- title
-        '80% of the city buildings must survive.',          -- description
+        'At least 80% of the civilian buildings must survive',          -- description
         {                                       -- target
             Units = units,
             NumRequired = math.ceil(table.getn(units)/1.25),
@@ -1625,7 +1625,7 @@ function ProtectCivilians()
         'secondary',                              -- type
         'incomplete',                           -- complete
         'Eliminate Seraphim Forces on the Island',          -- title
-        'Secure island by destroying Seraphim bases located on island so evacuation can begin.',          -- description
+        'Secure the island by destroying the Seraphim bases located on it, allowing the evacuation to begin',          -- description
         'kill',                         -- action
         {                                       -- target
             MarkUnits = true,
@@ -1708,7 +1708,7 @@ function Mission5Part2()
         'primary',                      -- type
         'incomplete',                   -- complete
         'Destroy Seraphim Base',                 -- title
-        'Eliminate the marked Seraphim structures.',  -- description
+        'Eliminate the marked Seraphim structures',  -- description
         'kill',                         -- action
         {                               -- target
             MarkUnits = true,
@@ -1929,7 +1929,7 @@ function LeavePlanetObjective()
         'primary',                      -- type
         'incomplete',                   -- status
         'Leave the Planet',  -- title
-        'Escape the planet using Quantum Gateway',  -- description
+        'Escape the planet using the Quantum Gateway',  -- description
         {                               -- target
             Units = {ScenarioInfo.PlayerCDR},
             Area = 'ACU_Evac_Area',
