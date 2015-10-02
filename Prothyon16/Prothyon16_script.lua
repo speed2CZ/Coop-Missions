@@ -59,9 +59,9 @@ local ReminderTaunts = {
 --------------
 -- Debug only!
 --------------
-local SkipNIS1 = true
-local SkipNIS2 = true
-local SkipNIS3 = true
+local SkipNIS1 = false
+local SkipNIS2 = false
+local SkipNIS3 = false
 local SkipNIS5 = false
 
 -----------------
@@ -499,8 +499,8 @@ function StartMission1()
             if(result) then
                 ForkThread(UEFBattleships)
                 ForkThread(UEFFlyover)
-                -- ScenarioFramework.Dialogue(OpStrings.base2killed, IntroMission2, true)
-                IntroMission2()
+                ScenarioFramework.Dialogue(OpStrings.base2killed, IntroMission2, true)
+                --IntroMission2()
             end
         end
     )
@@ -810,8 +810,7 @@ function StartMission2()
     ScenarioInfo.M2P1:AddResultCallback(
         function(result)
             if(result) then
-                --ScenarioFramework.Dialogue(OpStrings.airbase1, IntroMission3)
-                IntroMission3()
+                ScenarioFramework.Dialogue(OpStrings.airbase1, IntroMission3)
             end
         end
     )
@@ -819,8 +818,8 @@ function StartMission2()
     ScenarioFramework.CreateTimerTrigger(M2P1Reminder1, 15*60)
 
     -- Secondary Objectives
-    --ScenarioFramework.CreateArmyIntelTrigger(M2SecondaryTitans, ArmyBrains[Player], 'LOSNow', false, true, categories.uel0303, true, ArmyBrains[UEF])
-    --ScenarioFramework.Dialogue(OpStrings.airhqtechcentre, M2SecondaryCaptureTech)
+    ScenarioFramework.CreateArmyIntelTrigger(M2SecondaryTitans, ArmyBrains[Player], 'LOSNow', false, true, categories.uel0303, true, ArmyBrains[UEF])
+    ScenarioFramework.Dialogue(OpStrings.airhqtechcentre, M2SecondaryCaptureTech)
 end
 
 function M2SecondaryCaptureTech()
@@ -831,7 +830,7 @@ function M2SecondaryCaptureTech()
         'secondary',                      -- type
         'incomplete',                   -- complete
         'Capture T2 Air Tech Centre',  -- title
-        'Capture this building to gain access to T2 Air units',  -- description
+        'Capture this building to gain access to T2 Air units.',  -- description
         {
             Units = {ScenarioInfo.M2_T2_Air_Tech_Centre},
             FlashVisible = true,
@@ -1183,7 +1182,7 @@ function IntroMission4()
                 SetAlliance(Objective, player, 'Ally')
             end
 
-            -- Give civilian bases to 'UEFAlly' army just to make it more complicated
+            -- Give civilian bases to 'UEFAlly' army. I didn't want them to give any intel until now, that's why there were in neutral army.
             local units = ScenarioFramework.GetCatUnitsInArea((categories.ALLUNITS - categories.uec1101 - categories.uec1201 - categories.uec1301 - categories.uec1401 - categories.uec1501 - categories.xec1301 - categories.uec0001), 'M2_Area', ArmyBrains[Objective])
             for k, v in units do
                 if v and not v:IsDead() and (v:GetAIBrain() == ArmyBrains[Objective]) then
@@ -1243,6 +1242,8 @@ function IntroMission5()
 
             M5UEFALLYAI.UEFAllyM5BaseAI()
             M5UEFALLYAI.UEFAllyM5GateBaseAI()
+
+            ScenarioUtils.CreateArmyGroup('UEFAlly', 'M5_Island_Defences_Buildings')
 
             --------------
             -- Seraphim AI
@@ -1546,6 +1547,7 @@ function StartMission5()
 
     ScenarioFramework.CreateTimerTrigger(ProtectCivilians, 30)
     ScenarioFramework.CreateTimerTrigger(SecondSeraACUIntro, 30*60)
+    ScenarioFramework.CreateTimerTrigger(BackgroundCivilianLeaving1, 10*60)
 
     SetupWestM5Taunts()
 end
@@ -1700,6 +1702,7 @@ function M5S1Warnings()
 end
 
 function Mission5Part2()
+    -- Objective to kill rest of the main seraphim base after killing ACU if it's not dead yet.
     ScenarioFramework.Dialogue(OpStrings.M5SeraBaseRemains, false, true)
     -------------------------------------------
     -- Primary Objective 3 - Destroy Enemy Base
@@ -1948,6 +1951,82 @@ function LeavePlanetObjective()
         end
    )
     table.insert(AssignedObjectives, ScenarioInfo.M3P1)
+end
+
+-----------------------------
+-- Mission 5 Civilians moving
+-----------------------------
+function BackgroundCivilianLeaving1()
+    -- Just to add some movent on the map (not that there wouldn't be enough already)
+    ForkThread(
+        function()
+            for i = 1, 6 do
+                local unit = ScenarioUtils.CreateArmyUnit('UEFAlly', 'M5_UEFAlly_Truck_' .. i)
+                IssueMove({unit}, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'))
+                ScenarioFramework.CreateUnitToMarkerDistanceTrigger(TruckInBuilding, unit, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'), 3)
+            end
+
+            WaitSeconds(4*60)
+
+            for i = 7, 12 do
+                local unit = ScenarioUtils.CreateArmyUnit('UEFAlly', 'M5_UEFAlly_Truck_' .. i)
+                IssueMove({unit}, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'))
+                ScenarioFramework.CreateUnitToMarkerDistanceTrigger(TruckInBuilding, unit, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'), 3)
+            end
+
+            WaitSeconds(2*60)
+
+            for i = 13, 14 do
+                local unit = ScenarioUtils.CreateArmyUnit('UEFAlly', 'M5_UEFAlly_Truck_' .. i)
+                IssueMove({unit}, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'))
+                ScenarioFramework.CreateUnitToMarkerDistanceTrigger(TruckInBuilding, unit, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'), 3)
+            end
+        end
+    )
+    ScenarioFramework.CreateTimerTrigger(BackgroundCivilianLeaving2, 5*60)
+end
+
+function BackgroundCivilianLeaving2()
+    -- Sends some transports to evacuate civ trucks through gate.
+    ForkThread(
+        function()
+            local route, civiliantrucks, transport = 0, nil, nil
+
+            ScenarioInfo.DestroyTrigger = ScenarioFramework.CreateAreaTrigger(DestroyUnit, ScenarioUtils.AreaToRect('M5_TransportDeath_Area'), categories.UEF * categories.TRANSPORTATION, false, false, ArmyBrains[UEFAlly])
+            
+            while route < 3 do
+                civiliantrucks = ScenarioUtils.CreateArmyGroup('UEFAlly', 'M5_Transport_Units_P2')
+                transport = ScenarioUtils.CreateArmyGroup('UEFAlly', 'M5_Transports_P2')
+                ScenarioFramework.AttachUnitsToTransports(civiliantrucks, transport)
+                IssueTransportUnload(transport, ScenarioUtils.MarkerToPosition('M5_Transport_Drop'))
+                IssueMove(transport, ScenarioUtils.MarkerToPosition('M5_Transport_Death'))
+                for k, v in civiliantrucks do
+                    IssueMove({v}, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'))
+                    ScenarioFramework.CreateUnitToMarkerDistanceTrigger(TruckInBuilding, v, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'), 3)
+                end
+                route = route + 1
+                WaitSeconds(Random(60, 120))
+            end
+            while route < 8 do
+                civiliantrucks = ScenarioUtils.CreateArmyGroup('UEFAlly', 'M5_Transport_Units_P1')
+                transport = ScenarioUtils.CreateArmyGroup('UEFAlly', 'M5_Transports_P1')
+                ScenarioFramework.AttachUnitsToTransports(civiliantrucks, transport)
+                IssueTransportUnload(transport, ScenarioUtils.MarkerToPosition('M5_Transport_Drop'))
+                IssueMove(transport, ScenarioUtils.MarkerToPosition('M5_Transport_Death'))
+                for k, v in civiliantrucks do
+                    IssueMove({v}, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'))
+                    ScenarioFramework.CreateUnitToMarkerDistanceTrigger(TruckInBuilding, v, ScenarioUtils.MarkerToPosition('UEF_Secondary_Escort_Marker'), 3)
+                end
+                route = route + 1
+                WaitSeconds(Random(60, 120))
+            end
+            
+        end
+    )
+end
+
+function DestroyUnit(unit)
+    unit:Destroy()
 end
 
 -------------
@@ -2367,9 +2446,9 @@ end
 ------------------
 
 function OnShiftF4()
-    SACUescape()
+    BackgroundCivilianLeaving1()
 end
 
 function OnCtrlF4()
-    FinalAttacks()
+    BackgroundCivilianLeaving2()
 end

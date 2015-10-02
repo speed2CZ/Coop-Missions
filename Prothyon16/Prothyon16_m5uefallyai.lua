@@ -138,6 +138,9 @@ function UEFAllyM5GateBaseAI()
     UEFAllyM5GateBase:SetActive('AirScouting', true)
 
     UEFAllyM5GateBase:AddBuildGroup('Quantum_Gate_Afterbuild', 90)
+    UEFAllyM5GateBase:AddBuildGroup('M5_UEFAlly_Walls_1', 85)
+    UEFAllyM5GateBase:AddBuildGroup('M5_UEFAlly_Walls_2', 80)
+    UEFAllyM5GateBase:AddBuildGroup('M5_UEFAlly_Walls_3', 75)
 
     UEFAllyM5GateBaseAirAttacks()
 end

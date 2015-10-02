@@ -39,13 +39,12 @@ function SeraphimM6IslandBaseAI()
          }
     )
     SeraphimM6IslandBase:StartEmptyBase(8)
-    # SeraphimM6IslandBase:SetConstructionAlwaysAssist(true)
     SeraphimM6IslandBase:SetMaximumConstructionEngineers(5)
-    # SeraphimM6IslandBase.SetFactoryBuildRateBuff = 'BaseManagerFactoryDefaultBuildRate'
-    # SeraphimM6IslandBase.SetEngineerBuildRateBuff = 'BaseManagerEngineerDefaultBuildRate'
 
     SeraphimM6IslandBase:SetActive('AirScouting', true)
 
+    SeraphimM6IslandBaseNavalAttacks()
+    SeraphimM6IslandBaseAirAttacks()
 end
 
 function NewEngineerCount1()
@@ -223,8 +222,7 @@ end
 
 function SeraphimM6IslandBaseNavalAttacks()
 
-    --ScenarioFramework.CreateTimerTrigger(SeraphimM6IslandBaseNavalT3Attacks, 15*60)
-    LOG('*DEBUG: M6 Sera Naval Attack')
+    ScenarioFramework.CreateTimerTrigger(SeraphimM6IslandBaseNavalT3Attacks, 15*60)
     local opai = nil
     --[[
     local NavyOSB = nil
@@ -319,7 +317,6 @@ function SeraphimM6IslandBaseNavalT3Attacks()
 
     local opai = nil
     local NavyOSB = nil
-    LOG('*DEBUG: M6 Sera Naval Attack Begins')
     
     NavyOSB = NavalOSB.GenerateNavalOSB('M6_Sera_Island_T3_Naval_1' , 5, 100, 120, 'S', 120, nil, nil)
     opai = SeraphimM6IslandBase:AddOpAI(NavyOSB, 'M6_Sera_Island_T3_Naval_1',

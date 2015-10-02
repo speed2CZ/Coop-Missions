@@ -84,10 +84,11 @@ base1killed = {
   {text = '[Gyle]: The outpost has been destroyed, secure the area and push forward. HQ, Out', vid = 'Pro_16_base1killed.sfd', bank = 'G_VO1', cue = '5base1killed', faction = 'UEF'},
 }
 
-# Both Bases Killed / Actor: Gyle / Update 22/05/2015 / VO TODO
+# Both Bases Killed / Actor: Gyle / Update 22/05/2015 / VO Ready
 base2killed = {
-  {text = '[Gyle]: First part of the exercise complete. HQ, Out', vid = '', bank = '', cue = '', faction = ''},
+  {text = '[Gyle]: First part of the exercise complete. HQ, Out', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
+
 
 
 # Tech building reminder 1 / Actor: Gyle / Update 22/05/2015 / VO Ready
