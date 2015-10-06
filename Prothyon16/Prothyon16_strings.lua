@@ -7,7 +7,7 @@
 # also during intro Gyle should come up with info that there is Sera ACU, giving player task to kill it (second main objective).
 # Soon after intro there will be secondary objective assigned, protect civilians on the island and get ready for evacuation.
 # For that player has to kill 3 seraphim bases on the island (secondary objective).
-# Kalvirox as civil guy should say something that they cant evacuate until those bases are destroyed
+# Chief Johnson as civil guy should say something that they cant evacuate until those bases are destroyed
 # Info about destroying those bases, that should be obvious = classis info voiceovers, there will be more of thoses, they should be marked clearly.
 # After these 3 bases are destroyed, evacuation from island will start, objective to transport civ trucks to Quantum Gate
 # Some VOs when trucks are under attack, losing some, arriving to gate etc...
@@ -254,9 +254,9 @@ obj5intro1 = {
   {text = '[Morax]: My garrison is in the middle of a warzone and the Seraphim are after me! I will hold off the enemy attacks as long as I can, but I will need assistance!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Objective 5 Intro 3 / Actor: Kalvirox / Update 28/09/2015 / VO TODO
+# Objective 5 Intro 3 / Actor: Chief Johnson / Update 28/09/2015 / VO TODO
 obj5intro2 = {
-  {text = '[Kalvirox]: Commander, I have issued an evacuation order to all non-combat personnel in the area. But we are cut off by enemy forces! Clear those out of our way and escort everyone to the quantum gateway for extraction as soon as you can.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: Commander, I have issued an evacuation order to all non-combat personnel in the area. But we are cut off by enemy forces! Clear those out of our way and escort everyone to the quantum gateway for extraction as soon as you can.', vid = '', bank = 'ChJ_VO1', cue = '', faction = 'UEF'},
 }
 
 # Objective 5 Post Intro / Actor: Thel-Uuthow / Update: 06/28/2007 / VO Ready
@@ -375,78 +375,78 @@ IslandBaseAllKilledNoCiv = {
 
 
 
-# Secondary Obj Protect Civs / Actor: Kalvirox  / Update 28/09/2015 / VO TODO
+# Secondary Obj Protect Civs / Actor: Chief Johnson  / 06/10/2015 / VO Ready
 M5ProtectCivs = {
-  {text = '[Kalvirox]: There is a civilian installation on this island, you need to protect it from the seraphim attacks!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: There is a civilian installation on this island, you need to protect it from the seraphim attacks!', vid = '', bank = 'ChJ_VO1', cue = 'M5ProtectCivs', faction = 'UEF'},
 }
 
-# Secondary Obj Protect Civs Failed / Actor: Kalvirox  / Update 28/09/2015 / VO TODO
+# Secondary Obj Protect Civs Failed / Actor: Chief Johnson  / 06/10/2015 / VO Ready
 M5CivsDied = {
-  {text = '[Kalvirox]: The Seraphim have wiped out the civilian installation on the island, there is nothing left.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: The Seraphim have wiped out the civilian installation on the island, there is nothing left.', vid = '', bank = 'ChJ_VO1', cue = 'M5CivsDied', faction = 'UEF'},
 }
 
-# 4 buildings above min / Actor: Kalvirox  / Update 28/09/2015 / VO TODO
+# 4 buildings above min / Actor: Chief Johnson  / 06/10/2015 / VO Ready
 LosingCivs1 = {
-  {text = '[Kalvirox]: Only a few critical buildings remain, they must be protected!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: Only a few critical buildings remain, they must be protected!', vid = '', bank = 'ChJ_VO1', cue = 'LosingCivs1', faction = 'UEF'},
 }
 
-# 1 buildings above min / Actor:  Kalvirox / Update 28/09/2015 / VO TODO
+# 1 buildings above min / Actor:  Chief Johnson / Update 06/10/2015 / VO Ready
 LosingCivs2 = {
-  {text = '[Kalvirox]: We cannot afford to lose anymore civilian structures commander!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: We cannot afford to lose anymore civilian structures commander!', vid = '', bank = 'ChJ_VO1', cue = 'LosingCivs2', faction = 'UEF'},
 }
 
 
 
-# Secondary obj 3 Evacuate Civs / Actor: Kalvirox / Update 28/09/2015 / VO TODO
+# Secondary obj 3 Evacuate Civs / Actor: Chief Johnson / 06/10/2015 / VO Ready
 M5TrucksReady = {
-  {text = '[Kalvirox]: Commander, there are a number of civilian trucks in need of evacuation. You need to get them to the quantum gate as soon as possible.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: Commander, there are a number of civilian trucks in need of evacuation. You need to get them to the quantum gate as soon as possible.', vid = '', bank = 'ChJ_VO1', cue = 'M5TrucksReady', faction = 'UEF'},
 }
 
-# Trucks taking damage 1 / Actor: Kalvirox / Update 28/09/2015 / VO TODO
+# Trucks taking damage 1 / Actor: Chief Johnson / Update 06/10/2015 / VO Ready
 M5TruckDamaged1 = {
-  {text = '[Kalvirox]: The civilian trucks are taking damage! Protect the civilians!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: The civilian trucks are taking damage! Protect the civilians!', vid = '', bank = 'ChJ_VO1', cue = 'M5TruckDamaged1', faction = 'UEF'},
 }
 
-# Trucks taking damage 2 / Actor: Kalvirox / Update 28/09/2015 / VO TODO
+# Trucks taking damage 2 / Actor: Chief Johnson / Update 06/10/2015 / VO Ready
 M5TruckDamaged2 = {
-  {text = '[Kalvirox]: The civilians are under attack, you need to get them out of here safely!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: The civilians are under attack, you need to get them out of here safely!', vid = '', bank = 'ChJ_VO1', cue = 'M5TruckDamaged2', faction = 'UEF'},
 }
 
 
-# 1 truck destroyed / Actor: Kalvirox / Update 28/09/2015 / VO TODO
+# 1 truck destroyed / Actor: Chief Johnson / Update 06/10/2015 / VO Ready
 M5TruckDestroyed1 = {
-  {text = '[Kalvirox]: We\'ve lost contact with a civilian truck! The rest need to be evacuated immediately!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: We\'ve lost contact with a civilian truck! The rest need to be evacuated immediately!', vid = '', bank = 'ChJ_VO1', cue = 'M5TruckDestroyed1', faction = 'UEF'},
 }
 
-# 2 trucks destroyed / Actor: Kalvirox / Update 28/09/2015 / VO TODO
+# 2 trucks destroyed / Actor: Chief Johnson / Update 06/10/2015 / VO Ready
 M5TruckDestroyed2 = {
-  {text = '[Kalvirox]: Another truck has been destroyed! We need to rescue the civilians!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: Another truck has been destroyed! We need to rescue the civilians!', vid = '', bank = 'ChJ_VO1', cue = 'M5TruckDestroyed2', faction = 'UEF'},
 }
 
-# 3 trucks destroyed / Actor: Kalvirox / Update 28/09/2015 / VO TODO
+# 3 trucks destroyed / Actor: Chief Johnson / Update 06/10/2015 / VO Ready
 M5TruckDestroyed3 = {
-  {text = '[Kalvirox]: A third truck has been destroyed! Send aid at once!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: A third truck has been destroyed! Send aid at once!', vid = '', bank = 'ChJ_VO1', cue = 'M5TruckDestroyed3', faction = 'UEF'},
 }
 
 
-# All trucks destroyed, objective failed / Actor: Kalvirox / Update 28/09/2015 / VO TODO
+# All trucks destroyed, objective failed / Actor: Chief Johnson / Update 06/10/2015 / VO Ready
 M5AllTrucksDestroyed = {
-  {text = '[Kalvirox]: Commander, there are no more trucks remaining, all of the civilians have been killed.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: Commander, there are no more trucks remaining, all of the civilians have been killed.', vid = '', bank = 'ChJ_VO1', cue = 'M5AllTrucksDestroyed', faction = 'UEF'},
 }
 
-# objective complete / Actor: Kalvirox / Update 28/09/2015 / VO TODO
+# objective complete / Actor: Chief Johnson / Update 06/10/2015 / VO Ready
 M5AllTruckRescued = {
-  {text = '[Kalvirox]: All civilians have been evacuated, good work commander!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: All civilians have been evacuated, good work commander!', vid = '', bank = 'ChJ_VO1', cue = 'M5AllTruckRescued', faction = 'UEF'},
 }
 
-# 1 truck rescued / Actor: Kalvirox / Update 28/09/2015 / VO TODO
+# 1 truck rescued / Actor: Chief Johnson / Update 06/10/2015 / VO Ready
 M5TruckRescued1 = {
-  {text = '[Kalvirox]: The first convoy has successfully left the operation area.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: The first convoy has successfully left the operation area.', vid = '', bank = 'ChJ_VO1', cue = 'M5TruckRescued1', faction = 'UEF'},
 }
 
-# 2 trucks rescued / Actor: Kalvirox / Update 28/09/2015 / VO TODO
+# 2 trucks rescued / Actor: Chief Johnson / Update 06/10/2015 / VO Ready
 M5TruckRescued2 = {
-  {text = '[Kalvirox]: Another civilian truck has been successfully evacuated!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: Another civilian truck has been successfully evacuated!', vid = '', bank = 'ChJ_VO1', cue = 'M5TruckRescued2', faction = 'UEF'},
 }
 
 
