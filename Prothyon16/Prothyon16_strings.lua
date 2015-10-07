@@ -254,9 +254,9 @@ obj5intro1 = {
   {text = '[Morax]: My garrison is in the middle of a warzone and the Seraphim are after me! I will hold off the enemy attacks as long as I can, but I will need assistance!', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
 
-# Objective 5 Intro 3 / Actor: Chief Johnson / Update 28/09/2015 / VO TODO
+# Objective 5 Intro 3 / Actor: Chief Johnson / Update 06/10/2015 / VO Ready
 obj5intro2 = {
-  {text = '[Chief Johnson]: Commander, I have issued an evacuation order to all non-combat personnel in the area. But we are cut off by enemy forces! Clear those out of our way and escort everyone to the quantum gateway for extraction as soon as you can.', vid = '', bank = 'ChJ_VO1', cue = '', faction = 'UEF'},
+  {text = '[Chief Johnson]: Commander, I have issued an evacuation order to all non-combat personnel in the area. But we are cut off by enemy forces! Clear those out of our way and escort everyone to the quantum gateway for extraction as soon as you can.', vid = '', bank = 'ChJ_VO1', cue = 'obj5intro2', faction = 'UEF'},
 }
 
 # Objective 5 Post Intro / Actor: Thel-Uuthow / Update: 06/28/2007 / VO Ready
