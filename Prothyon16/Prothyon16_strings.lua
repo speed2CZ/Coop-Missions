@@ -84,7 +84,7 @@ base1killed = {
   {text = '[Gyle]: The outpost has been destroyed, secure the area and push forward. HQ, Out', vid = 'Pro_16_base1killed.sfd', bank = 'G_VO1', cue = '5base1killed', faction = 'UEF'},
 }
 
-# Both Bases Killed / Actor: Gyle / Update 22/05/2015 / VO Ready
+# Both Bases Killed / Actor: Gyle / Update 22/05/2015 / VO TODO
 base2killed = {
   {text = '[Gyle]: First part of the exercise complete. HQ, Out', vid = '', bank = '', cue = '', faction = 'UEF'},
 }
@@ -302,37 +302,37 @@ M5SeraBaseRemains = {
 
 # sACU on Losing Defences / Actor: Morax / Update 28/09/2015 / VO TODO
 sACULoseDef = {
-  {text = '[Morax]: My defenses are crumbling! The Seraphim are going to destroy my base!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: My defenses are crumbling! The Seraphim are going to destroy my base!', vid = '', bank = 'Morax_VO', cue = 'defcrumb', faction = 'UEF'},
 }
 
 # sACU on Losing Factory / Actor: Morax / Update 28/09/2015 / VO TODO
 sACULoseFac = {
-  {text = '[Morax]: One of my factories has been destroyed!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: One of my factories has been destroyed!', vid = '', bank = 'Morax_VO', cue = 'facdown', faction = 'UEF'},
 }
 
 # sACU on Taking Damage / Actor: Morax / Update 28/09/2015 / VO TODO
 sACUTakesDmg = {
-  {text = '[Morax]: I\'m getting incoming fire!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: I\'m getting incoming fire!', vid = '', bank = 'Morax_VO', cue = 'acudamage1', faction = 'UEF'},
 }
 
 # sACU Damaged 25% / Actor: Morax / Update 28/09/2015 / VO TODO
 sACUDamaged25 = {
-  {text = '[Morax]: Commander, I have received some light fire, but everything is still fully operational.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: Commander, I have received some light fire, but everything is still fully operational.', vid = '', bank = 'Morax_VO', cue = 'lightfireok', faction = 'UEF'},
 }
 
 # sACU Damaged 50% / Actor: Morax / Update 28/09/2015 / VO TODO
 sACUDamaged50 = {
-  {text = '[Morax]: My armour has suffered minor damage, but I\'m fine.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: My armour has suffered minor damage, but I\'m fine.', vid = '', bank = 'Morax_VO', cue = 'minordamage', faction = 'UEF'},
 }
 
 # sACU Damaged 75% / Actor: Morax / Update 28/09/2015 / VO TODO
 sACUDamaged75 = {
-  {text = '[Morax]: I have received heavy damage! I need support!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: I have received heavy damage! I need support!', vid = '', bank = 'Morax_VO', cue = 'acu75damage', faction = 'UEF'},
 }
 
 # sACU Damaged 90% / Actor: Morax / Update 28/09/2015 / VO TODO
 sACUDamaged90 = {
-  {text = '[Morax]: Systems report critical damage! I can\'t hold out much longer!', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: Systems report critical damage! I can\'t hold out much longer!', vid = '', bank = 'Morax_VO', cue = 'acucritial', faction = 'UEF'},
 }
 
 
@@ -344,7 +344,7 @@ sACURescued1 = {
 
 # sACU Rescued2 / Actor: Morax / Update 30/08/2015 / VO TODO
 sACURescued2 = {
-  {text = '[Morax]: Thanks for helping me out commander, I wouldn\'t have made it on my own.', vid = '', bank = '', cue = '', faction = 'UEF'},
+  {text = '[Morax]: Thanks for helping me out commander, I wouldn\'t have made it on my own.', vid = '', bank = 'Morax_VO', cue = 'thanks', faction = 'UEF'},
 }
 
 # Secondary Obj Destroy Seraphim Island Bases / Actor: Gyle / Update 28/09/2015 / VO TODO
