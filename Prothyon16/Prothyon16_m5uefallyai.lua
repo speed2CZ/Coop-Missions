@@ -3,14 +3,15 @@ local ScenarioFramework = import('/lua/ScenarioFramework.lua')
 
 local SPAIFileName = '/lua/scenarioplatoonai.lua'
 
-# ------
-# Locals
-# ------
+---------
+-- Locals
+---------
 local UEFAlly = 3
+local Difficulty = ScenarioInfo.Options.Difficulty
 
-# -------------
-# Base Managers
-# -------------
+----------------
+-- Base Managers
+----------------
 local UEFAllyM5Base = BaseManager.CreateBaseManager()
 local UEFAllyM5GateBase = BaseManager.CreateBaseManager()
 
@@ -27,8 +28,8 @@ end
 function UEFAllyM5BaseAirAttacks()
 	local opai = nil
 	
-	# Air Defense over Civs
-	# Maintains 12 Interceptors
+	-- Air Defense over Civs
+	-- Maintains 12 Interceptors
     for i = 1, 3 do
         opai = UEFAllyM5Base:AddOpAI('AirAttacks', 'M5_UEFAlly_AirDefense1_' .. i,
             {
@@ -42,7 +43,7 @@ function UEFAllyM5BaseAirAttacks()
         opai:SetChildQuantity({'Interceptors'}, 4)
     end
 
-    # Maintains 8 Gunships
+    -- Maintains 8 Gunships
     for i = 1, 4 do
         opai = UEFAllyM5Base:AddOpAI('AirAttacks', 'M5_UEFAlly_AirDefense2_' .. i,
             {
@@ -74,7 +75,7 @@ function UEFAllyM5BaseLandAttacks()
         opai:SetChildQuantity({'HeavyTanks'}, 6)
     end
 
-    # Base Defense
+    -- Base Defense
     for i = 1, 2 do
         opai = UEFAllyM5Base:AddOpAI('BasicLandAttack', 'M5_UEFAllyLandDef1_' .. i,
 	        {
@@ -114,7 +115,7 @@ function UEFAllyM5BaseLandAttacks()
         opai:SetChildQuantity({'MobileFlak'}, 2)
     end
 
-    # Civ Defense
+    -- Civ Defense
     for i = 1, 3 do
         opai = UEFAllyM5Base:AddOpAI('BasicLandAttack', 'M5_UEFAllyTransportDef1_' .. i,
         {
@@ -147,7 +148,7 @@ end
 
 function UEFAllyM5GateBaseAirAttacks()
 	local opai = nil
-	# Transport Builder
+	-- Transport Builder
     opai = UEFAllyM5GateBase:AddOpAI('EngineerAttack', 'M5_UEFAlly_TransportBuilder',
     {
         MasterPlatoonFunction = {'/lua/ScenarioPlatoonAI.lua', 'LandAssaultWithTransports'},
@@ -162,5 +163,5 @@ function UEFAllyM5GateBaseAirAttacks()
     opai:SetChildActive('T2Transports', true)
     opai:SetChildQuantity({'T2Transports'}, 1)
     opai:AddBuildCondition('/lua/editor/unitcountbuildconditions.lua',
-        'HaveLessThanUnitsWithCategory', {'default_brain', 4, categories.uea0104})   # T2 Transport
+        'HaveLessThanUnitsWithCategory', {'default_brain', 4, categories.uea0104})   -- T2 Transport
 end

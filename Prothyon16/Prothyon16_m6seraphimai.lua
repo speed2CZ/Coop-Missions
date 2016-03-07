@@ -4,14 +4,15 @@ local ScenarioFramework = import('/lua/ScenarioFramework.lua')
 
 local SPAIFileName = '/lua/scenarioplatoonai.lua'
 
-# ------
-# Locals
-# ------
+---------
+-- Locals
+---------
 local Seraphim = 5
+local Difficulty = ScenarioInfo.Options.Difficulty
 
-# -------------
-# Base Managers
-# -------------
+----------------
+-- Base Managers
+----------------
 local SeraphimM6IslandBase = BaseManager.CreateBaseManager()
 
 function SeraphimM6IslandBaseAI()
@@ -127,10 +128,10 @@ function SeraphimM6IslandBaseAirAttacks()
         {'default_brain', 'Player', 70, categories.AIR * categories.MOBILE})
     end
 
-	# -----------
-	# Air Defense
-	# -----------
-	# maintains 3 x 6 [air superiority]
+	--------------
+	-- Air Defense
+	--------------
+	-- maintains 3 x 6 [air superiority]
     for i = 1, 3 do
         opai = SeraphimM6IslandBase:AddOpAI('AirAttacks', 'M6_Sera_Island_AirDefense1_' .. i,
             {
@@ -144,7 +145,7 @@ function SeraphimM6IslandBaseAirAttacks()
         opai:SetChildQuantity('AirSuperiority', 6)
     end
 
-    # maintains 6 x 4 [gunships]
+    -- maintains 6 x 4 [gunships]
     for i = 1, 6 do
         opai = SeraphimM6IslandBase:AddOpAI('AirAttacks', 'M6_Sera_Island_AirDefense2_' .. i,
             {
@@ -158,7 +159,7 @@ function SeraphimM6IslandBaseAirAttacks()
         opai:SetChildQuantity('Gunships', 4)
     end
 
-    # maintains 5 x 5 [torp bombers]
+    -- maintains 5 x 5 [torp bombers]
     for i = 1, 5 do
         opai = SeraphimM6IslandBase:AddOpAI('AirAttacks', 'M6_Sera_Island_AirDefense3_' .. i,
             {
@@ -172,7 +173,7 @@ function SeraphimM6IslandBaseAirAttacks()
         opai:SetChildQuantity('TorpedoBombers', 5)
     end
 
-    # maintains 3 x 3 [strat bombers]
+    -- maintains 3 x 3 [strat bombers]
     for i = 1, 3 do
         opai = SeraphimM6IslandBase:AddOpAI('AirAttacks', 'M6_Sera_Island_AirDefense4_' .. i,
             {
@@ -201,7 +202,7 @@ function SeraphimM6IslandBaseT3AirAttacks()
                 Priority = 120,
             }
         )
-        opai:SetChildQuantity('AirSuperiority', 24)
+        opai:SetChildQuantity('AirSuperiority', 12)
         opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
         {'default_brain', 'Player', 85, categories.AIR * categories.MOBILE})
     end
@@ -216,7 +217,7 @@ function SeraphimM6IslandBaseT3AirAttacks()
                 Priority = 120,
             }
         )
-        opai:SetChildQuantity('StratBombers', 12)
+        opai:SetChildQuantity('StratBombers', 4)
     end
 end
 
@@ -370,9 +371,9 @@ function SeraphimM6IslandBaseNavalAttacks()
     local Temp = {
         'SeraM6NavalAttackPlayerTemp1',
         'NoPlan',
-        { 'xss0201', 1, 6, 'Attack', 'AttackFormation' },   # Destroyers
-        { 'xss0202', 1, 2, 'Attack', 'AttackFormation' },   # Cruisers
-        { 'xss0203', 1, 8, 'Attack', 'AttackFormation' },   # T1 Sub
+        { 'xss0201', 1, 6, 'Attack', 'AttackFormation' },   -- Destroyers
+        { 'xss0202', 1, 2, 'Attack', 'AttackFormation' },   -- Cruisers
+        { 'xss0203', 1, 8, 'Attack', 'AttackFormation' },   -- T1 Sub
     }
     local Builder = {
         BuilderName = 'SeraM6NavyAttackPlayerBuilder1',
@@ -392,8 +393,8 @@ function SeraphimM6IslandBaseNavalAttacks()
     Temp = {
         'SeraM6NavalAttackPlayerTemp2',
         'NoPlan',
-        { 'xss0201', 1, 2, 'Attack', 'AttackFormation' },   # Destroyers
-        { 'xss0103', 1, 12, 'Attack', 'AttackFormation' },   # Frigate
+        { 'xss0201', 1, 2, 'Attack', 'AttackFormation' },   -- Destroyers
+        { 'xss0103', 1, 12, 'Attack', 'AttackFormation' },   -- Frigate
     }
     Builder = {
         BuilderName = 'SeraM6NavyAttackPlayerBuilder2',
@@ -413,7 +414,7 @@ function SeraphimM6IslandBaseNavalAttacks()
     Temp = {
         'SeraM6NavalAttackPlayerTemp3',
         'NoPlan',
-        { 'xss0201', 1, 4, 'Attack', 'AttackFormation' },   # Destroyers
+        { 'xss0201', 1, 4, 'Attack', 'AttackFormation' },   -- Destroyers
     }
     Builder = {
         BuilderName = 'SeraM6NavyAttackPlayerBuilder3',
@@ -433,9 +434,9 @@ function SeraphimM6IslandBaseNavalAttacks()
     Temp = {
         'SeraM6NavalT3AttackPlayerTemp1',
         'NoPlan',
-        { 'xss0302', 1, 1, 'Attack', 'GrowthFormation' },   # Battleship
-        { 'xss0201', 1, 2, 'Attack', 'GrowthFormation' },   # Destroyers
-        { 'xss0203', 1, 3, 'Attack', 'GrowthFormation' },   # T1 Sub
+        { 'xss0302', 1, 1, 'Attack', 'GrowthFormation' },   -- Battleship
+        { 'xss0201', 1, 2, 'Attack', 'GrowthFormation' },   -- Destroyers
+        { 'xss0203', 1, 3, 'Attack', 'GrowthFormation' },   -- T1 Sub
     }
     Builder = {
         BuilderName = 'SeraM6NavyT3AttackPlayerBuilder1',
@@ -455,9 +456,9 @@ function SeraphimM6IslandBaseNavalAttacks()
     Temp = {
         'SeraM6NavalT3AttackPlayerTemp2',
         'NoPlan',
-        { 'xss0201', 1, 5, 'Attack', 'AttackFormation' },   # Destroyers
-        { 'xss0202', 1, 2, 'Attack', 'AttackFormation' },   # Cruisers
-        { 'xss0103', 1, 9, 'Attack', 'AttackFormation' },   # Frigate
+        { 'xss0201', 1, 5, 'Attack', 'AttackFormation' },   -- Destroyers
+        { 'xss0202', 1, 2, 'Attack', 'AttackFormation' },   -- Cruisers
+        { 'xss0103', 1, 9, 'Attack', 'AttackFormation' },   -- Frigate
     }
     Builder = {
         BuilderName = 'SeraM6NavyT3AttackPlayerBuilder2',
