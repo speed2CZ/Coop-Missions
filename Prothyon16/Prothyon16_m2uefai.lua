@@ -574,7 +574,7 @@ function UEFM2T1BaseLandAttacks()
 
     opai = UEFM2T1Base:AddOpAI('EngineerAttack', 'M2_South_Reclaim_Engineers',
     {
-        MasterPlatoonFunction = {CustomFunctions, 'ReclaimPatrolThread'},
+        MasterPlatoonFunction = {SPAIFileName, 'SplitPatrolThread'},
         PlatoonData = {
             PatrolChains = {'M2_SouthBase_Land_Attack_Chain1',
                             'M2_SouthBase_Land_Attack_Chain2',

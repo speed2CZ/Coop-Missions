@@ -99,7 +99,7 @@ function UEFM1WestBaseLandAttacks()
     -- Builds Platoon of 4 Engineers
     opai = UEFM1WestBase:AddOpAI('EngineerAttack', 'M1_West_Reclaim_Engineers',
     {
-        MasterPlatoonFunction = {CustomFunctions, 'ReclaimPatrolThread'},
+        MasterPlatoonFunction = {SPAIFileName, 'SplitPatrolThread'},
         PlatoonData = {
             PatrolChains = {'M1_Land_Attack_Chain'},
         },
@@ -271,7 +271,7 @@ function UEFM1EastBaseLandAttacks()
     -- Builds Platoon of 8 Engineers
     opai = UEFM1EastBase:AddOpAI('EngineerAttack', 'M1_East_Reclaim_Engineers',
     {
-        MasterPlatoonFunction = {CustomFunctions, 'ReclaimPatrolThread'},
+        MasterPlatoonFunction = {SPAIFileName, 'SplitPatrolThread'},
         PlatoonData = {
             PatrolChains = {'M1_East_Attack_Chain1',
                             'M1_East_Attack_Chain2',

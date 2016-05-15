@@ -347,7 +347,7 @@ function SeraphimM5MainBaseLandAttacks()
 
     opai = SeraphimM5MainBase:AddOpAI('EngineerAttack', 'M5_Sera_Main_Reclaim_Engineers_1',
     {
-        MasterPlatoonFunction = {CustomFunctions, 'ReclaimPatrolThread'},
+        MasterPlatoonFunction = {SPAIFileName, 'SplitPatrolThread'},
         PlatoonData = {
             PatrolChains = {'M5_Sera_Main_Air_AttackUEF_Chain1',
                             'M5_Sera_Main_Hover_AttackUEF_Chain',
@@ -362,7 +362,7 @@ function SeraphimM5MainBaseLandAttacks()
     for i = 1, 2 do
         opai = SeraphimM5MainBase:AddOpAI('EngineerAttack', 'M5_Sera_Main_Reclaim_Engineers_2_' .. i,
         {
-            MasterPlatoonFunction = {CustomFunctions, 'ReclaimPatrolThread'},
+            MasterPlatoonFunction = {SPAIFileName, 'SplitPatrolThread'},
             PlatoonData = {
                 PatrolChains = {'M5_Sera_Main_Naval_AttackPlayer_Chain1',
                                 'M5_Sera_Main_Naval_AttackPlayer_Chain2',
@@ -751,7 +751,7 @@ function SeraphimM5IslandWestBaseLandAttacks()
 
     opai = SeraphimM5IslandWestBase:AddOpAI('EngineerAttack', 'M5_Sera_West_Reclaim_Engineers_2',
     {
-        MasterPlatoonFunction = {CustomFunctions, 'ReclaimPatrolThread'},
+        MasterPlatoonFunction = {SPAIFileName, 'SplitPatrolThread'},
         PlatoonData = {
             PatrolChains = {'M5_Sera_Island_West_Hover_Attack_Chain1',
                             'M5_Sera_Island_West_Hover_Attack_Chain2',

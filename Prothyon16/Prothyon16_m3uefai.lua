@@ -606,7 +606,7 @@ function UEFM3AirBaseLandAttacks()
     for i = 1, 2 do
         opai = UEFM3AirBase:AddOpAI('EngineerAttack', 'M3_AirBase_Reclaim_Engineers_1_' .. i,
         {
-            MasterPlatoonFunction = {CustomFunctions, 'ReclaimPatrolThread'},
+            MasterPlatoonFunction = {SPAIFileName, 'SplitPatrolThread'},
             PlatoonData = {
                 PatrolChains = {'M3_Air_Attack_Chain1',
                                 'M3_Air_Attack_Chain2',
@@ -624,7 +624,7 @@ function UEFM3AirBaseLandAttacks()
 
     opai = UEFM3AirBase:AddOpAI('EngineerAttack', 'M3_AirBase_Reclaim_Engineers_2',
     {
-        MasterPlatoonFunction = {CustomFunctions, 'ReclaimPatrolThread'},
+        MasterPlatoonFunction = {SPAIFileName, 'SplitPatrolThread'},
         PlatoonData = {
             PatrolChains = {'M3_Air_Base_NavalAttack_Chain1',
                             'M3_Air_Base_NavalAttack_Chain2',

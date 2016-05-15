@@ -154,7 +154,7 @@ function UEFM5IslandBaseLandAttacks()
 
     opai = UEFM5IslandBase:AddOpAI('EngineerAttack', 'M5_UEFBase_Reclaim_Engineers_1',
     {
-        MasterPlatoonFunction = {CustomFunctions, 'ReclaimPatrolThread'},
+        MasterPlatoonFunction = {SPAIFileName, 'SplitPatrolThread'},
         PlatoonData = {
             PatrolChains = {'M5_UEF_Island_Hover_Attack_Chain',
                             'M5_UEF_Island_Naval_Attack_Chain1',
@@ -168,7 +168,7 @@ function UEFM5IslandBaseLandAttacks()
 
     opai = UEFM5IslandBase:AddOpAI('EngineerAttack', 'M5_UEFBase_Reclaim_Engineers_2',
     {
-        MasterPlatoonFunction = {CustomFunctions, 'ReclaimPatrolThread'},
+        MasterPlatoonFunction = {SPAIFileName, 'SplitPatrolThread'},
         PlatoonData = {
             PatrolChains = {'M5_UEF_Island_Base_EngineerChain'},
         },
