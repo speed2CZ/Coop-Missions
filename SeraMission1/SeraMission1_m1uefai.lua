@@ -85,7 +85,7 @@ function UEFM1BaseAirAttacks()
     	'BrainGreaterThanOrEqualNumCategory', {'default_brain', 'Player', trigger[Difficulty], categories.AIR * categories.TECH2})
 
 	-- Air Patrol
-	quantity = {2, 3, 4}
+	quantity = {1, 2, 3}
 	for i = 1, 3 do
 		opai = UEFM1Base:AddOpAI('AirAttacks', 'M1_UEF_AirDefense_1_' .. i,
 	        {
@@ -122,7 +122,7 @@ function UEFM1BaseNavalAttacks()
 	local trigger = {}
 
 	quantity = {4, 6, 8}
-	for i = 1, 3 do
+	for i = 1, 2 do
 		opai = UEFM1Base:AddNavalAI('M1_UEF_NavalAttack_1_' .. i,
 		    {
 		        MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
@@ -144,7 +144,7 @@ function UEFM1BaseNavalAttacks()
 
 	quantity = {6, 7, 9}
 	trigger = {10, 8, 6}
-	for i = 1, 3 do
+	for i = 1, 2 do
 		opai = UEFM1Base:AddNavalAI('M1_UEF_NavalAttack_2_' .. i,
 		    {
 		        MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
@@ -153,10 +153,14 @@ function UEFM1BaseNavalAttacks()
 		                            'M1_UEF_Naval_Attack_Middle_Chain',
 		                            'M1_UEF_Naval_Attack_West_Chain'}
 		        },
-		        EnabledTypes = {'Frigate', 'Destroyer'},
+		        EnabledTypes = {'Frigate', 'Submarine', 'Destroyer'},
 		        MaxFrigates = quantity[Difficulty],
 		        MinFrigates = quantity[Difficulty],
 		        Priority = 110,
+		        Overrides = {
+	                CORE_TO_SUBS = 0.5,
+	            },
+	            DisableTypes = {['T2Submarine'] = true},
 		    }
 		)
 		opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
