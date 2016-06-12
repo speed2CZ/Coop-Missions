@@ -69,9 +69,9 @@ function UEFM2NorthBaseAI()
         end
     )
 
-    UEFM2NorthBaseLandAttacks()
-    UEFM2NorthBaseAirAttacks()
-    UEFM2NorthBaseNavalAttacks()
+    --UEFM2NorthBaseLandAttacks()
+    --UEFM2NorthBaseAirAttacks()
+    --UEFM2NorthBaseNavalAttacks()
 end
 
 function UEFM2NorthBaseAirAttacks()
