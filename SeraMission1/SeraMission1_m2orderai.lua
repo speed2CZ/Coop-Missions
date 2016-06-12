@@ -29,8 +29,8 @@
 --##########################################################
 
 local BaseManager = import('/lua/ai/opai/basemanager.lua')
+local CustomFunctions = '/maps/FortClarkeAssault/FortClarkeAssault_CustomFunctions.lua'
 local SPAIFileName = '/lua/ScenarioPlatoonAI.lua'
-import('/maps/SeraMission1/SeraMission1_Buffs.lua')
 
 ---------
 -- Locals
@@ -47,26 +47,38 @@ function OrderM2BaseAI()
     ----------------
     -- Order M2 Base
     ----------------
-    OrderM2Base:InitializeDifficultyTables(ArmyBrains[Order], 'M2_Order_Base', 'M2_Order_Base_Marker', 80, {M2_Order_Base = 100,})
-    OrderM2Base:StartNonZeroBase({{15, 13, 11}, {13, 11, 9}})
-    OrderM2Base:SetMaximumConstructionEngineers(2)
-    OrderM2Base:SetEngineerBuildRateBuff('EngiesBuildRate')
-    OrderM2Base:SetFactoryBuildRateBuff('FactoryBuildRate')
-    OrderM2Base:SetActive('AirScouting', true)
-    ForkThread(
-        function()
-            WaitSeconds(1)
-            OrderM2Base:AddBuildGroup('M2_Order_Support_Factories', 110, true)
-            -- OrderM2Base:AddBuildGroup('M2_Order_Defences', 90, true)
-        end
+    OrderM2Base:Initialize(ArmyBrains[Order], 'M2_Order_Base', 'M2_Order_Base_Marker', 80,
+        {
+            M2_Order_Mass_1 = 290,
+            M2_Order_Mass_2 = 280,
+            M2_Order_Air_Factory_1 = 270,
+            M2_Order_Energy_1 = 260,
+            M2_Order_Air_Factory_2 = 250,
+            M2_Order_Mass_3 = 240,
+            M2_Order_Mass_4 = 230,
+            M2_Order_Factory_3 = 220,
+            M2_Order_Energy_2 = 210,
+            M2_Order_Factory_4 = 200,
+            M2_Oorder_North = 190,
+            M2_Order_Main_1 = 180,
+            M2_Order_Main_2 = 170,
+            M2_Order_Main_3 = 160,
+            M2_Order_Torp = 150,
+        }
     )
+    OrderM2Base:StartEmptyBase({{15, 13, 11}, {9, 7, 5}})
+    OrderM2Base:SetMaximumConstructionEngineers(6)
+end
 
-    OrderM2BaseAirAttacks()
-    OrderM2BaseLandAttacks()
-    OrderM2BaseNavalAttacks()
+function OrderM2BaseEngieCount()
+    OrderM2Base:SetEngineerCount({{15, 13, 11}, {13, 11, 9}})
+    OrderM2Base:SetMaximumConstructionEngineers(3)
 end
 
 function OrderM2BaseAirAttacks()
+    -- Enable air scouting
+    OrderM2Base:SetActive('AirScouting', true)
+
     local opai = nil
     local quantity = {}
 
@@ -118,248 +130,196 @@ end
 
 function OrderM2BaseLandAttacks()
     local opai = nil
+    local quantity = {}
+    local trigger = {}
 end
 
 function OrderM2BaseNavalAttacks()
-
     local opai = nil
-    local maxQuantity = {}
-    local minQuantity = {}
+    local quantity = {}
     local trigger = {}
-    local template = {}
-    local builder = {}
 
-        --[[
-    trigger = {16, 14, 12}
-    Temp = {
-        'M2_Order_North_Battlecruiser_Attack_1',
-        'NoPlan',
-        { 'xes0307', 1, 2, 'Attack', 'AttackFormation' },  -- Battlecruiser
-        { 'ues0203', 1, 4, 'Attack', 'AttackFormation' },  -- Submarine
-        { 'xes0205', 1, 2, 'Attack', 'AttackFormation' },  -- Shield Boat
-
-    }
-    Builder = {
-        BuilderName = 'M2_Order_North_Battlecruiser_Builder_1',
-        PlatoonTemplate = Temp,
-        InstanceCount = 1,
-        Priority = 120,
-        PlatoonType = 'Sea',
-        RequiresConstruction = true,
-        LocationType = 'M2_Order_Base',
-        PlatoonAIFunction = {SPAIFileName, 'PatrolChainPickerThread' },       
-        PlatoonData = {
-            PatrolChains = {'M2_OrderNorth_NavalAttack_Chain_1',
-                            'M2_OrderNorth_NavalAttack_Chain_2',
-                            'M2_OrderNorth_NavalAttack_Chain_3',
-                            'M2_OrderNorth_NavalAttack_Chain_4'}
-        },
-        BuildConditions = {
-            { '/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
-        {'default_brain', 'Player', trigger[Difficulty], categories.NAVAL * categories.TECH2 * categories.MOBILE}},
-        },
-    }
-    ArmyBrains[Order]:PBMAddPlatoon( Builder )
-
-    trigger = {2, 2, 1}
-    Temp = {
-        'M2_Order_North_Battlecruiser_Attack_2',
-        'NoPlan',
-        { 'xes0307', 1, 2, 'Attack', 'AttackFormation' },  -- Battlecruiser
-        { 'ues0203', 1, 4, 'Attack', 'AttackFormation' },  -- Submarine
-        { 'xes0205', 1, 2, 'Attack', 'AttackFormation' },  -- Shield Boat
-
-    }
-    Builder = {
-        BuilderName = 'M2_Order_North_Battlecruiser_Builder_2',
-        PlatoonTemplate = Temp,
-        InstanceCount = 1,
-        Priority = 120,
-        PlatoonType = 'Sea',
-        RequiresConstruction = true,
-        LocationType = 'M2_Order_Base',
-        PlatoonAIFunction = {SPAIFileName, 'PatrolChainPickerThread' },       
-        PlatoonData = {
-            PatrolChains = {'M2_OrderNorth_NavalAttack_Chain_1',
-                            'M2_OrderNorth_NavalAttack_Chain_2',
-                            'M2_OrderNorth_NavalAttack_Chain_3',
-                            'M2_OrderNorth_NavalAttack_Chain_4'}
-        },
-        BuildConditions = {
-            { '/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
-        {'default_brain', 'Player', trigger[Difficulty], categories.NAVAL * categories.TECH3 * categories.MOBILE}},
-        },
-    }
-    ArmyBrains[Order]:PBMAddPlatoon( Builder )
-    
-    opai = OrderM2Base:AddNavalAI('M2_OrderNorth_NavalAttack_1',
+    -- Defense
+    -- 6 Destroyers
+    --[[opai = OrderM2Base:AddNavalAI('M2_Order_NavalDef_1',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
             PlatoonData = {
-                PatrolChain = 'M2_OrderNorth_NavalAttack_Chain_1',
+                PatrolChain = 'M2_Order_Defensive_Chain_West',
+            },
+            EnabledTypes = {'Destroyer'},
+            MaxFrigates = 30,
+            MinFrigates = 30,
+            Priority = 120,
+        }
+    )
+    opai:SetChildActive('T3', false)]]--
+
+    -- 3 T2 subs, Cruisers
+    opai = OrderM2Base:AddNavalAI('M2_Order_NavalDef_2',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M2_Order_Defensive_Chain_West',
+            },
+            EnabledTypes = {'Cruiser', 'Submarine'},
+            Overrides = {
+                CORE_TO_SUBS = 2,
+                CORE_TO_CRUISERS = 2,
             },
             MaxFrigates = 30,
             MinFrigates = 30,
-            Priority = 100,
+            Priority = 110,
         }
     )
-    --opai:SetChildActive('T3', false)
+    opai:SetChildActive('T3', false)
 
-    opai = OrderM2Base:AddNavalAI('M2_OrderNorth_NavalAttack_2',
+    opai = OrderM2Base:AddNavalAI('M2_Order_NavalDef_3',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
             PlatoonData = {
-                PatrolChain = 'M2_OrderNorth_NavalAttack_Chain_1',
+                PatrolChain = 'M2_Order_Defensive_Chain_Full',
             },
             MaxFrigates = 50,
             MinFrigates = 50,
             Priority = 100,
         }
     )
-
-    opai = OrderM2Base:AddOpAI({'M2_Atlantis_1', 'M2_Atlantis_2'},
-        {
-            Amount = 2,
-            KeepAlive = true,
-            PlatoonAIFunction = {SPAIFileName, 'PatrolThread'},
-            PlatoonData = {
-                PatrolChain = 'M2_OrderNorth_NavalAttack_Chain_1',
-            },
-
-            MaxAssist = 6,
-            Retry = true,
-        }
-    )
-    ]]--
 end
 
-function CarrierRebuild1()
+-----------
+-- Carriers
+-----------
+function OrderM2Carriers()
+    for i = 1, 2 do
+        ArmyBrains[Order]:PBMAddBuildLocation('M2_Order_Carrier_Marker_' .. i, 40, 'OrderM2Carrier' .. i)
+    end
+
+    -- Build 2 Carriers
     local Temp = {
         'M2_Order_Carrier_1',
         'NoPlan',
-        { 'uas0303', 1, 1, 'Attack', 'AttackFormation' },  -- Carrier
-
+        { 'uas0303', 1, 2, 'Attack', 'AttackFormation' },  -- Carrier
     }
     local Builder = {
         BuilderName = 'M2_Order_Carrier_Builder_1',
         PlatoonTemplate = Temp,
         InstanceCount = 1,
-        Priority = 100,
+        Priority = 500,
         PlatoonType = 'Sea',
         RequiresConstruction = true,
         LocationType = 'M2_Order_Base',
-        PlatoonAIFunction = {SPAIFileName, 'MoveToThread' },       
+        BuildConditions = {
+            { '/lua/editor/BaseManagerBuildConditions.lua', 'BaseActive', {'M2_Order_Base'} },
+        },
+        PlatoonAIFunction = {CustomFunctions, 'CarrierAI'},       
         PlatoonData = {
-            MoveRoute = {'M2_Carrier_Move_Order_1'},
+            MoveChain = 'M2_Order_Carrier_Chain',
+            Location = 'OrderM2Carrier',
         },
     }
     ArmyBrains[Order]:PBMAddPlatoon( Builder )
-end
 
-function CarrierRebuild2()
-    local Temp = {
-        'M2_Order_Carrier_2',
+    --------------------
+    -- Carrier's attacks
+    --------------------
+    -- Carrier 1
+    --
+    quantity = {12, 10, 8}
+    trigger = {15, 20, 25}
+    Temp = {
+        'M2_Order_Carrier1_Air_Attack_1',
         'NoPlan',
-        { 'uas0303', 1, 1, 'Attack', 'AttackFormation' },  -- Carrier
-
+        { 'uaa0204', 1, quantity[Difficulty], 'Attack', 'AttackFormation' }, -- T2 Torp Bomber
     }
-    local Builder = {
-        BuilderName = 'M2_Order_Carrier_Builder_2',
-        PlatoonTemplate = Temp,
-        InstanceCount = 1,
-        Priority = 100,
-        PlatoonType = 'Sea',
-        RequiresConstruction = true,
-        LocationType = 'M2_Order_Base',
-        PlatoonAIFunction = {SPAIFileName, 'MoveToThread' },       
-        PlatoonData = {
-            MoveRoute = {'M2_Carrier_Move_Order_2'},
-        },
-    }
-    ArmyBrains[Order]:PBMAddPlatoon( Builder )
-end
-
-function PatrolWestRebuild1()
-    --[[
-    local Temp = {
-        'M2_Order_Naval_Defense_1',
-        'NoPlan',
-        { 'uas0201', 1, 6, 'Attack', 'GrowthFormation' },  -- Destroyer
-        { 'uas0202', 1, 3, 'Attack', 'GrowthFormation' },  -- Cruiser
-
-    }
-    local Builder = {
-        BuilderName = 'M2_Order_Naval_Defense_Builder_1',
+    Builder = {
+        BuilderName = 'M2_Order_Carrier1_Air_Builder_1',
         PlatoonTemplate = Temp,
         InstanceCount = 1,
         Priority = 110,
-        PlatoonType = 'Sea',
+        PlatoonType = 'Air',
         RequiresConstruction = true,
-        LocationType = 'M2_Order_Base',
-        PlatoonAIFunction = {SPAIFileName, 'PatrolThread' },       
+        LocationType = 'OrderM2Carrier1',
+        BuildConditions = {
+            { '/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
+                {'default_brain', 'UEF', trigger[Difficulty], categories.NAVAL * categories.MOBILE}},
+            { '/lua/editor/BaseManagerBuildConditions.lua', 'BaseActive', {'M2_Order_Naval_Base'} },
+        },
+        PlatoonAIFunction = {CustomFunctions, 'PatrolThread'},       
         PlatoonData = {
-            PatrolChain = 'M2_Order_Defensive_Chain_West',
-            Ratio = 0.5,
-            PlatoonName = 'M2_Order_Naval_Defense_Builder_1'
+            PatrolChain = 'M2_Order_Naval_Attack_Chain_1',
         },
-        PlatoonBuildCallbacks = {
-            [0] = {'/lua/editor/amplatoonhelperfunctions.lua', 'AMUnlockPlatoon',
-                {'Order','M2_Order_Naval_Defense_Builder_1'},
-                {'Order','M2_Order_Naval_Defense_Builder_1'}
-            },
-        },
-        PlatoonAddFunctions = {
-            [0] = {'/lua/editor/amplatoonhelperfunctions.lua', 'AMLockPlatoon',
-                {'M2_Order_Naval_Defense_Builder_1'},
-                {'M2_Order_Naval_Defense_Builder_1'}
-            },
-            [1] = {'/lua/ai/opai/BaseManagerPlatoonThreads.lua', 'AMUnlockRatio', 'M2_Order_Naval_Defense_Builder_1'}
-        }
     }
     ArmyBrains[Order]:PBMAddPlatoon( Builder )
-    ]]--
-    local opai = OrderM2Base:AddNavalAI('M2_Order_NavalDefense_1',
-        {
-            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
-            PlatoonData = {
-                PatrolChain = 'M2_Order_Defensive_Chain_West',
-            },
-            MaxFrigates = 40,
-            MinFrigates = 40,
-            Priority = 200,
-        }
-    )
-    opai:SetChildActive('T1', false)
-    opai:SetChildActive('T3', false)
-    opai:SetLockingStyle('DeathRatio', {Ratio = .4})
-end
 
-function PatrolWestRebuild2()
-    local opai = OrderM2Base:AddNavalAI('M2_Order_NavalDefense_2',
-        {
-            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
-            PlatoonData = {
-                PatrolChain = 'M2_Order_Defensive_Chain_West',
-            },
-            MaxFrigates = 25,
-            MinFrigates = 25,
-            Priority = 190,
-        }
-    )
-end
-function PatrolFullRebuild()
-    local opai = OrderM2Base:AddNavalAI('M2_Order_NavalDefense_3',
-        {
-            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
-            PlatoonData = {
-                PatrolChain = 'M2_Order_Defensive_Chain_Full',
-            },
-            MaxFrigates = 30,
-            MinFrigates = 30,
-            Priority = 180,
-        }
-    )
-    opai:SetChildActive('T1', false)
-    opai:SetChildActive('T3', false)
-    opai:SetLockingStyle('DeathRatio', {Ratio = .5})
+    -- 
+    quantity = {7, 6, 5}
+    Temp = {
+        'M2_Order_Carrier1_Air_Attack_2',
+        'NoPlan',
+        { 'xaa0305', 1, quantity[Difficulty], 'Attack', 'AttackFormation' }, -- Restorer
+    }
+    Builder = {
+        BuilderName = 'M2_Order_Carrier1_Air_Builder_2',
+        PlatoonTemplate = Temp,
+        InstanceCount = 1,
+        Priority = 100,
+        PlatoonType = 'Air',
+        RequiresConstruction = true,
+        LocationType = 'OrderM2Carrier1',
+        PlatoonAIFunction = {CustomFunctions, 'PatrolThread'},       
+        PlatoonData = {
+            PatrolChain = 'M2_Order_Naval_Attack_Chain_1',
+        },
+    }
+    ArmyBrains[Order]:PBMAddPlatoon( Builder )
+
+    -- Carrier 2
+    --
+    quantity = {7, 6}
+    trigger = {20, 25}
+    Temp = {
+        'M2_Order_Carrier2_Air_Attack_1',
+        'NoPlan',
+        { 'uaa0303', 1, quantity[Difficulty], 'Attack', 'AttackFormation' }, -- ASF
+    }
+    Builder = {
+        BuilderName = 'M2_Order_Carrier2_Air_Builder_1',
+        PlatoonTemplate = Temp,
+        InstanceCount = 1,
+        Priority = 100,
+        PlatoonType = 'Air',
+        RequiresConstruction = true,
+        LocationType = 'OrderM2Carrier2',
+        BuildConditions = {
+            { '/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
+                {'default_brain', 'UEF', trigger[Difficulty], categories.AIR * categories.MOBILE * categories.TECH3}},
+            { '/lua/editor/BaseManagerBuildConditions.lua', 'BaseActive', {'M2_Order_Naval_Base'} },
+        },
+        PlatoonAIFunction = {CustomFunctions, 'PatrolThread'},       
+        PlatoonData = {
+            PatrolChain = 'M2_Order_Naval_Attack_Chain_1',
+        },
+    }
+    ArmyBrains[Order]:PBMAddPlatoon( Builder )
+
+    Builder = {
+        BuilderName = 'M2_Order_Carrier2_Air_Builder_2',
+        PlatoonTemplate = Temp,
+        InstanceCount = 1,
+        Priority = 110,
+        PlatoonType = 'Air',
+        RequiresConstruction = true,
+        LocationType = 'OrderM2Carrier2',
+        BuildConditions = {
+            { '/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
+                {'default_brain', 'Cybran', trigger[Difficulty], categories.AIR * categories.MOBILE * categories.TECH3}},
+            { '/lua/editor/BaseManagerBuildConditions.lua', 'BaseActive', {'M2_Order_Naval_Base'} },
+        },
+        PlatoonAIFunction = {CustomFunctions, 'PatrolThread'},       
+        PlatoonData = {
+            PatrolChain = 'M2_Order_Carrier_Attack_Cybran_Chain',
+        },
+    }
+    ArmyBrains[Order]:PBMAddPlatoon( Builder )
 end
