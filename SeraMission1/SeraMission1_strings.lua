@@ -19,5 +19,9 @@
 
 
 Introduction = {
-  {text = '[Hall]: Ze Intro.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+  {text = '[Seraphim]: Ze Intro.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+}
+
+M1_CruiserLost = {
+  {text = '[Seraphim]: Cruiser lost.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
 }
