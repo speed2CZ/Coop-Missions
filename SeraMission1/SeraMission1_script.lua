@@ -270,6 +270,7 @@ function IntroMission1()
     StartMission1()
 end
 
+-- Assign objetives
 function StartMission1()
     ----------------------------------------
     -- Primary Objective 1 - Protect Carrier
@@ -377,7 +378,7 @@ function IntroMission2()
         local tblArmy = ListArmies()
 
         if tblArmy[ScenarioInfo.Coop1] then
-            ScenarioInfo.CoopCDR1 = ScenarioFramework.SpawnCommander('Coop1', 'Commander', 'Warp', true, true,
+            ScenarioInfo.CoopCDR1 = ScenarioFramework.SpawnCommander('Coop1', 'Commander', 'Warp', true, true, false,
                 {'ResourceAllocation', 'AdvancedEngineering', 'T3Engineering'})
         else
             useOrderAI = true
@@ -385,8 +386,14 @@ function IntroMission2()
                 {'ResourceAllocationAdvanced', 'EnhancedSensors', 'AdvancedEngineering', 'T3Engineering'})
         end
 
+        -- Spawn Coop player 3 or sACU for Order
         if tblArmy[ScenarioInfo.Coop3] then
-            ScenarioInfo.CoopCDR3 = ScenarioFramework.SpawnCommander('Coop3', 'Commander', 'Warp', true, true)
+            ScenarioInfo.CoopCDR3 = ScenarioFramework.SpawnCommander('Coop3', 'sACU', 'Warp', false, false, false,
+                {'EngineeringFocusingModule', 'ResourceAllocation'})
+        else
+            -- TODO: make sACU warp effect
+            ScenarioFramework.SpawnCommander('Order', 'M2_Order_sACU', false, false, false, false,
+                {'EngineeringFocusingModule', 'ResourceAllocation'})
         end
 
         -- Don't produce units for player anymore
@@ -400,6 +407,7 @@ function IntroMission2()
         IssueMove({ScenarioInfo.M1_Order_Tempest}, ScenarioUtils.MarkerToPosition('M2_Order_Tempest_Marker'))
 
         if useOrderAI then
+            -- Order base AI and mobile factories AI
             M2OrderAI.OrderM2BaseAI()
             -- M2OrderAI.OrderM2Carriers()
 
@@ -407,12 +415,15 @@ function IntroMission2()
 
             ScenarioFramework.CreateTimerTrigger(ResetBuildInterval, 300)
 
+            -- Trigger to assist first factory once build, get it asap to T3 so T3 engies can build base.
             ScenarioFramework.CreateArmyStatTrigger(M2T1AirFactoryBuilt, ArmyBrains[Order], 'M2T1AirFactoryBuilt',
                 {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 1, Category = categories.FACTORY * categories.TECH1 * categories.AIR}})
 
+            -- Trigger to stop assisting factory once it's on T3, get back to base building.
             ScenarioFramework.CreateArmyStatTrigger(M2T3AirFactoryBuilt, ArmyBrains[Order], 'M2T3AirFactoryBuilt',
                 {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 1, Category = categories.FACTORY * categories.TECH3 * categories.AIR}})
         else
+            -- Give Carrier to coop player, once near island
             ForkThread(function()
                 while (ScenarioInfo.M1_Order_Carrier and not ScenarioInfo.M1_Order_Carrier:IsDead() and ScenarioInfo.M1_Order_Carrier:IsUnitState('Moving')) do
                     WaitSeconds(.5)
@@ -423,6 +434,9 @@ function IntroMission2()
                 end
             end)
 
+            -- Give Tempest to coop player once near island
+            -- TODO: Find out if the hidden gun isn't causing problems.
+            --       Alternative solution: Ctrl-K once it's arrives / secondary objective to reclaim
             ForkThread(function()
                 while (ScenarioInfo.M1_Order_Tempest and not ScenarioInfo.M1_Order_Tempest:IsDead() and ScenarioInfo.M1_Order_Tempest:IsUnitState('Moving')) do
                     WaitSeconds(.5)
@@ -505,13 +519,38 @@ function IntroMission2NIS()
 
         Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('Cam_2_2'), 3)
 
+        -- Spawn Player and Coop 2
         ScenarioInfo.PlayerCDR = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true, false,
             {'AdvancedEngineering', 'T3Engineering', 'ResourceAllocation'})
+
+        if tblArmy[ScenarioInfo.Coop2] then
+            ScenarioInfo.CoopCDR2 = ScenarioFramework.SpawnCommander('Coop2', 'sACU', false, true)--, false, false,
+                --{'EngineeringThroughput'})
+        else
+            -- TODO: make sACU warp effect
+            --ScenarioFramework.SpawnCommander('Player', 'sACU', 'Warp')
+            ScenarioUtils.CreateArmyUnit('Player', 'sACU')
+        end
+
+        WaitSeconds(3)
         
         Cinematics.ExitNISMode()
 
         -- Set back to default
         ArmyBrains[Order]:PBMSetCheckInterval(6)
+    else
+        -- Spawn Player and Coop 2
+        ScenarioInfo.PlayerCDR = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true, false,
+            {'AdvancedEngineering', 'T3Engineering', 'ResourceAllocation'})
+
+        if tblArmy[ScenarioInfo.Coop2] then
+            ScenarioInfo.CoopCDR2 = ScenarioFramework.SpawnCommander('Coop2', 'sACU', false, true)--, false, false,
+                --{'EngineeringThroughput'})
+        else
+            -- TODO: make sACU warp effect
+            --ScenarioFramework.SpawnCommander('Player', 'sACU', 'Warp')
+            ScenarioUtils.CreateArmyUnit('Player', 'sACU')
+        end
     end
     
     StartMission2()
@@ -521,6 +560,7 @@ function ResetBuildInterval()
     ArmyBrains[Order]:PBMSetCheckInterval(6)
 end
 
+-- Order Base building functions
 function M2T1AirFactoryBuilt()
     local factory = ArmyBrains[Order]:GetListOfUnits(categories.FACTORY * categories.AIR, false)
     IssueGuard({ScenarioInfo.OrderACU}, factory[1])
@@ -530,14 +570,19 @@ function M2T3AirFactoryBuilt()
     IssueStop({ScenarioInfo.OrderACU})
     IssueClearCommands({ScenarioInfo.OrderACU})
 
+    -- Allow T1, T2 engineers again
+    ScenarioFramework.RemoveRestriction(Order, categories.ual0105 + categories.ual0208)
+
+    -- Trigger to assist naval factory once built
     ScenarioFramework.CreateArmyStatTrigger(M2T1NavalFactoryBuilt, ArmyBrains[Order], 'M2T1NavalFactoryBuilt',
         {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 1, Category = categories.FACTORY * categories.TECH1 * categories.NAVAL}})
 
-    ScenarioFramework.CreateArmyStatTrigger(M2_T3AirAttacks, ArmyBrains[Order], 'M2_T3AirAttacks',
+    -- Trigger to start air attacks once at least 2 T3 pgens are built
+    ScenarioFramework.CreateArmyStatTrigger(M2OrderT3AirAttacks, ArmyBrains[Order], 'M2OrderT3AirAttacks',
         {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 2, Category = categories.ENERGYPRODUCTION * categories.STRUCTURE * categories.TECH3}})
 end
 
-function M2_T3AirAttacks()
+function M2OrderT3AirAttacks()
     M2OrderAI.OrderM2BaseAirAttacks()
 end
 
@@ -564,10 +609,14 @@ function M2T3NavalFactoryBuilt()
 end
 
 function M2T3LandFactoryBuilt()
+    -- Start land attacks
     M2OrderAI.OrderM2BaseLandAttacks()
+    
+    -- Put more engies on permanent assist
     M2OrderAI.OrderM2BaseEngieCount()
 end
 
+-- Assign objectives
 function StartMission2()
     -----------------------------------------
     -- Primary Objective 1 - Destroy Factories
