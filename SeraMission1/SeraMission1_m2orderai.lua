@@ -59,11 +59,12 @@ function OrderM2BaseAI()
             M2_Order_Factory_3 = 220,
             M2_Order_Energy_2 = 210,
             M2_Order_Factory_4 = 200,
-            M2_Oorder_North = 190,
+            M2_Order_North = 190,
             M2_Order_Main_1 = 180,
-            M2_Order_Main_2 = 170,
-            M2_Order_Main_3 = 160,
-            M2_Order_Torp = 150,
+            M2_Order_Factory_5 = 170,
+            M2_Order_Main_2 = 160,
+            M2_Order_Main_3 = 150,
+            M2_Order_Torp = 140,
         }
     )
     OrderM2Base:StartEmptyBase({{15, 13, 11}, {9, 7, 5}})
@@ -81,6 +82,7 @@ function OrderM2BaseAirAttacks()
 
     local opai = nil
     local quantity = {}
+    local trigger = {}
 
     -- Air Defense
     for i = 1, 3 do
@@ -141,7 +143,7 @@ function OrderM2BaseNavalAttacks()
 
     -- Defense
     -- 6 Destroyers
-    --[[opai = OrderM2Base:AddNavalAI('M2_Order_NavalDef_1',
+    opai = OrderM2Base:AddNavalAI('M2_Order_NavalDef_1',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
             PlatoonData = {
@@ -153,7 +155,7 @@ function OrderM2BaseNavalAttacks()
             Priority = 120,
         }
     )
-    opai:SetChildActive('T3', false)]]--
+    opai:SetChildActive('T3', false)
 
     -- 3 T2 subs, Cruisers
     opai = OrderM2Base:AddNavalAI('M2_Order_NavalDef_2',
@@ -180,6 +182,7 @@ function OrderM2BaseNavalAttacks()
             PlatoonData = {
                 PatrolChain = 'M2_Order_Defensive_Chain_Full',
             },
+            EnabledTypes = {'Battleship'},
             MaxFrigates = 50,
             MinFrigates = 50,
             Priority = 100,
@@ -190,7 +193,7 @@ end
 -----------
 -- Carriers
 -----------
-function OrderM2Carriers()
+function OrderM2CarriersAI()
     for i = 1, 2 do
         ArmyBrains[Order]:PBMAddBuildLocation('M2_Order_Carrier_Marker_' .. i, 40, 'OrderM2Carrier' .. i)
     end
@@ -320,6 +323,42 @@ function OrderM2Carriers()
         PlatoonData = {
             PatrolChain = 'M2_Order_Carrier_Attack_Cybran_Chain',
         },
+    }
+    ArmyBrains[Order]:PBMAddPlatoon( Builder )
+end
+
+function OrderM2TempestAI(unit)
+    ArmyBrains[Order]:PBMAddBuildLocation('M2_Order_Starting_Tempest', 60, 'M2_Tempest1')
+
+    local location
+    for num, loc in ArmyBrains[Order].PBM.Locations do
+        if loc.LocationType == 'M2_Tempest1' then
+            location = loc
+            OrderM2TempestAttacks()
+            break
+        end
+    end
+    location.PrimaryFactories.Sea = unit
+end
+
+function OrderM2TempestAttacks()
+    local Temp = {
+        'M2_Order_Tempest_Engineers_1',
+        'NoPlan',
+        { 'ual0105', 1, 8, 'Attack', 'AttackFormation' },  -- T1 Engineer
+    }
+    local Builder = {
+        BuilderName = 'M2_Order_Tempest_Engineer_Builder_1',
+        PlatoonTemplate = Temp,
+        InstanceCount = 1,
+        Priority = 100,
+        PlatoonType = 'Sea',
+        RequiresConstruction = true,
+        LocationType = 'M2_Tempest1',
+        PlatoonAIFunction = {SPAIFileName, 'SplitPatrolThread'},
+        PlatoonData = {
+            PatrolChains = {'M2_Order_Base_EngineerChain', 'M2_Order_Base_Tempest_Engineers_Chain', 'M1_UEF_Base_Naval_Patrol_Chain'},
+        },    
     }
     ArmyBrains[Order]:PBMAddPlatoon( Builder )
 end

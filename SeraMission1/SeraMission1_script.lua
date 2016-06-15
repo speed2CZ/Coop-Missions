@@ -404,12 +404,15 @@ function IntroMission2()
 
         -- Move Carrier and Tempest on map close to the island
         IssueMove({ScenarioInfo.M1_Order_Carrier}, ScenarioUtils.MarkerToPosition('M2_Order_Carrier_Marker_1'))
-        IssueMove({ScenarioInfo.M1_Order_Tempest}, ScenarioUtils.MarkerToPosition('M2_Order_Tempest_Marker'))
+        IssueMove({ScenarioInfo.M1_Order_Tempest}, ScenarioUtils.MarkerToPosition('M2_Order_Starting_Tempest'))
 
         if useOrderAI then
             -- Order base AI and mobile factories AI
             M2OrderAI.OrderM2BaseAI()
-            -- M2OrderAI.OrderM2Carriers()
+            -- M2OrderAI.OrderM2CarriersAI()
+
+            -- Temporary unit production from the tempest
+            M2OrderAI.OrderM2TempestAI(ScenarioInfo.M1_Order_Tempest)
 
             ArmyBrains[Order]:PBMSetCheckInterval(6)
 
