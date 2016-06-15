@@ -1756,8 +1756,8 @@ Scenario = {
     --[[  Armies                                                                   ]]--
     --[[                                                                           ]]--
     next_army_id = '9',
-    next_group_id = '207',
-    next_unit_id = '943',
+    next_group_id = '208',
+    next_unit_id = '944',
     Armies = 
     {
         --[[                                                                           ]]--
@@ -1883,19 +1883,6 @@ Scenario = {
                         orders = '',
                         platoon = '',
                         Units = {
-                            ['M2_Order_sACU'] = {
-                                type = 'ual0301',
-                                orders = '',
-                                platoon = '',
-                                Position = { 1825.500000, 17.884766, 1667.500000 },
-                                Orientation = { 0.000000, 0.000000, 0.000000 },
-                            },
-                            ['M2_Order_Support_Factories'] = GROUP {
-                                orders = '',
-                                platoon = '',
-                                Units = {
-                                },
-                            },
                             ['M2_Order_Units'] = GROUP {
                                 orders = '',
                                 platoon = '',
@@ -1907,73 +1894,26 @@ Scenario = {
                                         Position = { 1844.000000, 17.500000, 1758.000000 },
                                         Orientation = { 0.000000, 0.000000, 0.000000 },
                                     },
-                                },
-                            },
-                            ['M2_Order_Defences'] = GROUP {
-                                orders = '',
-                                platoon = '',
-                                Units = {
-                                },
-                            },
-                            ['M2_Order_Base_D1'] = GROUP {
-                                orders = '',
-                                platoon = '',
-                                Units = {
-                                    ['M2_Order_Base_D2'] = GROUP {
+                                    ['M2_Order_ACU'] = {
+                                        type = 'ual0001',
                                         orders = '',
                                         platoon = '',
-                                        Units = {
-                                            ['M2_Order_Base_D3'] = GROUP {
-                                                orders = '',
-                                                platoon = '',
-                                                Units = {
-                                                    ['Misc'] = GROUP {
-                                                        orders = '',
-                                                        platoon = '',
-                                                        Units = {
-                                                            ['UNIT_384'] = {
-                                                                type = 'uab3202',
-                                                                orders = '',
-                                                                platoon = '',
-                                                                Position = { 1863.500000, 17.500000, 1715.500000 },
-                                                                Orientation = { 0.000000, 0.000000, 0.000000 },
-                                                            },
-                                                            ['UNIT_385'] = {
-                                                                type = 'uab3202',
-                                                                orders = '',
-                                                                platoon = '',
-                                                                Position = { 1820.500000, 17.500000, 1682.500000 },
-                                                                Orientation = { 0.000000, 0.000000, 0.000000 },
-                                                            },
-                                                        },
-                                                    },
-                                                    ['Defense'] = GROUP {
-                                                        orders = '',
-                                                        platoon = '',
-                                                        Units = {
-                                                        },
-                                                    },
-                                                    ['Factories'] = GROUP {
-                                                        orders = '',
-                                                        platoon = '',
-                                                        Units = {
-                                                        },
-                                                    },
-                                                    ['Energy'] = GROUP {
-                                                        orders = '',
-                                                        platoon = '',
-                                                        Units = {
-                                                        },
-                                                    },
-                                                    ['Mass'] = GROUP {
-                                                        orders = '',
-                                                        platoon = '',
-                                                        Units = {
-                                                        },
-                                                    },
-                                                },
-                                            },
-                                        },
+                                        Position = { 1821.500000, 17.857422, 1667.500000 },
+                                        Orientation = { 0.000000, -6.256993, 0.000000 },
+                                    },
+                                    ['M2_Order_sACU'] = {
+                                        type = 'ual0301',
+                                        orders = '',
+                                        platoon = '',
+                                        Position = { 1825.500000, 17.884766, 1667.500000 },
+                                        Orientation = { 0.000000, 0.000000, 0.000000 },
+                                    },
+                                    ['M2_Order_T3_Sonar'] = {
+                                        type = 'uas0305',
+                                        orders = '',
+                                        platoon = '',
+                                        Position = { 1815.500000, 17.500000, 1681.500000 },
+                                        Orientation = { 0.000000, 0.000000, 0.000000 },
                                     },
                                 },
                             },
@@ -2630,14 +2570,20 @@ Scenario = {
                                             },
                                         },
                                     },
+                                    ['M2_Order_Sonar'] = GROUP {
+                                        orders = '',
+                                        platoon = '',
+                                        Units = {
+                                            ['UNIT_384'] = {
+                                                type = 'uab3202',
+                                                orders = '',
+                                                platoon = '',
+                                                Position = { 1863.500000, 17.500000, 1715.500000 },
+                                                Orientation = { 0.000000, 0.000000, 0.000000 },
+                                            },
+                                        },
+                                    },
                                 },
-                            },
-                            ['M2_Order_ACU'] = {
-                                type = 'ual0001',
-                                orders = '',
-                                platoon = '',
-                                Position = { 1821.500000, 17.857422, 1667.500000 },
-                                Orientation = { 0.000000, -6.256993, 0.000000 },
                             },
                         },
                     },

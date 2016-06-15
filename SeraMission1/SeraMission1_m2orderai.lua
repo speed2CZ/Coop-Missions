@@ -65,6 +65,7 @@ function OrderM2BaseAI()
             M2_Order_Main_2 = 160,
             M2_Order_Main_3 = 150,
             M2_Order_Torp = 140,
+            M2_Order_Sonar = 130,
         }
     )
     OrderM2Base:StartEmptyBase({{15, 13, 11}, {9, 7, 5}})
@@ -142,20 +143,22 @@ function OrderM2BaseNavalAttacks()
     local trigger = {}
 
     -- Defense
-    -- 6 Destroyers
-    opai = OrderM2Base:AddNavalAI('M2_Order_NavalDef_1',
-        {
-            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
-            PlatoonData = {
-                PatrolChain = 'M2_Order_Defensive_Chain_West',
-            },
-            EnabledTypes = {'Destroyer'},
-            MaxFrigates = 30,
-            MinFrigates = 30,
-            Priority = 120,
-        }
-    )
-    opai:SetChildActive('T3', false)
+    -- 2x 3 Destroyers and 3 frigates
+    for i = 1, 2 do
+        opai = OrderM2Base:AddNavalAI('M2_Order_NavalDef_1_' .. i,
+            {
+                MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+                PlatoonData = {
+                    PatrolChain = 'M2_Order_Defensive_Chain_West',
+                },
+                EnabledTypes = {'Destroyer', 'Frigate'},
+                MaxFrigates = 18,
+                MinFrigates = 18,
+                Priority = 120,
+            }
+        )
+        --opai:SetChildActive('T3', false)
+    end
 
     -- 3 T2 subs, Cruisers
     opai = OrderM2Base:AddNavalAI('M2_Order_NavalDef_2',
