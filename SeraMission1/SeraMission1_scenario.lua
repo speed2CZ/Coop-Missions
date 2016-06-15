@@ -16,8 +16,8 @@ ScenarioInfo = {
     norushoffsetY_UEF = 0.000000,
     norushoffsetX_Order = 0.000000,
     norushoffsetY_Order = 0.000000,
-    norushoffsetX_Seraphim = 0.000000,
-    norushoffsetY_Seraphim = 0.000000,
+    norushoffsetX_Cybran = 0.000000,
+    norushoffsetY_Cybran = 0.000000,
     norushoffsetX_Objective = 0.000000,
     norushoffsetY_Objective = 0.000000,
     norushoffsetX_Coop1 = 0.000000,
@@ -29,7 +29,7 @@ ScenarioInfo = {
     Configurations = {
         ['standard'] = {
             teams = {
-                { name = 'FFA', armies = {'Player','UEF','Order','Seraphim','Objective','Coop1','Coop2','Coop3',} },
+                { name = 'FFA', armies = {'Player','UEF','Order','Cybran','Objective','Coop1','Coop2','Coop3',} },
             },
             customprops = {
             },
