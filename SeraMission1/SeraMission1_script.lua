@@ -391,7 +391,7 @@ function IntroMission2()
             ScenarioInfo.CoopCDR3 = ScenarioFramework.SpawnCommander('Coop3', 'sACU', 'Warp', false, false, false,
                 {'EngineeringFocusingModule', 'ResourceAllocation'})
         else
-            -- TODO: make sACU warp effect
+            -- TODO: make sACU warp effect, name for the sACU
             ScenarioFramework.SpawnCommander('Order', 'M2_Order_sACU', false, false, false, false,
                 {'EngineeringFocusingModule', 'ResourceAllocation'})
         end
@@ -507,6 +507,8 @@ end
 function IntroMission2NIS()
     ScenarioFramework.SetPlayableArea('M2_Area', false)
 
+    local tblArmy = ListArmies()
+
     if not SkipNIS2 then
         Cinematics.EnterNISMode()
         -- Ensure that Order starts building base sooner rather than later
@@ -524,12 +526,12 @@ function IntroMission2NIS()
             {'AdvancedEngineering', 'T3Engineering', 'ResourceAllocation'})
 
         if tblArmy[ScenarioInfo.Coop2] then
-            ScenarioInfo.CoopCDR2 = ScenarioFramework.SpawnCommander('Coop2', 'sACU', false, true)--, false, false,
-                --{'EngineeringThroughput'})
+            ScenarioInfo.CoopCDR2 = ScenarioFramework.SpawnCommander('Coop2', 'sACU', false, true, false, false,
+                {'EngineeringThroughput', 'EnhancedSensors'})
         else
-            -- TODO: make sACU warp effect
-            --ScenarioFramework.SpawnCommander('Player', 'sACU', 'Warp')
-            ScenarioUtils.CreateArmyUnit('Player', 'sACU')
+            -- TODO: make sACU warp effect, name for the sACU
+            ScenarioFramework.SpawnCommander('Player', 'sACU', false, false, false, false,
+                {'EngineeringThroughput', 'EnhancedSensors'})
         end
 
         WaitSeconds(3)
@@ -544,12 +546,12 @@ function IntroMission2NIS()
             {'AdvancedEngineering', 'T3Engineering', 'ResourceAllocation'})
 
         if tblArmy[ScenarioInfo.Coop2] then
-            ScenarioInfo.CoopCDR2 = ScenarioFramework.SpawnCommander('Coop2', 'sACU', false, true)--, false, false,
-                --{'EngineeringThroughput'})
+            ScenarioInfo.CoopCDR2 = ScenarioFramework.SpawnCommander('Coop2', 'sACU', false, true, false, false,
+                {'EngineeringThroughput', 'EnhancedSensors'})
         else
-            -- TODO: make sACU warp effect
-            --ScenarioFramework.SpawnCommander('Player', 'sACU', 'Warp')
-            ScenarioUtils.CreateArmyUnit('Player', 'sACU')
+            -- TODO: make sACU warp effect, name for the sACU
+            ScenarioFramework.SpawnCommander('Player', 'sACU', false, false, false, false,
+                {'EngineeringThroughput', 'EnhancedSensors'})
         end
     end
     
