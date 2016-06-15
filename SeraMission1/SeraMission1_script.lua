@@ -19,7 +19,7 @@ local Utilities = import('/lua/utilities.lua')
 ScenarioInfo.Player = 1
 ScenarioInfo.UEF = 2
 ScenarioInfo.Order = 3
-ScenarioInfo.Seraphim = 4
+ScenarioInfo.Cybran = 4
 ScenarioInfo.Objective = 5
 ScenarioInfo.Coop1 = 6
 ScenarioInfo.Coop2 = 7
@@ -31,7 +31,7 @@ ScenarioInfo.Coop3 = 8
 local Player = ScenarioInfo.Player
 local UEF = ScenarioInfo.UEF
 local Order = ScenarioInfo.Order
-local Seraphim = ScenarioInfo.Seraphim
+local Cybran = ScenarioInfo.Cybran
 local Objective = ScenarioInfo.Objective
 local Coop1 = ScenarioInfo.Coop1
 local Coop2 = ScenarioInfo.Coop2
@@ -63,9 +63,11 @@ function OnPopulate(scenario)
     -- Sets Army Colors
     ScenarioFramework.SetSeraphimColor(Player)
     ScenarioFramework.SetUEFPlayerColor(UEF)
+    ScenarioFramework.SetCybranPlayerColor(Cybran)
     ScenarioFramework.SetNeutralColor(Objective)
     ScenarioFramework.SetAeonEvilColor(Order)
 
+    -- TODO: check colors, coop1,3 should havee something similar to Order color, coop 1 order color maybe, coop 2 some seraphim-ish color
     local colors = {
         ['Coop1'] = {132, 10, 10}, 
         ['Coop2'] = {47, 79, 79}, 
@@ -83,7 +85,6 @@ function OnPopulate(scenario)
 
     -- Disable resource sharing from friendly AI
     GetArmyBrain(Order):SetResourceSharing(false)
-    GetArmyBrain(Seraphim):SetResourceSharing(false)
 
     --------
     -- Order
