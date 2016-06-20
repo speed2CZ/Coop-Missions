@@ -16,16 +16,16 @@ local CybranM2Base = BaseManager.CreateBaseManager()
 -- Cybran M2 North Base
 --------------------
 function CybranM2BaseAI()
-    CybranM2NorthBase:InitializeDifficultyTables(ArmyBrains[Cybran], 'M2_Cybran_Base', 'M2_Cybran_Base_Marker', 160, {M2_Cybran_Base = 100})
-    CybranM2NorthBase:StartNonZeroBase({{18, 21, 24}, {14, 17, 20}})
-    CybranM2NorthBase:SetMaximumConstructionEngineers(4)
+    CybranM2Base:InitializeDifficultyTables(ArmyBrains[Cybran], 'M2_Cybran_Base', 'M2_Cybran_Base_Marker', 100, {M2_Cybran_Base = 100})
+    CybranM2Base:StartNonZeroBase({{18, 21, 24}, {14, 17, 20}})
+    CybranM2Base:SetMaximumConstructionEngineers(4)
     
-    CybranM2NorthBase:SetActive('AirScouting', true)
+    CybranM2Base:SetActive('AirScouting', true)
 
     -- Spawn support factories a bit later, else they sometimes bug out and can't build higher tech units.
     ForkThread(function()
         WaitSeconds(1)
-        CybranM2NorthBase:AddBuildGroupDifficulty('M2_Cybran_Base_Support_Factories', 100, true)
+        CybranM2Base:AddBuildGroupDifficulty('M2_Cybran_Base_Support_Factories', 100, true)
     end)
 
     CybranM2BaseAirAttacks()

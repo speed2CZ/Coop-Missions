@@ -4,7 +4,7 @@ local Cinematics = import('/lua/cinematics.lua')
 local M1OrderAI = import('/maps/SeraMission1/SeraMission1_m1orderai.lua')
 local M1UEFAI = import('/maps/SeraMission1/SeraMission1_m1uefai.lua')
 local M2OrderAI = import('/maps/SeraMission1/SeraMission1_m2orderai.lua')
-local M2CybranAI = import('maps/SeraMission1/SeraMission1_m2cybranai.lua')
+local M2CybranAI = import('/maps/SeraMission1/SeraMission1_m2cybranai.lua')
 local M2UEFAI = import('/maps/SeraMission1/SeraMission1_m2uefai.lua')
 local Objectives = import('/lua/ScenarioFramework.lua').Objectives
 local OpStrings = import('/maps/SeraMission1/SeraMission1_strings.lua')
@@ -465,7 +465,7 @@ function IntroMission2()
         -- Cybran AI
         ------------
         -- Spawn cybran base
-        --M2CybranAI.CybranM2BaseAI()
+        M2CybranAI.CybranM2BaseAI()
         
         ---------
         -- UEF AI
