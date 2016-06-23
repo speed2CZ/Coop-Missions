@@ -23,10 +23,17 @@ function AeonM1AirBaseAI()
     AeonM1AirBase:SetActive('AirScouting', true)
 
     ForkThread(function()
-        WaitSeconds(100 - 30*Difficulty)
+        --WaitSeconds(100 - 30*Difficulty)
+		WaitSeconds(5)
         AeonM1AirBase:AddBuildGroup('M1AeonAirBase', 90)
     end)
 
+	ForkThread(function()
+        -- Spawn support factories bit later, since sometimes they can't build anything
+        WaitSeconds(1)
+        AeonM1AirBase:AddBuildGroup('M1_AirBaseSupportFactories', 100, true)
+    end)
+	
     M1AeonAirBaseAttacks()
 end
 
@@ -41,7 +48,7 @@ function M1AeonAirBaseAttacks()
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
                 PatrolChains = {'M1_AirRaid_Aeon',
-                                'M1_AttackFleet_UEF'},
+                                'M1_AmphibiousAttack_Aeon'},
             },
             Priority = 100,
         }
@@ -50,20 +57,31 @@ function M1AeonAirBaseAttacks()
     opai:SetLockingStyle('None')
 
     quantity = {2, 3, 4}
-    trigger = {11, 8, 5}
     opai = AeonM1AirBase:AddOpAI('AirAttacks', 'M1_NorthAirAttack2',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
                 PatrolChains = {'M1_AirRaid_Aeon',
-                                'M1_AttackFleet_UEF'},
+                                'M1_AmphibiousAttack_Aeon'},
             },
             Priority = 100,
         }
     )
     opai:SetChildQuantity('HeavyGunships', quantity[Difficulty])
-    opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
-        {'default_brain', 'Player', trigger[Difficulty], categories.AIR * categories.MOBILE})
+	
+	quantity = {5, 6, 7} --difficulty
+    opai = AeonM1AirBase:AddOpAI('AirAttacks', 'M1_NorthAirAttack3',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+            PlatoonData = {
+                PatrolChains = {'M1_AirRaid_Aeon',
+                                'M1_AmphibiousAttack_Aeon'},
+            },
+            Priority = 100,
+        }
+    )
+    opai:SetChildQuantity('Bombers', quantity[Difficulty])
+
 end
 
 
@@ -71,14 +89,21 @@ end
 -- Aeon M1 Land Base
 --------------------
 function AeonM1LandBaseAI()
-    AeonM1LandBase:InitializeDifficultyTables(ArmyBrains[Aeon], 'M1_South_Base', 'M1AeonLandBaseMarker', 35, {M1_LandBase_1 = 100})
+    AeonM1LandBase:InitializeDifficultyTables(ArmyBrains[Aeon], 'M1AeonLandBase', 'M1AeonLandBaseMarker', 50, {M1_LandBase_1 = 100})
     AeonM1LandBase:StartNonZeroBase({{3, 3, 4}, {2, 2, 3}})
 
 	AeonM1LandBase:SetActive('LandScouting', true)
 	
 	ForkThread(function()
-        WaitSeconds(100 - 30*Difficulty)
-        AeonM1AirBase:AddBuildGroup('M1AeonAirBase', 90)
+        --WaitSeconds(100 - 30*Difficulty)
+		WaitSeconds(5)
+        AeonM1LandBase:AddBuildGroup('M1AeonLandBase', 90)
+    end)
+	
+	ForkThread(function()
+        -- Spawn support factories bit later, since sometimes they can't build anything
+        WaitSeconds(1)
+        AeonM1LandBase:AddBuildGroup('M1_LandBaseSupportFactories', 100, true)
     end)
 	
     AeonM1LandBaseAttacks()
@@ -95,15 +120,13 @@ function AeonM1LandBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_AirRaid_Aeon'},
+                PatrolChains = {'M1_AmphibiousAttack_Aeon'},
             },
             Priority = 100,
         }
     )
     opai:SetChildQuantity({'LightTanks', 'AmphibiousTanks', 'MobileFlak'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
-    opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
-        {'default_brain', 'Player', trigger[Difficulty], categories.ALLUNITS - categories.WALL})
 
     quantity = {20, 30, 40}
     trigger = {60, 50, 40}
@@ -111,15 +134,14 @@ function AeonM1LandBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_AirRaid_Aeon'},
+                PatrolChains = {'M1_AmphibiousAttack_Aeon'},
             },
             Priority = 110,
         }
     )
     opai:SetChildQuantity({'LightTanks', 'AmphibiousTanks', 'MobileFlak'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
-    opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
-        {'default_brain', 'Player', trigger[Difficulty], categories.ALLUNITS - categories.WALL})
+
 
     quantity = {6, 6, 8}
     trigger = {36, 28, 22}

@@ -9,6 +9,7 @@
 local Cinematics = import('/lua/cinematics.lua')
 #local CustomFunctions = import('/maps/SeraNukeMission/SeraNukeMission_CustomFunctions.lua') --> make
 local M1AeonAI = import('/maps/SeraNukeMission/SeraNukeMission_m1AeonAI.lua')  --> make
+local M1SeraAI = import('/maps/SeraNukeMission/SeraNukeMission_m1SeraAI.lua')  --> make
 #local M2OrderAI = import('/maps/SeraNukeMission/SeraNukeMission_m2orderai.lua')  --> make
 #local M2UEFAI = import('/maps/SeraNukeMission/SeraNukeMission_m2uefai.lua')  --> make
 #local M3AeonAI = import('/maps/SeraNukeMission/SeraNukeMission_m3aeonai.lua')  --> make
@@ -34,7 +35,7 @@ ScenarioInfo.Civilians = 7
 ScenarioInfo.Coop1 = 8
 ScenarioInfo.Coop2 = 9
 ScenarioInfo.Coop3 = 10
-ScenarioInfo.HumanPlayers = {}
+ScenarioInfo.HumanPlayers = {} --Is this needed????
 
 --------
 -- Locals
@@ -101,7 +102,7 @@ function OnPopulate(scenario)
 	GetArmyBrain(Order):SetResourceSharing(false)
 	
     ------------
-    -- Aeon Firebase
+    -- Aeon Air and Land Bases
     ------------
 	#ScenarioUtils.CreateArmyGroup('Aeon', 'M1_AirBase_1')
     #ScenarioUtils.CreateArmyGroup('Aeon', 'M1_LandBase_1')
@@ -111,7 +112,31 @@ function OnPopulate(scenario)
     #M1UEFAI.UEFM1ExpansionBases()
     ArmyBrains[Aeon]:PBMSetCheckInterval(5)
     #ScenarioUtils.CreateArmyGroup('Aeon', 'M1_Mass')
+	
+	------------
+    -- Seraphim Base
+    ------------
 
+	M1SeraAI.SeraphimBaseAI() 
+	
+	------------
+    -- Seraphim Defense Patrols
+    ------------
+    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M1_DefenseForceSouth_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_SeraLandPatrolSouth')
+	
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M1_DefenseForceEast_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_SeraLandPatrolEast')
+	
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'DefenseFleet1_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_SeraSeaPatrolSouth')
+	
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'DefenseFleet2_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_SeraSeaPatrolWest')
+	
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'Commander', 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_SeraCommanderPatrol')
+	
     -- Resources for Aeon AI, slightly delayed cause army didn't recieve it for some reason
     ForkThread(function()
         WaitSeconds(2)
@@ -120,6 +145,8 @@ function OnPopulate(scenario)
         ArmyBrains[Aeon]:GiveResource('MASS', 20000)
         ArmyBrains[Aeon]:GiveResource('ENERGY', 100000)
     end)
+	
+	
 
     -- Walls
     #ScenarioUtils.CreateArmyGroup('UEF', 'M1_UEF_Walls')
@@ -136,8 +163,8 @@ function OnPopulate(scenario)
     -- Seraphim Base and Fleet
     ------------
 	
-	ScenarioUtils.CreateArmyGroup('Seraphim', 'Base')
-	ScenarioUtils.CreateArmyGroup('Seraphim', 'DefenseFleet')
+	--ScenarioUtils.CreateArmyGroup('Seraphim', 'Base')
+	--ScenarioUtils.CreateArmyGroup('Seraphim', 'DefenseFleet')
 	
     ------------------
     -- Initial Attacks
@@ -148,18 +175,20 @@ function OnPopulate(scenario)
         #ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_North_Land_Attack_Chain_' .. i)
     #end
 
-    #for i = 1, 2 do
-        #platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_Initial_Tanks_South_' .. i, 'GrowthFormation')
-        #ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_South_Land_Attack_Chain_' .. i)
-    #end
-
-    #platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_Titans_1_D' .. Difficulty, 'GrowthFormation')
-    #ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_Titan_Chain_1')
-    #ScenarioFramework.CreatePlatoonDeathTrigger(M1SendTitans1, platoon)
-
-    #platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_Titans_2_D' .. Difficulty, 'GrowthFormation')
-    #ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_Titan_Chain_2')
-    #ScenarioFramework.CreatePlatoonDeathTrigger(M1SendTitans2, platoon)
+	
+	-- Aeon Air Raid
+    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M1_AirRaid_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_AirRaid_Aeon')
+    
+	-- UEF Fleet Attack
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_AttackFleet_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonMoveChain(platoon, 'M1_AttackFleet_UEF1')
+	
+	--Cybran Experimental Attack
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M1_Experimentals_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonMoveChain(platoon, 'M1_AmphibiousAttack_Cybran')
+	
+	#ScenarioFramework.CreatePlatoonDeathTrigger(M1SendTitans2, platoon)
 
     #for i = 1, 3 do
         #platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_Engineer' .. i, 'GrowthFormation')
@@ -189,6 +218,7 @@ function OnStart(self)
             categories.xeb0204 + -- UEF Engineering Station 2
             categories.xea0306 + -- UEF Heavy Air Transport
             categories.xeb2402 + -- UEF Sub-Orbital Defense System
+			categories.xss0304 + -- Seraph T3 sub
             categories.xsl0401 + -- Seraph Exp Bot
             categories.xsa0402 + -- Seraph Exp Bomb
             categories.xsb0304 + -- Seraph Gate
