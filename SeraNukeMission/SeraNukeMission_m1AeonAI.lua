@@ -42,7 +42,7 @@ function M1AeonAirBaseAttacks()
     local quantity = {}
     local trigger = {}
 
-    quantity = {6, 10, 15}
+    quantity = {12, 16, 20}
     opai = AeonM1AirBase:AddOpAI('AirAttacks', 'M1_NorthAirAttack1',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
@@ -56,7 +56,7 @@ function M1AeonAirBaseAttacks()
     opai:SetChildQuantity('Gunships', quantity[Difficulty])
     opai:SetLockingStyle('None')
 
-    quantity = {2, 3, 4}
+    quantity = {8, 12, 16}
     opai = AeonM1AirBase:AddOpAI('AirAttacks', 'M1_NorthAirAttack2',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
@@ -69,7 +69,7 @@ function M1AeonAirBaseAttacks()
     )
     opai:SetChildQuantity('HeavyGunships', quantity[Difficulty])
 	
-	quantity = {5, 6, 7} --difficulty
+	quantity = {10, 15, 20} --difficulty
     opai = AeonM1AirBase:AddOpAI('AirAttacks', 'M1_NorthAirAttack3',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
@@ -80,7 +80,7 @@ function M1AeonAirBaseAttacks()
             Priority = 100,
         }
     )
-    opai:SetChildQuantity('Bombers', quantity[Difficulty])
+    opai:SetChildQuantity({'Bombers', 'HeavyGunships', 'AirSuperiority'}, quantity[Difficulty])
 
 end
 
@@ -114,8 +114,7 @@ function AeonM1LandBaseAttacks()
     local quantity = {}
     local trigger = {}
 
-    quantity = {20, 30, 40}
-    trigger = {41, 33, 25}
+    quantity = {5,10,15}
     opai = AeonM1LandBase:AddOpAI('BasicLandAttack', 'M1_SouthLandAttack1',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
@@ -128,8 +127,7 @@ function AeonM1LandBaseAttacks()
     opai:SetChildQuantity({'LightTanks', 'AmphibiousTanks', 'MobileFlak'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
 
-    quantity = {20, 30, 40}
-    trigger = {60, 50, 40}
+    quantity = {5,10,15}
     opai = AeonM1LandBase:AddOpAI('BasicLandAttack', 'M1_SouthLandAttack2',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
@@ -142,8 +140,31 @@ function AeonM1LandBaseAttacks()
     opai:SetChildQuantity({'LightTanks', 'AmphibiousTanks', 'MobileFlak'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
 
+	quantity = {5,10,15}
+     opai = AeonM1LandBase:AddOpAI('BasicLandAttack', 'M1_SouthLandAttack3',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+            PlatoonData = {
+                PatrolChains = {'M1_AmphibiousAttack_Aeon'},
+            },
+            Priority = 120,
+        }
+    )
+    opai:SetChildQuantity({'LightTanks', 'AmphibiousTanks', 'MobileFlak'}, quantity[Difficulty])
+    opai:SetLockingStyle('None')
+	
+	quantity = {5,10,15}
+     opai = AeonM1LandBase:AddOpAI('BasicLandAttack', 'M1_SouthLandAttack4',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+            PlatoonData = {
+                PatrolChains = {'M1_AmphibiousAttack_Aeon'},
+            },
+            Priority = 130,
+        }
+    )
+    opai:SetChildQuantity({'LightTanks', 'AmphibiousTanks', 'MobileFlak'}, quantity[Difficulty])
+    opai:SetLockingStyle('None')
 
-    quantity = {6, 6, 8}
-    trigger = {36, 28, 22}
 
 end
