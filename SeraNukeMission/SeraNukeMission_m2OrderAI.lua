@@ -4,128 +4,126 @@ local SPAIFileName = '/lua/scenarioplatoonai.lua'
 ---------
 -- Locals
 ---------
-local Seraphim = 2
+local Order = 3
 local Difficulty = ScenarioInfo.Options.Difficulty
 
 ----------------
 -- Base Managers
 ----------------
-local SeraphimBase = BaseManager.CreateBaseManager()
-
+local OrderBase = BaseManager.CreateBaseManager()
 
 ---------------------
--- Seraphim M1 Base
+---Order M2 Base
 ---------------------
-function SeraphimBaseAI()
-    SeraphimBase:InitializeDifficultyTables(ArmyBrains[Seraphim], 'SeraphimBase', 'SeraphimBaseMarker', 150, {M1_SeraphimBase = 100})
-    SeraphimBase:StartNonZeroBase({{8, 7, 5}, {1, 1, 1}})
-    SeraphimBase:SetActive('LandScouting', true)
-    SeraphimBase:SetActive('AirScouting', true)
 
-    --ForkThread(function()
-    --    WaitSeconds(1)
-    --    SeraphimBase:AddBuildGroup('SeraphimBase', 90)
-    --end)
+function OrderBaseAI()
+    OrderBase:InitializeDifficultyTables(ArmyBrains[Order], 'OrderBase', 'M2_OrderBase', 150, {M2_OrderBase = 150})
+    OrderBase:StartNonZeroBase({{9, 8, 7}, {1, 1, 1}})
+    OrderBase:SetActive('LandScouting', true)
+    OrderBase:SetActive('AirScouting', true)
+
 	
 	ForkThread(function()
         -- Spawn support factories bit later, since sometimes they can't build anything
         WaitSeconds(1)
-        SeraphimBase:AddBuildGroup('SeraphimSupportFactories', 200, true)
+        OrderBase:AddBuildGroup('OrderSupportFactories', 200, true)
     end)
 
-    SeraphimBaseDefensePatrols()
+    OrderBaseDefensePatrols()
 end
 
-function SeraphimBaseDefensePatrols()
+function OrderBaseDefensePatrols()
     local opai = nil
     local quantity = {}
     local trigger = {}
 
     quantity = {12, 10, 8}
-    opai = SeraphimBase:AddOpAI('BasicLandAttack', 'M1_LandPatrol1',
+    opai = OrderBase:AddOpAI('BasicLandAttack', 'M2_LandPatrol1',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_SeraLandPatrolSouth',
-                                'M1_SeraLandPatrolEast'},
+                PatrolChains = {'M2_OrderAirPatrol',
+                                'M2_OrderLandPatrol1',
+								'M2_OrderLandPatrol2'},
             },
             Priority = 100,
         }
     )
-    opai:SetChildQuantity({'SiegeBots', 'HeavyTanks', 'LightTanks'}, quantity[Difficulty])
+    opai:SetChildQuantity({'HeavyTanks', 'HeavyBots'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
 	
 	quantity = {12, 10, 8}
-    opai = SeraphimBase:AddOpAI('BasicLandAttack', 'M1_LandPatrol2',
+    opai = OrderBase:AddOpAI('BasicLandAttack', 'M2_LandPatrol2',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_SeraLandPatrolSouth',
-                                'M1_SeraLandPatrolEast'},
+                PatrolChains = {'M2_OrderAirPatrol',
+                                'M2_OrderLandPatrol1',
+								'M2_OrderLandPatrol2'},
             },
             Priority = 100,
         }
     )
-    opai:SetChildQuantity({'MobileMissiles', 'LightArtillery'}, quantity[Difficulty])
+    opai:SetChildQuantity({'LightTanks', 'AmphibiousTanks', 'MobileFlak'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
 	
 	quantity = {10, 8, 6}
-    opai = SeraphimBase:AddOpAI('BasicLandAttack', 'M1_LandPatrol3',
+    opai = OrderBase:AddOpAI('BasicLandAttack', 'M2_LandPatrol3',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_SeraLandPatrolSouth',
-                                'M1_SeraLandPatrolEast'},
+                PatrolChains = {'M2_OrderAirPatrol',
+                                'M2_OrderLandPatrol1',
+								'M2_OrderLandPatrol2'},
             },
             Priority = 100,
         }
     )
-    opai:SetChildQuantity({'MobileFlak', 'LightBots'}, quantity[Difficulty])
+    opai:SetChildQuantity({'MobileFlak', 'HeavyBots'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
 
 	quantity = {10, 8, 6}
-    opai = SeraphimBase:AddOpAI('BasicLandAttack', 'M1_LandPatrol4',
+    opai = OrderBase:AddOpAI('BasicLandAttack', 'M2_LandPatrol14',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_SeraLandPatrolSouth',
-                                'M1_SeraLandPatrolEast'},
+                PatrolChains = {'M2_OrderAirPatrol',
+                                'M2_OrderLandPatrol1',
+								'M2_OrderLandPatrol2'},
             },
             Priority = 100,
         }
     )
-    opai:SetChildQuantity({'MobileFlak', 'LightBots'}, quantity[Difficulty])
+    opai:SetChildQuantity({'LightTanks', 'AmphibiousTanks', 'MobileFlak'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
 	
 
   
 	--Defense Air Patrol
-    quantity = {8, 7, 6}
-    opai = SeraphimBase:AddOpAI('AirAttacks', 'M1_AirPatrol1',
+    quantity = {10, 9, 8}
+    opai = OrderBase:AddOpAI('AirAttacks', 'M2_AirPatrol1',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_SeraLandPatrolSouth',
-                                'M1_SeraLandPatrolEast'},
+                PatrolChains = {'M2_OrderAirPatrol',},
             },
             Priority = 100,
         }
     )
-    opai:SetChildQuantity({'Gunships', 'Interceptors'}, quantity[Difficulty])
+    opai:SetChildQuantity({'CombatFighters', 'Gunships'}, quantity[Difficulty])
 
 		--Defense Air Patrol
 	quantity = {8, 7, 6}
-    opai = SeraphimBase:AddOpAI('AirAttacks', 'M1_AirPatrol2',
+    opai = OrderBase:AddOpAI('AirAttacks', 'M2_AirPatrol2',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_SeraLandPatrolSouth',
-                                'M1_SeraLandPatrolEast'},
+                PatrolChains = {'M2_OrderAirPatrol',},
             },
             Priority = 100,
         }
     )
-    opai:SetChildQuantity({'Gunships', 'Interceptors'}, quantity[Difficulty])
+    opai:SetChildQuantity({'HeavyGunships'}, quantity[Difficulty])
 	
 
 end

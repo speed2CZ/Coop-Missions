@@ -100,7 +100,7 @@ function SeraphimBaseDefensePatrols()
 
   
 	--Defense Air Patrol
-    quantity = {8, 7, 6}
+    quantity = {12, 10, 8}
     opai = SeraphimBase:AddOpAI('AirAttacks', 'M1_AirPatrol1',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
@@ -114,7 +114,7 @@ function SeraphimBaseDefensePatrols()
     opai:SetChildQuantity({'Gunships', 'Interceptors'}, quantity[Difficulty])
 
 		--Defense Air Patrol
-	quantity = {8, 7, 6}
+	quantity = {12, 10, 8}
     opai = SeraphimBase:AddOpAI('AirAttacks', 'M1_AirPatrol2',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
