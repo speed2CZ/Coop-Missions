@@ -48,10 +48,11 @@ function M1AeonAirBaseAttacks()
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
                 PatrolChains = {'M1_AirRaid_Aeon',
-                                'M1_AmphibiousAttack_Aeon'},
-            },
-            Priority = 100,
-        }
+                                'M1_AmphibiousAttack_Aeon',
+								'M1_YolonaOss'},
+        },
+		Priority = 100,
+		}
     )
     opai:SetChildQuantity('Gunships', quantity[Difficulty])
     opai:SetLockingStyle('None')
@@ -62,10 +63,11 @@ function M1AeonAirBaseAttacks()
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
                 PatrolChains = {'M1_AirRaid_Aeon',
-                                'M1_AmphibiousAttack_Aeon'},
-            },
-            Priority = 100,
-        }
+                                'M1_AmphibiousAttack_Aeon',
+								'M1_YolonaOss'},
+        },
+		Priority = 100,
+		}
     )
     opai:SetChildQuantity('HeavyGunships', quantity[Difficulty])
 	
@@ -75,12 +77,28 @@ function M1AeonAirBaseAttacks()
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
                 PatrolChains = {'M1_AirRaid_Aeon',
-                                'M1_AmphibiousAttack_Aeon'},
+                                'M1_AmphibiousAttack_Aeon',
+								'M1_YolonaOss'},
+        },
+		Priority = 100,
+		}
+    )
+    opai:SetChildQuantity({'Bombers', 'HeavyGunships', 'AirSuperiority'}, quantity[Difficulty])
+	
+	quantity = {10, 15, 20} --difficulty
+    opai = AeonM1AirBase:AddOpAI('AirAttacks', 'M1_NorthAirAttack4',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+            PlatoonData = {
+                PatrolChains = {'M1_AirRaid_Aeon',
+                                'M1_AmphibiousAttack_Aeon',
+								'M1_YolonaOss'},
             },
             Priority = 100,
         }
     )
     opai:SetChildQuantity({'Bombers', 'HeavyGunships', 'AirSuperiority'}, quantity[Difficulty])
+
 
 end
 

@@ -49,7 +49,7 @@ function OrderBaseDefensePatrols()
             Priority = 100,
         }
     )
-    opai:SetChildQuantity({'HeavyTanks', 'HeavyBots'}, quantity[Difficulty])
+    opai:SetChildQuantity({'HeavyTanks', 'LightTanks'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
 	
 	quantity = {12, 10, 8}
@@ -97,6 +97,8 @@ function OrderBaseDefensePatrols()
     opai:SetChildQuantity({'LightTanks', 'AmphibiousTanks', 'MobileFlak'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
 	
+	quantity = {12, 10, 8}
+
 
   
 	--Defense Air Patrol
@@ -125,6 +127,63 @@ function OrderBaseDefensePatrols()
     )
     opai:SetChildQuantity({'HeavyGunships'}, quantity[Difficulty])
 	
+		--Defense Air Patrol
+    quantity = {10, 9, 8}
+    opai = OrderBase:AddOpAI('AirAttacks', 'M2_AirPatrol3',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+            PlatoonData = {
+                PatrolChains = {'M2_OrderAirPatrol',},
+            },
+            Priority = 100,
+        }
+    )
+    opai:SetChildQuantity({'CombatFighters', 'Gunships'}, quantity[Difficulty])
+
+    # sends 12 frigate power 
+    opai = OrderBase:AddNavalAI('M2_NavalDefensePatrol1',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M2_UEFFleetAttackChain',
+            },
+            MaxFrigates = 15,
+            MinFrigates = 15,
+            Priority = 130,
+        }
+    )
+    opai:SetChildActive('T3', false)	
+	
+	# sends 17 frigate power 
+    opai = OrderBase:AddNavalAI('M2_NavalDefensePatrol2',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M2_AeonFleetAttackChain',
+							  'M2_UEFFleetAttackChain',
+            },
+            MaxFrigates = 17,
+            MinFrigates = 17,
+            Priority = 130,
+        }
+    )
+    opai:SetChildActive('T3', false)
+	
+	
+	# sends 25 frigate power 
+    opai = OrderBase:AddNavalAI('M2_NavalDefensePatrol3',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M2_AeonFleetAttackChain',
+							  'M2_UEFFleetAttackChain',
+            },
+            MaxFrigates = 25,
+            MinFrigates = 25,
+            Priority = 100,
+        }
+    )
+    opai:SetChildActive('T3', true)
 
 end
 

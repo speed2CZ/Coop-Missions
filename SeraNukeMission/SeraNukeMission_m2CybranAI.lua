@@ -17,8 +17,8 @@ local CybranIslandBase = BaseManager.CreateBaseManager()
 ---------------------
 
 function CybranIslandBaseAI()
-    CybranIslandBase:InitializeDifficultyTables(ArmyBrains[Cybran], 'CybranIslandBase', 'M2_SouthIsland', 150, {M2_OrderBase = 150})
-    CybranIslandBase:StartNonZeroBase({{9, 8, 7}, {1, 1, 1}})
+    CybranIslandBase:InitializeDifficultyTables(ArmyBrains[Cybran], 'CybranIslandBase', 'M2_CybranIslandBase', 150, {M2_SouthIsland = 150})
+    CybranIslandBase:StartNonZeroBase({{3, 4, 5}, {1, 1, 1}})
     CybranIslandBase:SetActive('LandScouting', false)
     CybranIslandBase:SetActive('AirScouting', true)
 
@@ -32,7 +32,7 @@ function CybranIslandBaseAI()
     CybranIslandBaseAttacks()
 end
 
-function CybranIslandBaseDefensePatrols()
+function CybranIslandBaseAttacks()
     local opai = nil
     local quantity = {}
     local trigger = {}
@@ -64,7 +64,7 @@ function CybranIslandBaseDefensePatrols()
     opai:SetLockingStyle('None')
 	
 	quantity = {10, 8, 6}
-    opai = OrderBase:AddOpAI('BasicLandAttack', 'M2_LandPatrol3',
+    opai = CybranIslandBase:AddOpAI('BasicLandAttack', 'M2_LandPatrol3',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
