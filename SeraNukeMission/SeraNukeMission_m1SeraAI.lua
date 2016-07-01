@@ -17,7 +17,7 @@ local SeraphimBase = BaseManager.CreateBaseManager()
 -- Seraphim M1 Base
 ---------------------
 function SeraphimBaseAI()
-    SeraphimBase:InitializeDifficultyTables(ArmyBrains[Seraphim], 'SeraphimBase', 'SeraphimBaseMarker', 150, {M1_SeraphimBase = 210})
+    SeraphimBase:InitializeDifficultyTables(ArmyBrains[Seraphim], 'SeraphimBase', 'SeraphimBaseMarker', 200, {M1_SeraphimBase = 210})
     SeraphimBase:StartNonZeroBase({{8, 7, 6}, {1, 1, 1}})
     SeraphimBase:SetActive('LandScouting', true)
     SeraphimBase:SetActive('AirScouting', true)
@@ -34,10 +34,10 @@ function SeraphimBaseAI()
     end)
 	
 	
-    SeraphimBaseDefensePatrols()
+    M1SeraphimBaseDefensePatrols()
 end
 
-function SeraphimBaseDefensePatrols()
+function M1SeraphimBaseDefensePatrols()
     local opai = nil
     local quantity = {}
     local trigger = {}
@@ -98,7 +98,7 @@ function SeraphimBaseDefensePatrols()
 	
 	
 	quantity = {12, 10, 8}
-    opai = SeraphimBase:AddOpAI('BasicLandAttack', 'M2_LandPatrol4',
+    opai = SeraphimBase:AddOpAI('BasicLandAttack', 'M1_LandPatrol5',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
@@ -182,10 +182,9 @@ function SeraphimBaseDefensePatrols()
 				--Defense Sea Patrol South
     opai = SeraphimBase:AddNavalAI('M1_SeraSeaPatrolSouth1',
         {
-            MasterPlatoonFunction = {SPAIFileName, 'PlatoonAttackClosestUnit'},
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
             PlatoonData = {
                 PatrolChain = 'M1_SeraSeaPatrolSouth',
-							  'M1_SeraSeaPatrolSouth',
             },
             EnabledTypes = {'Destroyer', 'Cruiser', 'Submarine','Frigate','Battleship'},
             MaxFrigates = 10,
@@ -203,7 +202,6 @@ function SeraphimBaseDefensePatrols()
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
             PlatoonData = {
                 PatrolChain = 'M1_SeraSeaPatrolSouth',
-							  'M1_SeraSeaPatrolSouth',
             },
             EnabledTypes = {'Destroyer', 'Cruiser', 'Submarine'},
             MaxFrigates = 15,
@@ -213,23 +211,56 @@ function SeraphimBaseDefensePatrols()
     )
     opai:SetChildActive('T3', false)
 	
-						--Defense Sea Patrol South
-	opai = SeraphimBase:AddNavalAI('M1_SeraSeaPatrolSouth3',
+
+
+end
+
+M2SeraphimAttacks = function()
+
+	quantity = {8, 7, 6}
+    opai = SeraphimBase:AddOpAI('BasicLandAttack', 'M2_LandAttackl',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PlatoonAttackClosestUnit'},
+            PlatoonData = {
+                PatrolChains = {'M1_SeraLandPatrolSouth'},
+            },
+            Priority = 100,
+        }
+    )
+    opai:SetChildQuantity({'HeavyTanks'}, quantity[Difficulty])
+    opai:SetLockingStyle('None')
+
+	--Defense Sea Patrol South
+	opai = SeraphimBase:AddNavalAI('M2_SeraSeaAttack',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PlatoonAttackClosestUnit'},
             PlatoonData = {
                 PatrolChain = 'M1_SeraSeaPatrolSouth',
             },
             EnabledTypes = {'Destroyer', 'Cruiser', 'Submarine','Battleship'},
-            MaxFrigates = 20,
-            MinFrigates = 5,
+            MaxFrigates = 30,
+            MinFrigates = 20,
             Priority = 108,
 
             --DisableTypes = {['T2Submarine'] = true}
         }
     )
-    opai:SetChildActive('T3', false)
-
-
 end
 
+M3SeraphimAttacks = function()
+						--Defense Sea Patrol South
+	opai = SeraphimBase:AddNavalAI('M3_SeraSeaAttack',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PlatoonAttackClosestUnit'},
+            PlatoonData = {
+                PatrolChain = 'M1_SeraSeaPatrolSouth',
+            },
+            EnabledTypes = {'Destroyer', 'Cruiser', 'Submarine','Battleship'},
+            MaxFrigates = 50,
+            MinFrigates = 40,
+            Priority = 108,
+
+            --DisableTypes = {['T2Submarine'] = true}
+        }
+    )
+end

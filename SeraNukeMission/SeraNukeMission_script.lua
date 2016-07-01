@@ -507,19 +507,19 @@ function IntroMission2()
     -- Order Fleet Attacks, East and West
     ------------
     platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M2_DefenseFleetEast_D' .. Difficulty, 'GrowthFormation')
-	for k, v in EntityCategoryFilterDown(categories.uas0401, platoon:GetPlatoonUnits()) do
-        --IssueDive({v}) Not needed, starts surfaced
-    end
-    ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_AeonFleetAttackChain')
-	ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_UEFFleetAttackChain')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_AeonFleetAttack')
+	--ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_UEFFleetAttackChain')
+	--ForkThread(function()
+	--	ScenarioPlatoonAI.PlatoonAttackClosestUnit(platoon)
+	--end
+	--)
 	
-
     platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M2_DefenseFleetWest_D' .. Difficulty, 'GrowthFormation')
 	for k, v in EntityCategoryFilterDown(categories.uas0401, platoon:GetPlatoonUnits()) do
         --IssueDive({v})
     end
     ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_UEFFleetAttackChain')
-	ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_AeonFleetAttackChain')
+	ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_AeonFleetAttack')
 	
 	------------
     -- Order Land and Air Patrols
@@ -540,7 +540,8 @@ function IntroMission2()
 	for k, v in EntityCategoryFilterDown(categories.uas0401, platoon:GetPlatoonUnits()) do
         --IssueDive({v})
     end
-    ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_AeonFleetAttackChain')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_AeonFleetAttack')
+	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
 	
     platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_AttackFleetNorth_D' .. Difficulty, 'GrowthFormation')
     ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_UEFFleetAttackChain')
@@ -635,8 +636,12 @@ function IntroMission2()
     ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_SeraFleetAttackChain')
 	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
 
+	------
+	-- Add Seraphim Tech 3 navy
+	----
 		
-
+	M1SeraAI.M2SeraphimAttacks()
+	
 	------------------------------------------
     -- Secondary Objective 2 - Protect the Order Ally
     ------------------------------------------
@@ -693,7 +698,7 @@ function IntroMission2()
     ScenarioInfo.M2P3:AddResultCallback(
         function(result)
             if(result) then
-                if ScenarioInfo.MissionNumber == 1 then
+                if ScenarioInfo.MissionNumber == 2 then
                     -- ScenarioFramework.Dialogue(OpStrings.M1_Bases_Destroyed, IntroMission2, true)
                     IntroMission3()
                 else
@@ -720,6 +725,92 @@ function IntroMission3()
     ScenarioInfo.MissionNumber = 3
 	
 	ScenarioFramework.SetPlayableArea('AREA_3', false)
+	
+	
+	------------
+    -- Seraphim and Order Experimental Attacks
+    ------------
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M3_GC_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_UEFIslandBase')
+	ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_UEFHeavyArtilleryBase')
+	
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M3_Ythotha_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_AeonAirBase')	
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_SWCityDefense')
+	
+	------------
+    -- Cybran and Aeon Fleet Attacks
+    ------------
+	
+    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_FleetAttack_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_CybranFleetAttack')
+	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
+	
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M3_FleetAttack_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_AeonFleetAttack')
+	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
+	
+	------------
+    -- UEF and Cybran Sub Attacks
+    ------------
+	
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_SubAttack_D' .. Difficulty, 'GrowthFormation')
+	ScenarioFramework.PlatoonMoveChain(platoon, 'M3_CybranSubAttack')
+	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
+	
+	ScenarioInfo.M3UEFNukeSubs = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M3_NukeSubs_D' .. Difficulty, 'GrowthFormation')
+	ScenarioFramework.PlatoonMoveChain(ScenarioInfo.M3UEFNukeSubs, 'M3_UEFSubAttack')	
+	local counter = 0
+	for _, submarine in EntityCategoryFilterDown(categories.ues0304, ScenarioInfo.M3UEFNukeSubs:GetPlatoonUnits()) do
+		counter = counter + 1
+		submarine.target = counter
+		submarine.NukeThread = submarine:ForkThread(function(self)
+			WaitSeconds(5)
+		    while not self:IsDead() and self:IsUnitState('Moving') do
+                WaitSeconds(5)
+            end
+			for i = 1, Difficulty do
+				if self and not self:IsDead() then
+					self:GiveNukeSiloAmmo(1)
+					IssueNuke({self}, ScenarioUtils.MarkerToPosition('M3_UEFNuke' .. i ..(self.target)))
+					WaitSeconds(10)
+				end
+			end
+		end)
+	end
+	
+	ScenarioInfo.M3UEFAtlantis = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M3_AtlantisAttack_D' .. Difficulty, 'GrowthFormation')
+	ScenarioFramework.PlatoonMoveChain(ScenarioInfo.M3UEFAtlantis, 'M3_UEFAtlantisAttack')
+	for _, Atlantis in ScenarioInfo.M3UEFAtlantis:GetPlatoonUnits() do
+		Atlantis.AttackThread = Atlantis:ForkThread(function(self)
+			WaitSeconds(5)
+			while not self:IsDead() and self:IsUnitState('Moving') do
+				WaitSeconds(5)
+			end
+			--IssueDive({self})
+			WaitSeconds(10)
+			while self and not self:IsDead() do
+				local cargoUnits = ScenarioUtils.CreateArmyGroup('UEF', 'M3_AtlantisSquadron')
+				for _, unit in cargoUnits do
+					IssueStop({unit})
+					self:AddUnitToStorage(unit)
+				end
+				IssueClearCommands({self})
+				IssueTransportUnload({self}, self:GetPosition())
+				for _, unit in cargoUnits do
+					while (not unit:IsDead() and unit:IsUnitState('Attached')) do
+						WaitSeconds(3)
+					end
+					IssueClearCommands(cargoUnits)
+					ScenarioFramework.PlatoonPatrolChain(cargoUnits, 'M2_OrderBase')
+					ScenarioFramework.PlatoonPatrolChain(cargoUnits, 'M1_YolonaOss')
+				end
+				WaitSeconds(60 + (30/Difficulty))
+			end
+		end)
+	end
+
+	
 end
 
 PlayerLoseYolonaOss = function()
