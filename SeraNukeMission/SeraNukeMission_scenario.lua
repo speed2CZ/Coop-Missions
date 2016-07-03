@@ -1,7 +1,7 @@
 version = 3
 ScenarioInfo = {
     name = 'Seraphim Nuke Mission',
-    description = 'High command is preparing an attack on Fort Clarke.  We are launching an attack against the human city of New Sanctuary to draw out and destroy Fort Clarke defenders. For this mission, you are being granted use of the Yolona Oss experimental nuke launcher.  You will use it to crush all Coalition forces and destroy New Sanctuary.',
+    description = 'High command is preparing an attack on Fort Clarke.  We are launching an attack against the heavily defended human city of New Sanctuary to draw out and destroy Fort Clarke defenders. For this mission, you are being granted use of the Yolona Oss experimental nuke launcher.  You will use it to crush all Coalition forces and destroy New Sanctuary.',
     type = 'campaign_coop',
     starts = true,
     preview = '',

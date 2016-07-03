@@ -17,7 +17,7 @@ local AeonM1LandBase = BaseManager.CreateBaseManager()
 -- Aeon M1 Air Base
 ---------------------
 function AeonM1AirBaseAI()
-    AeonM1AirBase:InitializeDifficultyTables(ArmyBrains[Aeon], 'M1AeonAirBase', 'M1AeonAirBaseMarker', 35, {M1_AirBase_1 = 100})
+    AeonM1AirBase:InitializeDifficultyTables(ArmyBrains[Aeon], 'M1AeonAirBase', 'M1_AeonAirBase', 35, {M1_AirBase_1 = 100})
     AeonM1AirBase:StartNonZeroBase({{2, 2, 3}, {1, 1, 1}})
     #AeonM1AirBase:SetActive('LandScouting', true)
     AeonM1AirBase:SetActive('AirScouting', true)

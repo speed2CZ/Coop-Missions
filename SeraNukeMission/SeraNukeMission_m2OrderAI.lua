@@ -17,7 +17,7 @@ local OrderBase = BaseManager.CreateBaseManager()
 ---------------------
 
 function OrderBaseAI()
-    OrderBase:InitializeDifficultyTables(ArmyBrains[Order], 'OrderBase', 'M2_OrderBase', 150, {M2_OrderBase = 150})
+    OrderBase:InitializeDifficultyTables(ArmyBrains[Order], 'OrderBase', 'M2_OrderBase', 200, {M2_OrderBase = 150})
     OrderBase:StartNonZeroBase({{9, 8, 7}, {1, 1, 1}})
     OrderBase:SetActive('LandScouting', true)
     OrderBase:SetActive('AirScouting', true)
@@ -28,6 +28,11 @@ function OrderBaseAI()
         WaitSeconds(1)
         OrderBase:AddBuildGroup('OrderSupportFactories', 200, true)
     end)
+	
+	local M2OrderSMDs = OrderBase:AddBuildGroup('M2_SMD', 200, true)
+	--for i,SMD in M2OrderSMDs do
+	--	SMD:GiveTacticalSiloAmmo(4 - Difficulty)
+	--end
 
     OrderBaseDefensePatrols()
 end
@@ -145,7 +150,7 @@ function OrderBaseDefensePatrols()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
             PlatoonData = {
-                PatrolChain = 'M2_UEFFleetAttackChain',
+                PatrolChain = 'M2_UEFFleetAttack',
             },
             MaxFrigates = 15,
             MinFrigates = 15,
@@ -159,8 +164,8 @@ function OrderBaseDefensePatrols()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
             PlatoonData = {
-                PatrolChain = 'M2_AeonFleetAttackChain',
-							  'M2_UEFFleetAttackChain',
+                PatrolChain = 'M2_AeonFleetAttack',
+							  'M2_UEFFleetAttack',
             },
             MaxFrigates = 17,
             MinFrigates = 17,
@@ -175,8 +180,8 @@ function OrderBaseDefensePatrols()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
             PlatoonData = {
-                PatrolChain = 'M2_AeonFleetAttackChain',
-							  'M2_UEFFleetAttackChain',
+                PatrolChain = 'M2_AeonFleetAttack',
+							  'M2_UEFFleetAttack',
             },
             MaxFrigates = 25,
             MinFrigates = 25,
