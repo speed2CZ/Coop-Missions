@@ -10,10 +10,9 @@ local Difficulty = ScenarioInfo.Options.Difficulty
 ----------------
 -- Base Managers
 ----------------
---local AeonM1AirBase = BaseManager.CreateBaseManager()
+local AeonM3AirBase = BaseManager.CreateBaseManager()
 
 --CZAR construction and attacks
-
 function CZARFactory()
 	ArmyBrains[Aeon]:PBMAddBuildLocation('M1_AeonAirBase', 150, 'AeonCZAR')
 	local Carrier = ScenarioInfo.M3AeonCZAR
@@ -35,6 +34,84 @@ function CZARFactory()
     end	
 	
 end
+
+function AeonM3AirBaseAI()
+    AeonM3AirBase:InitializeDifficultyTables(ArmyBrains[Aeon], 'M3AeonAirBase', 'M3_AeonAirBase', 35, {M3_AirBase = 100})
+    AeonM3AirBase:StartNonZeroBase({{3, 3, 3}, {1, 1, 1}})
+    --AeonM1AirBase:SetActive('LandScouting', true)
+    --AeonM3AirBase:SetActive('AirScouting', true)
+
+
+	ForkThread(function()
+        -- Spawn support factories bit later, since sometimes they can't build anything
+        WaitSeconds(1)
+        AeonM3AirBase:AddBuildGroup('M3_AirBaseSupportFactories', 100, true)
+    end)
+	
+    M3AeonAirBaseAttacks()
+end
+
+function M3AeonAirBaseAttacks()
+    local opai = nil
+    local quantity = {}
+    local trigger = {}
+
+    quantity = {12, 16, 20}
+    opai = AeonM3AirBase:AddOpAI('AirAttacks', 'M3_NorthAirAttack1',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+            PlatoonData = {
+                PatrolChains = {'M1_SeraphimBase',
+								'M1_YolonaOss'},
+        },
+		Priority = 100,
+		}
+    )
+    opai:SetChildQuantity('Gunships', quantity[Difficulty])
+    opai:SetLockingStyle('None')
+
+    quantity = {8, 12, 16}
+    opai = AeonM3AirBase:AddOpAI('AirAttacks', 'M3_NorthAirAttack2',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+            PlatoonData = {
+                PatrolChains = {'M1_SeraphimBase',
+								'M1_YolonaOss'},
+        },
+		Priority = 100,
+		}
+    )
+    opai:SetChildQuantity('HeavyGunships', quantity[Difficulty])
+	
+	quantity = {10, 15, 20} --difficulty
+    opai = AeonM3AirBase:AddOpAI('AirAttacks', 'M3_NorthAirAttack3',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+            PlatoonData = {
+                PatrolChains = {'M1_SeraphimBase',
+								'M1_YolonaOss'},
+        },
+		Priority = 100,
+		}
+    )
+    opai:SetChildQuantity({'Bombers', 'HeavyGunships', 'AirSuperiority'}, quantity[Difficulty])
+	
+	quantity = {10, 15, 20} --difficulty
+    opai = AeonM3AirBase:AddOpAI('AirAttacks', 'M3_NorthAirAttack4',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+            PlatoonData = {
+                PatrolChains = {'M1_SeraphimBase',
+								'M1_YolonaOss'},
+            },
+            Priority = 100,
+        }
+    )
+    opai:SetChildQuantity({'Bombers', 'HeavyGunships', 'AirSuperiority'}, quantity[Difficulty])
+
+
+end
+
 
 -- Platoons built by CZAR
 function AeonCZARAttacks()

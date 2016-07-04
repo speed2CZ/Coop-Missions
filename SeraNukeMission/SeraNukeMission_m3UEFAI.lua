@@ -21,7 +21,7 @@ local UEFM3HeavyArtilleryBase = BaseManager.CreateBaseManager()
 function UEFM3AirBaseAI()						--brain	      -- name of base --Marker   ---radius?    --army group and priority
     UEFM3AirBase:InitializeDifficultyTables(ArmyBrains[UEF], 'UEFM3AirBase', 'M3_UEFAirBase', 150, {M3_AirBase = 150})
     UEFM3AirBase:StartNonZeroBase({{4, 5, 6}, {1, 1, 1}})
-    UEFM3AirBase:SetActive('AirScouting', true)
+    --UEFM3AirBase:SetActive('AirScouting', true)
 
 	
 	ForkThread(function()

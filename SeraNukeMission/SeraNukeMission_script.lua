@@ -14,8 +14,8 @@ local M2OrderAI = import('/maps/SeraNukeMission/SeraNukeMission_m2OrderAI.lua')
 local M2CybranAI = import('/maps/SeraNukeMission/SeraNukeMission_m2CybranAI.lua') 
 local M2UEFAI = import('/maps/SeraNukeMission/SeraNukeMission_m2UEFAI.lua') 
 
-local M3AeonAI = import('/maps/SeraNukeMission/SeraNukeMission_m3AeonAI.lua')  --> make
-#local M3CybranAI = import('/maps/SeraNukeMission/SeraNukeMission_m3cybranai.lua')  --> make
+local M3AeonAI = import('/maps/SeraNukeMission/SeraNukeMission_m3AeonAI.lua') 
+local M3CybranAI = import('/maps/SeraNukeMission/SeraNukeMission_m3CybranAI.lua')  
 local M3UEFAI = import('/maps/SeraNukeMission/SeraNukeMission_m3UEFAI.lua')
 local Objectives = import('/lua/ScenarioFramework.lua').Objectives
 #local OpStrings = import('/maps/SeraNukeMission/SeraNukeMission_strings.lua')  --> make
@@ -267,6 +267,31 @@ function OnStart(self)
     --------------------
     for _, player in ScenarioInfo.HumanPlayers do
         ScenarioFramework.AddRestriction(player,
+            categories.xal0305 + -- Aeon Sniper Bot
+            categories.xaa0202 + -- Aeon Mid Range fighter (Swift Wind)
+            categories.xal0203 + -- Aeon Assault Tank (Blaze)
+            categories.xab1401 + -- Aeon Quantum Resource Generator
+            categories.xas0204 + -- Aeon Submarine Hunter
+            categories.xaa0306 + -- Aeon Torpedo Bomber
+            categories.xas0306 + -- Aeon Missile Ship
+            categories.xab3301 + -- Aeon Quantum Optics Device
+            categories.xab2307 + -- Aeon Rapid Fire Artillery
+            categories.xaa0305 + -- Aeon AA Gunship
+            categories.xrl0302 + -- Cybran Mobile Bomb
+            categories.xra0105 + -- Cybran Light Gunship
+            categories.xrs0204 + -- Cybran Sub Killer
+            categories.xrs0205 + -- Cybran Counter-Intelligence Boat
+            categories.xrb2308 + -- Cybran Torpedo Ambushing System
+            categories.xrb0104 + -- Cybran Engineering Station 1
+            categories.xrb0204 + -- Cybran Engineering Station 2
+            categories.xrb0304 + -- Cybran Engineering Station 3
+            categories.xrb3301 + -- Cybran Perimeter Monitoring System
+            categories.xra0305 + -- Cybran Heavy Gunship
+            categories.xrl0305 + -- Cybran Brick
+            categories.xrl0403 + -- Cybran Amphibious Mega Bot
+			categories.url0402 + -- Cybran Monkeylord
+            categories.url0401 + -- Cybran Scathis
+            categories.ura0401 + -- Cybran Soul Ripper
             categories.xeb2306 + -- UEF Heavy Point Defense
             categories.xel0305 + -- UEF Percival
             categories.xel0306 + -- UEF Mobile Missile Platform
@@ -277,11 +302,12 @@ function OnStart(self)
             categories.xeb0204 + -- UEF Engineering Station 2
             categories.xea0306 + -- UEF Heavy Air Transport
             categories.xeb2402 + -- UEF Sub-Orbital Defense System
-			categories.xss0304 + -- Seraph T3 sub
-            categories.xsl0401 + -- Seraph Exp Bot
-            categories.xsa0402 + -- Seraph Exp Bomb
+            categories.xsl0305 + -- Seraph Sniper Bot
+            categories.xsa0402 + -- Seraph Exp Bomber
+            categories.xss0304 + -- Seraph Sub Hunter
             categories.xsb0304 + -- Seraph Gate
-            categories.xsl0301  -- Seraph sACU
+            categories.xsl0301 + -- Seraph sACU
+            --categories.xsb2401   -- Seraph exp Nuke (need this)
         )
     end
 
@@ -301,7 +327,7 @@ function IntroMission1NIS()
 
     #else
         #DropReinforcements('Seraphim', 'Player', 'NIS_Bots_Player_D' .. Difficulty, 'NIS_Drop_Player', 'NIS_Transport_Death')
-        ScenarioInfo.PlayerCDR = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true)
+        ScenarioInfo.PlayerCommander = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true)
 
         -- spawn coop players too
         ScenarioInfo.CoopCDR = {}
@@ -704,7 +730,7 @@ function IntroMission2()
             MarkUnits = true,
             Requirements = {
                 {   
-                    Area = 'M2_UEF_AirBase',
+                    Area = 'M2_UEFAirBase',
                     Category = categories.FACTORY,
                     CompareOp = '<=',
                     Value = 0,
@@ -964,20 +990,30 @@ function IntroMission3()
 	------------
     -- Aeon Air Base
     ------------
-	
-	
+	M3AeonAI.AeonM3AirBaseAI()
+	ScenarioUtils.CreateArmyGroup('Aeon','M3_Paragon')
+	local AeonM3SMDs = ScenarioUtils.CreateArmyGroup('Aeon','M3_SMD')
+	for i,SMD in AeonM3SMDs do
+		SMD:GiveTacticalSiloAmmo(Difficulty - 1)
+	end
 	------------
-    -- Cybran Large Island Base
+    -- Cybran Heavy Artillery Base
     ------------
+	M3CybranAI.CybranM3HeavyArtilleryBaseAI()
+	local CybranM3SMDs = ScenarioUtils.CreateArmyGroup('Cybran','M3_SMD')
+	for i,SMD in CybranM3SMDs do
+		SMD:GiveTacticalSiloAmmo(Difficulty - 1)
+	end
+	--M3_HeavyArtilleryBaseSupportFactories
 	
 	------------------------------------------
-    -- Primary Objective 4 - Destroy New Sanctuary
+    -- Primary Objective 4 - Destroy New Sanctuary and the Coalition Bases
     ------------------------------------------
     ScenarioInfo.M3P4 = Objectives.CategoriesInArea(
         'primary',                      -- type
         'incomplete',                   -- complete
-        'Destroy New Sanctuary',    -- title
-        'Crush the human city.',  -- description
+        'Destroy New Sanctuary and the Coalitions bases',    -- title
+        'Crush the human city and Coalition bases.',  -- description
         'kill',                         -- action
         {                               -- target
             MarkUnits = true,
@@ -989,6 +1025,41 @@ function IntroMission3()
                     Value = 0,
                     ArmyIndex = Civilians,
                 },
+				{   
+                    Area = 'M3_UEFAirBase',
+                    Category = categories.FACTORY,
+                    CompareOp = '<=',
+                    Value = 0,
+                    ArmyIndex = UEF,
+                },
+                {   
+                    Area = 'M3_UEFHeavyArtilleryBase',
+                    Category = categories.FACTORY,
+                    CompareOp = '<=',
+                    Value = 0,
+                    ArmyIndex = UEF,
+                },
+				{   
+                    Area = 'M3_UEFIslandBase',
+                    Category = categories.FACTORY,
+                    CompareOp = '<=',
+                    Value = 0,
+                    ArmyIndex = UEF,
+                },
+                {   
+                    Area = 'M3_AeonAirBase',
+                    Category = categories.FACTORY,
+                    CompareOp = '<=',
+                    Value = 0,
+                    ArmyIndex = Aeon,
+                },
+				{   
+                    Area = 'M3_CybranHeavyArtilleryBase',
+                    Category = categories.FACTORY,
+                    CompareOp = '<=',
+                    Value = 0,
+                    ArmyIndex = Cybran,
+                },
             },
         }
    )
@@ -997,7 +1068,7 @@ function IntroMission3()
             if(result) then
                 if ScenarioInfo.MissionNumber == 2 then
                     -- ScenarioFramework.Dialogue(OpStrings.M1_Bases_Destroyed, IntroMission2, true)
-                    IntroMission3()
+                    IntroMission4()
                 else
                     -- ScenarioFramework.Dialogue(OpStrings.M1_Bases_Destroyed, nil, true)
                 end
@@ -1005,6 +1076,18 @@ function IntroMission3()
         end
     )
     table.insert(AssignedObjectives, ScenarioInfo.M2P3)
+end
+
+IntroMission4 = function()
+    if ScenarioInfo.MissionNumber == 4 then
+        return
+    end
+    ScenarioInfo.MissionNumber = 4
+	
+	ScenarioFramework.SetPlayableArea('AREA_4', false)
+	
+	---Spawn Cybran, Aeon and UEF bases with Nukes, Mavor, and Salvation.  Spawn the commanders.  Spawn lots of attacks.  Set objective to kill the commanders.
+
 end
 
 PlayerLoseYolonaOss = function()
@@ -1026,7 +1109,7 @@ PlayerLoseYolonaOss = function()
         function()
             WaitSeconds(3)
             UnlockInput()
-            KillGame() --how make this work lol
+            --KillGame() --how make this work lol
 			
         end
         )

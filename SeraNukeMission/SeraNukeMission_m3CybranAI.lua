@@ -10,35 +10,35 @@ local Difficulty = ScenarioInfo.Options.Difficulty
 ----------------
 -- Base Managers
 ----------------
-local CybranIslandBase = BaseManager.CreateBaseManager()
+local CybranM3HeavyArtilleryBase = BaseManager.CreateBaseManager()
 
 ---------------------
----Order M2 Base
+---Cybra M3 Heavy Artillery Base
 ---------------------
 
-function CybranIslandBaseAI()
-    CybranIslandBase:InitializeDifficultyTables(ArmyBrains[Cybran], 'CybranIslandBase', 'M2_CybranIslandBase', 150, {M2_SouthIsland = 150})
-    CybranIslandBase:StartNonZeroBase({{3, 4, 5}, {1, 1, 1}})
-    CybranIslandBase:SetActive('LandScouting', false)
-    CybranIslandBase:SetActive('AirScouting', true)
+function CybranM3HeavyArtilleryBaseAI()
+    CybranM3HeavyArtilleryBase:InitializeDifficultyTables(ArmyBrains[Cybran], 'CybranHeavyArtilleryBase', 'M3_CybranHeavyArtilleryBase', 200, {M3_HeavyArtilleryBase = 150})
+    CybranM3HeavyArtilleryBase:StartNonZeroBase({{3, 4, 5}, {1, 1, 1}})
+    CybranM3HeavyArtilleryBase:SetActive('LandScouting', false)
+    CybranM3HeavyArtilleryBase:SetActive('AirScouting', true)
 
 	
 	ForkThread(function()
         -- Spawn support factories bit later, since sometimes they can't build anything
         WaitSeconds(1)
-        CybranIslandBase:AddBuildGroup('M2_IslandSupportFactories', 200, true)
+        CybranM3HeavyArtilleryBase:AddBuildGroup('M3_HeavyArtilleryBaseSupportFactories', 200, true)
     end)
 
-    CybranIslandBaseAttacks()
+    CybranM3HeavyArtilleryBaseAttacks()
 end
 
-function CybranIslandBaseAttacks()
+function CybranM3HeavyArtilleryBaseAttacks()
     local opai = nil
     local quantity = {}
     local trigger = {}
 
     quantity = {10,15,20}
-    opai = CybranIslandBase:AddOpAI('BasicLandAttack', 'M2_LandPatrol1',
+    opai = CybranM3HeavyArtilleryBase:AddOpAI('BasicLandAttack', 'M3_LandPatrol1',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
@@ -51,7 +51,7 @@ function CybranIslandBaseAttacks()
     opai:SetLockingStyle('None')
 	
     quantity = {10,15,20}
-    opai = CybranIslandBase:AddOpAI('BasicLandAttack', 'M2_LandPatrol2',
+    opai = CybranM3HeavyArtilleryBase:AddOpAI('BasicLandAttack', 'M3_LandPatrol2',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
@@ -64,7 +64,7 @@ function CybranIslandBaseAttacks()
     opai:SetLockingStyle('None')
 	
 	quantity = {10, 8, 6}
-    opai = CybranIslandBase:AddOpAI('BasicLandAttack', 'M2_LandPatrol3',
+    opai = CybranM3HeavyArtilleryBase:AddOpAI('BasicLandAttack', 'M3_LandPatrol3',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
@@ -80,7 +80,7 @@ function CybranIslandBaseAttacks()
   
 
     quantity = {10, 9, 8}
-    opai = CybranIslandBase:AddOpAI('AirAttacks', 'M2_AirPatrol1',
+    opai = CybranM3HeavyArtilleryBase:AddOpAI('AirAttacks', 'M3_AirPatrol1',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
@@ -93,7 +93,7 @@ function CybranIslandBaseAttacks()
 
 
 	quantity = {8, 7, 6}
-    opai = CybranIslandBase:AddOpAI('AirAttacks', 'M2_AirPatrol2',
+    opai = CybranM3HeavyArtilleryBase:AddOpAI('AirAttacks', 'M3_AirPatrol2',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
