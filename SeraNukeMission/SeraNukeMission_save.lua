@@ -1004,7 +1004,7 @@ Scenario = {
                     ['type'] = STRING( 'Air Path Node' ),
                     ['prop'] = STRING( '/env/common/props/markers/M_Path_prop.bp' ),
                     ['orientation'] = VECTOR3( 0, -0, 0 ),
-                    ['position'] = VECTOR3( 273.878, 18.9844, 1181.11 ),
+                    ['position'] = VECTOR3( 273.5, 18.9844, 1181.5 ),
                 },
                 ['M2_OrderLandPatrol13'] = {
                     ['hint'] = BOOLEAN( true ),
@@ -1301,7 +1301,7 @@ Scenario = {
                     ['type'] = STRING( 'Defensive Point' ),
                     ['prop'] = STRING( '/env/common/props/markers/M_Defensive_prop.bp' ),
                     ['orientation'] = VECTOR3( 0, -0, 0 ),
-                    ['position'] = VECTOR3( 273.428, 18.9921, 1176.99 ),
+                    ['position'] = VECTOR3( 273.5, 18.9902, 1176.5 ),
                 },
                 ['AmphPN42'] = {
                     ['hint'] = BOOLEAN( true ),
@@ -2751,6 +2751,14 @@ Scenario = {
                     ['orientation'] = VECTOR3( 0, -0, 0 ),
                     ['position'] = VECTOR3( 1008.24, 21.9922, 645.975 ),
                 },
+                ['Rally Point 02'] = {
+                    ['color'] = STRING( 'FF808000' ),
+                    ['hint'] = BOOLEAN( true ),
+                    ['type'] = STRING( 'Rally Point' ),
+                    ['prop'] = STRING( '/env/common/props/markers/M_Defensive_prop.bp' ),
+                    ['orientation'] = VECTOR3( 0, -0, 0 ),
+                    ['position'] = VECTOR3( 883.887, 21.9922, 1351.19 ),
+                },
             },
         },
     },
@@ -3010,7 +3018,27 @@ Scenario = {
         ['M3_CybranHeavyArtilleryBase'] = {
             Markers = {
                 "Rally Point 01",
+                "Rally Point 02",
                 "M3_CybranHeavyArtilleryBase",
+            },
+        },
+        ['M2_OrderOss'] = {
+            Markers = {
+                "M2_OrderBase",
+                "M1_YolonaOss",
+            },
+        },
+        ['M1_SeraOss'] = {
+            Markers = {
+                "M1_SeraphimBase1",
+                "M1_YolonaOss",
+            },
+        },
+        ['M1_SeraphimCombined'] = {
+            Markers = {
+                "M1_SeraAirPatrol5",
+                "M1_AirRaid_Aeon2",
+                "M1_SeraLandPatrolSouth1",
             },
         },
     },
@@ -12733,14 +12761,14 @@ Scenario = {
                                                 type = 'xrl0403',
                                                 orders = '',
                                                 platoon = '',
-                                                Position = { 1657.000000, 17.500000, 1276.000000 },
+                                                Position = { 1677.000000, 17.500000, 1277.000000 },
                                                 Orientation = { 0.000000, -1.527164, 0.000000 },
                                             },
                                             ['UNIT_2328'] = {
                                                 type = 'xrl0403',
                                                 orders = '',
                                                 platoon = '',
-                                                Position = { 1654.000000, 17.500000, 1292.000000 },
+                                                Position = { 1674.000000, 17.500000, 1293.000000 },
                                                 Orientation = { 0.000000, -1.527164, 0.000000 },
                                             },
                                         },
@@ -12749,7 +12777,7 @@ Scenario = {
                                         type = 'xrl0403',
                                         orders = '',
                                         platoon = '',
-                                        Position = { 1654.000000, 17.500000, 1262.000000 },
+                                        Position = { 1674.000000, 17.500000, 1263.000000 },
                                         Orientation = { 0.000000, -1.527164, 0.000000 },
                                     },
                                 },
@@ -12758,7 +12786,7 @@ Scenario = {
                                 type = 'xrl0403',
                                 orders = '',
                                 platoon = '',
-                                Position = { 1651.000000, 17.500000, 1250.000000 },
+                                Position = { 1671.000000, 17.500000, 1251.000000 },
                                 Orientation = { 0.000000, -1.527164, 0.000000 },
                             },
                         },

@@ -68,6 +68,13 @@ local SkipNIS2 = false
 local SkipNIS3 = false
 local SkipNIS4 = false
 
+function PlayerCommanderKilled()
+	ArmyBrains[Player]:OnDefeat()
+    if(not ScenarioInfo.OpEnded) then
+        ScenarioFramework.CDRDeathNISCamera(ScenarioInfo.PlayerCommander)
+    end
+	return
+end
 
 function OrderCommanderKilled()
 	ArmyBrains[Order]:OnDefeat()
@@ -163,6 +170,8 @@ function OnPopulate(scenario)
 	
 	--ScenarioInfo.SeraphimCommander = ScenarioUtils.CreateArmyGroup('Seraphim', 'Commander')[1]
 	ScenarioInfo.SeraphimCommander  = ScenarioFramework.SpawnCommander('Seraphim', 'Commander', false, 'Ithanyis', false, SeraphimCommanderKilled,
+	
+
 		{'BlastAttack','DamageStabilization','RateOfFire'})
 	---So it doesnt wander away from the main base and get killed building T1 PD
 	ScenarioInfo.SeraphimCommander:AddBuildRestriction( categories.SERAPHIM * ( categories.DEFENSE + categories.SHIELD) )
@@ -330,7 +339,8 @@ function IntroMission1NIS()
 
     #else
         #DropReinforcements('Seraphim', 'Player', 'NIS_Bots_Player_D' .. Difficulty, 'NIS_Drop_Player', 'NIS_Transport_Death')
-        ScenarioInfo.PlayerCommander = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true)
+	ScenarioInfo.PlayerCommander = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true, PlayerCommanderKilled)
+
 
         -- spawn coop players too
         ScenarioInfo.CoopCDR = {}
@@ -509,7 +519,7 @@ function IntroMission2()
 	ScenarioInfo.OrderCommander  = ScenarioFramework.SpawnCommander('Order', 'Commander', false, 'Veronica', false, OrderCommanderKilled,
 		{'Shield','T3Engineering'})
 		--So it doesnt wander away from the main base and get killed building T1 torp defenses
-	ScenarioInfo.OrderCommander:AddBuildRestriction( categories.AEON * ( categories.DEFENSE + categories.SHIELD) )
+	ScenarioInfo.OrderCommander:AddBuildRestriction( categories.AEON * ( categories.DEFENSE) )
 	
 	------------
     -- Cybran Island Base

@@ -44,7 +44,7 @@ function UEFM3AirBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M2_OrderBase',
+                PatrolChains = {'M2_OrderOss',
 								'M1_YolonaOss',},
             },
             Priority = 100,
@@ -58,7 +58,8 @@ function UEFM3AirBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_YolonaOss',}
+                PatrolChains = {'M2_OrderOss',
+								'M1_YolonaOss',},
             },
             Priority = 100,
         }
@@ -66,12 +67,12 @@ function UEFM3AirBaseAttacks()
     opai:SetChildQuantity({'Gunships'}, quantity[Difficulty])
 
 		--Air Attack against Order
-	quantity = {20, 25, 30}
+	quantity = {10, 12, 14}
     opai = UEFM3AirBase:AddOpAI('AirAttacks', 'M3_UEFAirAttack3',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M2_OrderAirPatrol',
+                PatrolChains = {'M2_OrderOss',
 								'M1_YolonaOss',},
             },
             Priority = 100,
@@ -85,7 +86,7 @@ function UEFM3AirBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M2_OrderAirPatrol',
+                PatrolChains = {'M2_OrderOss',
 								'M1_YolonaOss',},
             },
             Priority = 100,
@@ -193,9 +194,8 @@ function UEFM3IslandBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M2_OrderBase',
-                                'M1_YolonaOss',
-								},
+                PatrolChains = {'M2_OrderOss',
+								'M1_YolonaOss',},
             },
             Priority = 100,
         }
@@ -208,9 +208,8 @@ function UEFM3IslandBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M2_OrderBase',
-                                'M1_YolonaOss',
-								},
+                PatrolChains = {'M2_OrderOss',
+								'M1_YolonaOss',},
             },
             Priority = 100,
         }
@@ -223,9 +222,8 @@ function UEFM3IslandBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M2_OrderBase',
-                                'M1_YolonaOss',
-								},
+                PatrolChains = {'M2_OrderOss',
+								'M1_YolonaOss',},
             },
             Priority = 100,
         }
@@ -238,9 +236,8 @@ function UEFM3IslandBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M2_OrderBase',
-                                'M1_YolonaOss',
-								},
+                PatrolChains = {'M2_OrderOss',
+								'M1_YolonaOss',},
             },
             Priority = 100,
         }

@@ -42,7 +42,8 @@ function CybranM3HeavyArtilleryBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_SeraphimBase', 'M1_YolonaOss'},
+                PatrolChains = {'M1_SeraOss',
+								'M1_YolonaOss',},
             },
             Priority = 100,
         }
@@ -55,7 +56,8 @@ function CybranM3HeavyArtilleryBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_SeraphimBase', 'M1_YolonaOss'},
+                PatrolChains = {'M1_SeraOss',
+								'M1_YolonaOss',},
             },
             Priority = 100,
         }
@@ -68,7 +70,8 @@ function CybranM3HeavyArtilleryBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_SeraphimBase', 'M1_YolonaOss'},
+                PatrolChains = {'M1_SeraOss',
+								'M1_YolonaOss',},
             },
             Priority = 100,
         }
@@ -84,7 +87,8 @@ function CybranM3HeavyArtilleryBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_SeraphimBase', 'M1_YolonaOss'},
+                PatrolChains = {'M1_SeraOss',
+								'M1_YolonaOss',},
             },
             Priority = 100,
         }
@@ -97,7 +101,8 @@ function CybranM3HeavyArtilleryBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_SeraphimBase', 'M1_YolonaOss'},
+                PatrolChains = {'M1_SeraOss',
+								'M1_YolonaOss',},
             },
             Priority = 100,
         }

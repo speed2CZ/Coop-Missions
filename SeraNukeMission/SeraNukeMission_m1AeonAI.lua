@@ -47,9 +47,8 @@ function M1AeonAirBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_AirRaid_Aeon',
-                                'M1_AmphibiousAttack_Aeon',
-								'M1_YolonaOss'},
+                PatrolChains = {'M1_SeraOss',
+								'M1_YolonaOss',},
         },
 		Priority = 100,
 		}
@@ -62,9 +61,8 @@ function M1AeonAirBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_AirRaid_Aeon',
-                                'M1_AmphibiousAttack_Aeon',
-								'M1_YolonaOss'},
+                PatrolChains = {'M1_SeraOss',
+								'M1_YolonaOss',},
         },
 		Priority = 100,
 		}
@@ -76,9 +74,8 @@ function M1AeonAirBaseAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_AirRaid_Aeon',
-                                'M1_AmphibiousAttack_Aeon',
-								'M1_YolonaOss'},
+                PatrolChains = {'M1_SeraOss',
+								'M1_YolonaOss',},
         },
 		Priority = 100,
 		}
@@ -91,8 +88,8 @@ function M1AeonAirBaseAttacks()
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
                 PatrolChains = {'M1_AirRaid_Aeon',
-                                'M1_AmphibiousAttack_Aeon',
-								'M1_YolonaOss'},
+								'M1_SeraOss',
+								'M1_YolonaOss',},
             },
             Priority = 100,
         }
@@ -132,12 +129,13 @@ function AeonM1LandBaseAttacks()
     local quantity = {}
     local trigger = {}
 
-    quantity = {5,10,15}
+	quantity = {10,14,18}
     opai = AeonM1LandBase:AddOpAI('BasicLandAttack', 'M1_SouthLandAttack1',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_AmphibiousAttack_Aeon'},
+                PatrolChains = {'M1_SeraOss',
+								'M1_YolonaOss',},
             },
             Priority = 100,
         }
@@ -145,12 +143,13 @@ function AeonM1LandBaseAttacks()
     opai:SetChildQuantity({'LightTanks', 'AmphibiousTanks', 'MobileFlak'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
 
-    quantity = {5,10,15}
+	quantity = {10,14,18}
     opai = AeonM1LandBase:AddOpAI('BasicLandAttack', 'M1_SouthLandAttack2',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_AmphibiousAttack_Aeon'},
+                PatrolChains = {'M1_SeraOss',
+								'M1_YolonaOss',},
             },
             Priority = 110,
         }
@@ -158,12 +157,13 @@ function AeonM1LandBaseAttacks()
     opai:SetChildQuantity({'LightTanks', 'AmphibiousTanks', 'MobileFlak'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
 
-	quantity = {5,10,15}
+	quantity = {10,14,18}
      opai = AeonM1LandBase:AddOpAI('BasicLandAttack', 'M1_SouthLandAttack3',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_AmphibiousAttack_Aeon'},
+                PatrolChains = {'M1_SeraOss',
+								'M1_YolonaOss',},
             },
             Priority = 120,
         }
@@ -171,12 +171,13 @@ function AeonM1LandBaseAttacks()
     opai:SetChildQuantity({'LightTanks', 'AmphibiousTanks', 'MobileFlak'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
 	
-	quantity = {5,10,15}
+	quantity = {10,14,18}
      opai = AeonM1LandBase:AddOpAI('BasicLandAttack', 'M1_SouthLandAttack4',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M1_AmphibiousAttack_Aeon'},
+                PatrolChains = {'M1_SeraOss',
+								'M1_YolonaOss',},
             },
             Priority = 130,
         }
