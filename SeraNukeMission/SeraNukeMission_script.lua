@@ -302,11 +302,14 @@ function OnStart(self)
             categories.xeb0204 + -- UEF Engineering Station 2
             categories.xea0306 + -- UEF Heavy Air Transport
             categories.xeb2402 + -- UEF Sub-Orbital Defense System
-            categories.xsl0305 + -- Seraph Sniper Bot
-            categories.xsa0402 + -- Seraph Exp Bomber
+			categories.ueb2401 + -- UEF Mavor
+            categories.ues0401 + -- UEF Atlantis
+            categories.xeb2402 + -- UEF Sub-Orbital Defense System
+            --categories.xsl0305 + -- Seraph Sniper Bot
+            --categories.xsa0402 + -- Seraph Exp Bomber
             categories.xss0304 + -- Seraph Sub Hunter
-            categories.xsb0304 + -- Seraph Gate
-            categories.xsl0301 + -- Seraph sACU
+            categories.xsb0304  -- Seraph Gate
+            --categories.xsl0301 -- Seraph sACU
             --categories.xsb2401   -- Seraph exp Nuke (need this)
         )
     end
