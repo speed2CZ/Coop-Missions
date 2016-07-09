@@ -19,7 +19,7 @@ local SeraphimBase = BaseManager.CreateBaseManager()
 function SeraphimBaseAI()
     SeraphimBase:InitializeDifficultyTables(ArmyBrains[Seraphim], 'SeraphimBase', 'SeraphimBaseMarker', 200, {M1_SeraphimBase = 210})
     SeraphimBase:StartNonZeroBase({{8, 7, 6}, {1, 1, 1}})
-    SeraphimBase:SetActive('LandScouting', true)
+    --SeraphimBase:SetActive('LandScouting', true)
     SeraphimBase:SetActive('AirScouting', true)
 
     --ForkThread(function()
@@ -42,6 +42,65 @@ function M1SeraphimBaseDefensePatrols()
     local quantity = {}
     local trigger = {}
 
+    opai = SeraphimBase:AddOpAI('BasicLandAttack', 'M1_LandPatrol1',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M1_SeraphimCombined',
+            },
+            Priority = 150,
+        }
+    )
+    opai:SetChildQuantity({'SiegeBots', 'HeavyTanks', 'LightTanks'}, 6)
+    opai:SetLockingStyle('None')
+	
+	opai = SeraphimBase:AddOpAI('BasicLandAttack', 'M1_LandPatrol2',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M1_SeraphimCombined',
+            },
+            Priority = 150,
+        }
+    )
+    opai:SetChildQuantity({'SiegeBots', 'HeavyTanks', 'LightTanks'}, 6)
+    opai:SetLockingStyle('None')
+	
+	opai = SeraphimBase:AddOpAI('BasicLandAttack', 'M1_LandPatrol3',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M1_SeraphimCombined',
+            },
+            Priority = 150,
+        }
+    )
+    opai:SetChildQuantity({'SiegeBots', 'HeavyTanks', 'LightTanks'}, 6)
+    opai:SetLockingStyle('None')
+	
+	opai = SeraphimBase:AddOpAI('BasicLandAttack', 'M1_LandPatrol4',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M1_SeraphimCombined',
+            },
+            Priority = 150,
+        }
+    )
+    opai:SetChildQuantity({'MobileFlak'}, 8)
+    opai:SetLockingStyle('None')
+		opai = SeraphimBase:AddOpAI('BasicLandAttack', 'M1_LandPatrol5',
+        {
+            MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M1_SeraphimCombined',
+            },
+            Priority = 150,
+        }
+    )
+    opai:SetChildQuantity({'MobileFlak'}, 8)
+    opai:SetLockingStyle('None')
+	--[[
     quantity = {12, 10, 8}
     opai = SeraphimBase:AddOpAI('BasicLandAttack', 'M1_LandPatrol1',
         {
@@ -50,12 +109,39 @@ function M1SeraphimBaseDefensePatrols()
                 PatrolChains = {'M1_SeraLandPatrolSouth',
                                 'M1_SeraLandPatrolEast'},
             },
-            Priority = 100,
+            Priority = 200,
         }
     )
     --opai:SetChildQuantity({'SiegeBots', 'HeavyTanks', 'LightTanks'}, quantity[Difficulty])  --Does not work, just makes siege tanks
-	opai:SetChildQuantity({'HeavyTanks', 'LightTanks'}, quantity[Difficulty])
-    opai:SetLockingStyle('None')
+	--opai:SetChildQuantity( {'HeavyBots', 'MobileFlak'}, quantity[Difficulty]) -- OSB_Child_BasicLandAttack_T3NewHeavyBots' heavy bots  ==> snipers. also doesnt make flak
+	--opai:SetChildQuantity( {'HeavyBots', 'SiegeBots' , 'MobileShields', 'MobileFlak'}, quantity[Difficulty])  --'OSB_Child_BasicLandAttack_T3MixedHeavyBotsShields' doesnt work just makes snipers
+	--opai:SetChildQuantity({'SiegeBots', 'HeavyTanks', 'LightTanks'}, quantity[Difficulty]) --OST_BasicLandAttack_T3Attack3Tanks
+    --opai:SetLockingStyle('None')
+	
+	--[[ this fails, just makes flak
+	local template = {
+        'HeavyLandAttack1',
+        'NoPlan',
+        { 'xsl0303', 1, 4, 'Attack', 'GrowthFormation' },    -- Siege tank
+        { 'xsl0205', 1, 4, 'Attack', 'GrowthFormation' },    -- Mobile flak
+        { 'xsl0307', 1, 2, 'Attack', 'GrowthFormation' },    -- Mobile Shields
+    }
+    local builder = {
+        BuilderName = 'HeavyLandAttack1',
+        PlatoonTemplate = template,
+        InstanceCount = 2,
+        Priority = 200,
+        PlatoonType = 'Land',
+        RequiresConstruction = true,
+        LocationType = 'M1_SeraphimBase',
+        PlatoonAIFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+        PlatoonData = {
+                PatrolChains = {'M1_SeraLandPatrolSouth',
+                                'M1_SeraLandPatrolEast'},
+        },
+    }
+    ArmyBrains[Seraphim]:PBMAddPlatoon( builder )
+	--]]
 	
 	quantity = {12, 10, 8}
     opai = SeraphimBase:AddOpAI('BasicLandAttack', 'M1_LandPatrol2',
@@ -65,10 +151,10 @@ function M1SeraphimBaseDefensePatrols()
                 PatrolChains = {'M1_SeraLandPatrolSouth',
                                 'M1_SeraLandPatrolEast'},
             },
-            Priority = 100,
+            Priority = 100, --second
         }
     )
-    opai:SetChildQuantity({'MobileMissiles', 'LightArtillery'}, quantity[Difficulty]) --This works
+    opai:SetChildQuantity({'MobileMissiles', 'LightArtillery'}, quantity[Difficulty]) --This works... or not?
     opai:SetLockingStyle('None')
 	
 	quantity = {10, 8, 8}
@@ -82,7 +168,7 @@ function M1SeraphimBaseDefensePatrols()
         }
     )
     --opai:SetChildQuantity({'MobileFlak', 'LightBots'}, quantity[Difficulty])  --Does not work.  No light bots?
-	opai:SetChildQuantity({'MobileFlak', 'LightTanks'}, quantity[Difficulty])
+	opai:SetChildQuantity( {'LightTanks', 'AmphibiousTanks', 'MobileFlak'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
 
 	quantity = {10, 8, 8}
@@ -95,7 +181,7 @@ function M1SeraphimBaseDefensePatrols()
             Priority = 100,
         }
     )
-	opai:SetChildQuantity({'MobileFlak', 'LightTanks'}, quantity[Difficulty])
+	opai:SetChildQuantity( {'LightTanks', 'AmphibiousTanks', 'MobileFlak'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
 	
 	
@@ -106,12 +192,12 @@ function M1SeraphimBaseDefensePatrols()
             PlatoonData = {
                 PatrolChains = {'M1_SeraLandPatrolSouth'},
             },
-            Priority = 100,
+            Priority = 100, --first
         }
     )
     opai:SetChildQuantity({'HeavyTanks', 'LightTanks'}, quantity[Difficulty]) --This works.  HeavyTanks --> T2 bots
     opai:SetLockingStyle('None')
-
+	--]]
 
   
 	--Defense Air Patrol
@@ -138,46 +224,47 @@ function M1SeraphimBaseDefensePatrols()
             Priority = 100,
         }
     )
-    opai:SetChildQuantity({'Gunships', 'Interceptors'}, quantity[Difficulty])
+    opai:SetChildQuantity({'Gunships', 'Interceptors'}, quantity[Difficulty]) --This works
 	
-	--[[
+	
 			--Defense Air Patrol
-	quantity = {10, 8, 7}
+	quantity = {9, 8, 7}
     opai = SeraphimBase:AddOpAI('AirAttacks', 'M1_AirPatrol3',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
                 PatrolChains = {'M1_SeraphimCombined'},
             },
-            Priority = 100,
+            Priority = 150,
         }
     )
-    opai:SetChildQuantity({'FighterBombers'}, quantity[Difficulty]) --It wont make this?
-	--]]
+    opai:SetChildQuantity({'CombatFighters'}, quantity[Difficulty]) --Works --uses platoon OSB_Child_AirAttacks_T2SeraphimPlatoon3
 	
+	--[[
 	local BomberNum = {7, 6, 5}
     local FighterBomberNum = {7, 6, 5}
 
-    local Temp = {
+    local Template = {
         'M1SeraBombers',
         'NoPlan',
         { 'xsa0103', 1, BomberNum[Difficulty], 'Attack', 'AttackFormation' }, -- T1 Bomber
         { 'xsa0202', 1, FighterBomberNum[Difficulty], 'Attack', 'AttackFormation' }, -- T2 fighterBomber
     }
     local Builder = {
-        BuilderName = 'SeraphimBase',
-        PlatoonTemplate = Temp,
-        InstanceCount = 1,
+        BuilderName = 'SeraphimBaseBomber',
+        PlatoonTemplate = Template,
+        InstanceCount = 2,
         Priority = 150,
         PlatoonType = 'Air',
         RequiresConstruction = true,
-        LocationType = 'SeraphimBase',
+        LocationType = 'M1_SeraphimBase',
         PlatoonAIFunction = {SPAIFileName, 'Patrol'},
         PlatoonData = {
             PatrolChain = 'M1_SeraphimCombined',
         },      
     }
     ArmyBrains[Seraphim]:PBMAddPlatoon( Builder )
+	--]]
 	--[[
 	local Temp = {
        'TestSealPatrolSouth',
@@ -254,7 +341,7 @@ M2SeraphimAttacks = function()
             Priority = 120,
         }
     )
-    opai:SetChildQuantity({'HeavyTanks'}, quantity[Difficulty])
+    opai:SetChildQuantity({'SiegeBots'}, quantity[Difficulty])
     opai:SetLockingStyle('None')
 
 	--Defense Sea Patrol South

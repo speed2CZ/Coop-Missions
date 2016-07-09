@@ -92,6 +92,66 @@ function SeraphimCommanderKilled()
 		--end
 	return
 end
+
+function M1CoalitionAttacks()
+	--Stop recurring attacks from previous phase
+	if ScenarioInfo.M1RecurringAttacks then 
+		for k,v in ScenarioInfo.M1RecurringAttacks do
+			KillThread(v)
+		end
+	end
+    local platoon
+	ScenarioInfo.M1RecurringAttacks = {}
+	
+	-- Aeon Air Raid, lasts 4 minutes
+	ScenarioInfo.M1RecurringAttacks.AeonAirRaid = ForkThread(function()
+		for i = 1, (Difficulty * 2) do
+			platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M1_AirRaid_D' .. Difficulty, 'GrowthFormation')
+			ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_AirRaid_Aeon')
+			WaitSeconds(4*60/Difficulty)
+		end
+	end)
+	
+	--Aeon GC Attack
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M1_GC_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonMoveChain(platoon, 'M1_GC_Move')
+	ScenarioFramework.PlatoonAttackChain(platoon, 'M1_SeraphimBase')
+	ScenarioFramework.PlatoonMoveChain(platoon, 'M1_CybranAmphibiousAttack')
+    
+	-- UEF Fleet Attack
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_AttackFleet_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonMoveChain(platoon, 'M1_AttackFleet_UEF1')
+	
+	-- UEF Riptide Attack vs Player and vs Seraphim, lasts 3 minutes
+	ScenarioInfo.M1RecurringAttacks.UEFRipTides = ForkThread(
+	function()
+		for i = 1, Difficulty do
+			for i = 1, Difficulty do
+				platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_AttackPlayer_D' .. Difficulty, 'GrowthFormation')
+				ScenarioFramework.PlatoonAttackChain(platoon, 'M1_YolonaOss')
+		
+				platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_AttackSera_D' .. Difficulty, 'GrowthFormation')
+				ScenarioFramework.PlatoonAttackChain(platoon, 'M1_SeraphimBase')
+				ScenarioFramework.PlatoonAttackChain(platoon, 'M1_YolonaOss')
+				WaitSeconds(15)
+			end
+			WaitSeconds(60*3/Difficulty)
+		end
+	end)
+
+	--Cybran Spider Attack
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M1_Experimentals_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonMoveChain(platoon, 'M1_CybranAmphibiousMove')
+	ScenarioFramework.PlatoonAttackChain(platoon, 'M1_SeraphimBase')
+	ScenarioFramework.PlatoonMoveChain(platoon, 'M1_CybranAmphibiousAttack')
+	
+	--Cybran Wagners	
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M1_WagnerAttack_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonMoveChain(platoon, 'M3_CybranAmphibiousMove')
+	ScenarioFramework.PlatoonAttackChain(platoon, 'M1_SeraphimBase')
+	ScenarioFramework.PlatoonMoveChain(platoon, 'M1_CybranAmphibiousAttack')
+end
+
 ----------
 -- Startup
 ----------
@@ -126,6 +186,9 @@ function OnPopulate(scenario)
     GetArmyBrain(Seraphim):SetResourceSharing(false)
 	GetArmyBrain(Order):SetResourceSharing(false)
 	
+	--UEF Support base in M3 location to provide power for M1 fleet
+	ScenarioUtils.CreateArmyGroup('UEF','M1_SupportBase')
+	
     ------------
     -- Aeon Air and Land Bases
     ------------
@@ -150,6 +213,7 @@ function OnPopulate(scenario)
     ------------
     platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M1_DefenseForceSouth_D' .. Difficulty, 'GrowthFormation')
     ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_SeraLandPatrolSouth')
+    --ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_SeraphimCombined')
 	
 	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M1_DefenseForceEast_D' .. Difficulty, 'GrowthFormation')
     ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_SeraLandPatrolEast')
@@ -160,8 +224,6 @@ function OnPopulate(scenario)
     end
     ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_SeraSeaPatrolSouth')
 	
-
-	
 	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'DefenseFleet2_D' .. Difficulty, 'GrowthFormation')
 	for k, v in EntityCategoryFilterDown(categories.xss0201, platoon:GetPlatoonUnits()) do
         IssueDive({v})
@@ -170,12 +232,9 @@ function OnPopulate(scenario)
 	
 	--ScenarioInfo.SeraphimCommander = ScenarioUtils.CreateArmyGroup('Seraphim', 'Commander')[1]
 	ScenarioInfo.SeraphimCommander  = ScenarioFramework.SpawnCommander('Seraphim', 'Commander', false, 'Ithanyis', false, SeraphimCommanderKilled,
-	
-
-		{'BlastAttack','DamageStabilization','RateOfFire'})
+	{'BlastAttack','DamageStabilization','RateOfFire'})
 	---So it doesnt wander away from the main base and get killed building T1 PD
 	ScenarioInfo.SeraphimCommander:AddBuildRestriction( categories.SERAPHIM * ( categories.DEFENSE + categories.SHIELD) )
-	
 	
     -- Resources for Aeon AI, slightly delayed cause army didn't recieve it for some reason
     ForkThread(function()
@@ -184,15 +243,16 @@ function OnPopulate(scenario)
 		ArmyBrains[Aeon]:GiveStorage('MASS', 20000)
         ArmyBrains[Aeon]:GiveResource('MASS', 20000)
         ArmyBrains[Aeon]:GiveResource('ENERGY', 100000)
+		ArmyBrains[Cybran]:GiveStorage('ENERGY', 100000)
+		ArmyBrains[Cybran]:GiveStorage('MASS', 20000)
+        ArmyBrains[Cybran]:GiveResource('MASS', 20000)
+        ArmyBrains[Cybran]:GiveResource('ENERGY', 100000)
+		ArmyBrains[UEF]:GiveStorage('ENERGY', 100000)
+		ArmyBrains[UEF]:GiveStorage('MASS', 20000)
+        ArmyBrains[UEF]:GiveResource('MASS', 20000)
+        ArmyBrains[UEF]:GiveResource('ENERGY', 100000)
     end)
-	
-	
 
-    -- Walls
-    #ScenarioUtils.CreateArmyGroup('UEF', 'M1_UEF_Walls')
-    #ScenarioUtils.CreateArmyGroup('Civilians', 'Walls')
-	
-	
 	------------
     -- Player Base and Fleet
     ------------
@@ -205,65 +265,11 @@ function OnPopulate(scenario)
         ScenarioInfo.YolonaOss = v
     end
 	
-
     ------------------
     -- Initial Attacks
     ------------------
-    local platoon
-	ScenarioInfo.M1RecurringAttacks = {}
-	
-	
-	-- Aeon Air Raid
-	ScenarioInfo.M1RecurringAttacks.AeonAirRaid = ForkThread(function()
-		for i = 1, (Difficulty * 2) do
-			platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M1_AirRaid_D' .. Difficulty, 'GrowthFormation')
-			ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_AirRaid_Aeon')
-			WaitSeconds(240/Difficulty)
-		end
-	end)
-	
-	--Aeon GC Attack
-	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M1_GC_D' .. Difficulty, 'GrowthFormation')
-    ScenarioFramework.PlatoonMoveChain(platoon, 'M1_GC_Move')
-	ScenarioFramework.PlatoonAttackChain(platoon, 'M1_SeraphimBase')
-	ScenarioFramework.PlatoonMoveChain(platoon, 'M1_CybranAmphibiousAttack')
-    
-	-- UEF Fleet Attack
-	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_AttackFleet_D' .. Difficulty, 'GrowthFormation')
-    ScenarioFramework.PlatoonMoveChain(platoon, 'M1_AttackFleet_UEF1')
-	
-	--UEF Support base in M3 to provide power
-	ScenarioUtils.CreateArmyGroup('UEF','M1_SupportBase')
-	
-	-- UEF Riptide Attack vs Player and vs Seraphim
-	ScenarioInfo.M1RecurringAttacks.UEFRipTides = ForkThread(
-	function()
-		for i = 1, Difficulty do
-			platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_AttackPlayer_D' .. Difficulty, 'GrowthFormation')
-			ScenarioFramework.PlatoonAttackChain(platoon, 'M1_YolonaOss')
-	
-			platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_AttackSera_D' .. Difficulty, 'GrowthFormation')
-			ScenarioFramework.PlatoonAttackChain(platoon, 'M1_SeraphimBase')
-			ScenarioFramework.PlatoonAttackChain(platoon, 'M1_YolonaOss')
-			WaitSeconds(15)
-		end
-	end)
+	M1CoalitionAttacks()
 
-
-	
-	--Cybran Spider Attack
-	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M1_Experimentals_D' .. Difficulty, 'GrowthFormation')
-    ScenarioFramework.PlatoonMoveChain(platoon, 'M1_CybranAmphibiousMove')
-	ScenarioFramework.PlatoonAttackChain(platoon, 'M1_SeraphimBase')
-	ScenarioFramework.PlatoonMoveChain(platoon, 'M1_CybranAmphibiousAttack')
-	
-	--Cybran Wagners
-	
-	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M1_WagnerAttack_D' .. Difficulty, 'GrowthFormation')
-    ScenarioFramework.PlatoonMoveChain(platoon, 'M3_CybranAmphibiousMove')
-	ScenarioFramework.PlatoonAttackChain(platoon, 'M1_SeraphimBase')
-	ScenarioFramework.PlatoonMoveChain(platoon, 'M1_CybranAmphibiousAttack')
-	
 	#ScenarioFramework.CreatePlatoonDeathTrigger(M1SendTitans2, platoon)
 
     -- First objective area
@@ -335,26 +341,50 @@ end
 -- Mission 1
 ------------
 function IntroMission1NIS()
-    #if not SkipNIS1 then
-
-    #else
-        #DropReinforcements('Seraphim', 'Player', 'NIS_Bots_Player_D' .. Difficulty, 'NIS_Drop_Player', 'NIS_Transport_Death')
-	ScenarioInfo.PlayerCommander = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true, PlayerCommanderKilled)
-
-
-        -- spawn coop players too
-        ScenarioInfo.CoopCDR = {}
-        local tblArmy = ListArmies()
-        coop = 1
-        for iArmy, strArmy in pairs(tblArmy) do
-            if iArmy >= ScenarioInfo.Coop1 then
-                ScenarioInfo.CoopCDR[coop] = ScenarioFramework.SpawnCommander(strArmy, 'Commander', 'Warp', true, true)
-                #DropReinforcements('Seraphim', strArmy, 'NIS_Bots_' .. strArmy ..'_D' .. Difficulty, 'NIS_Drop_' .. strArmy, 'NIS_Transport_Death')
-                coop = coop + 1
-                WaitSeconds(0.5)
-            end
-        end
-    #end
+    if not SkipNIS1 then
+	    Cinematics.EnterNISMode()
+		
+		ForkThread(function()
+		    -- Vision for NIS location
+			local VisMarker	= ScenarioFramework.CreateVisibleAreaLocation(150, 'M1_CybranAmphibiousAttack3', 20, ArmyBrains[Player])
+			ScenarioInfo.NISGate = ScenarioUtils.CreateArmyGroup('Player', 'M1_NISGate')[1]
+			ScenarioInfo.NISGroup = ScenarioUtils.CreateArmyGroup('UEF', 'M1_NISAirRaid')	
+			--for k,v in NISGroup do
+			IssueAttack(ScenarioInfo.NISGroup,ScenarioInfo.NISGate)
+			--end
+			--local NISGroup = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_NISAirRaid','GrowthFormation')	
+			--ScenarioFramework.PlatoonPatrolChain(NISGroup, 'M1_CybranAmphibiousAttack3')
+			ScenarioInfo.PlayerCommander = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true, PlayerCommanderKilled)
+			
+			WaitSeconds(2)
+			IssueGuard({ScenarioInfo.PlayerCommander}, ScenarioInfo.YolonaOss)
+		end)
+		Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('M1_CybranAmphibiousAttack3'), 5)
+		
+		-- spawn coop players too
+		ScenarioInfo.CoopCDR = {}
+		local tblArmy = ListArmies()
+		coop = 1
+		for iArmy, strArmy in pairs(tblArmy) do
+			if iArmy >= ScenarioInfo.Coop1 then
+				ScenarioInfo.CoopCDR[coop] = ScenarioFramework.SpawnCommander(strArmy, 'Commander', 'Warp', true, true)
+				#DropReinforcements('Seraphim', strArmy, 'NIS_Bots_' .. strArmy ..'_D' .. Difficulty, 'NIS_Drop_' .. strArmy, 'NIS_Transport_Death')
+				coop = coop + 1
+				WaitSeconds(0.5)
+			end
+		end
+		WaitSeconds(10)
+		--VisMarker:Destroy()
+		for k, v in ScenarioInfo.NISGroup do
+			if not v:IsDead() then
+				v:Kill()
+			end
+		end
+		ScenarioInfo.NISGate:Kill()
+		Cinematics.ExitNISMode()
+	else
+		ScenarioInfo.PlayerCommander = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true, PlayerCommanderKilled)
+	end
     IntroMission1()
 end
 
@@ -493,102 +523,31 @@ function StartMission1()
 
 end
 
-function IntroMission2()
-
-    if ScenarioInfo.MissionNumber == 2 or ScenarioInfo.MissionNumber == 3 then
-        return
-    end
-    ScenarioInfo.MissionNumber = 2
-	
-	ScenarioFramework.SetPlayableArea('AREA_2', false)
-	
-	--Stop recurring attacks from previous phase
-	for k,v in ScenarioInfo.M1RecurringAttacks do
-		KillThread(v)
-	end
-	
-	ScenarioInfo.M2RecurringAttacks = {}
-	
-	------------
-    -- Order Base
-    ------------
-	M2OrderAI.OrderBaseAI()
-    ArmyBrains[Order]:PBMSetCheckInterval(5)
-	
-	--ScenarioInfo.OrderCommander = ScenarioUtils.CreateArmyGroup('Order', 'Commander')
-	ScenarioInfo.OrderCommander  = ScenarioFramework.SpawnCommander('Order', 'Commander', false, 'Veronica', false, OrderCommanderKilled,
-		{'Shield','T3Engineering'})
-		--So it doesnt wander away from the main base and get killed building T1 torp defenses
-	ScenarioInfo.OrderCommander:AddBuildRestriction( categories.AEON * ( categories.DEFENSE) )
-	
-	------------
-    -- Cybran Island Base
-    ------------
-	M2CybranAI.CybranIslandBaseAI()
-    ArmyBrains[Cybran]:PBMSetCheckInterval(5)
-	local M2CybranSMDs = ScenarioUtils.CreateArmyGroup('Cybran','M2_SMD')
-	for i,SMD in M2CybranSMDs do
-		SMD:GiveTacticalSiloAmmo(Difficulty - 1)
+function M2CoalitionAttacks()
+	--Stop recurring attacks from M2 if already in progress
+	if ScenarioInfo.M2RecurringAttacks then
+		for k,v in ScenarioInfo.M2RecurringAttacks do
+			KillThread(v)
+		end
 	end
 
+	--Cybran Island base either gets a t3 heavy artillery now, or a scathis soon.  Unless difficulty is easy, then niether
 	if Difficulty > 1 and not ScenarioInfo.SeraphimCommander:IsDead() then
 		ScenarioInfo.M2RecurringAttacks.Scathis = ForkThread(function()
-			WaitSeconds(120*Difficulty)
+			WaitSeconds(10*60/Difficulty) --5 min for medium, 200 seconds for hard
 			local platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M2_Scathis','GrowthFormation')	
 			ScenarioFramework.PlatoonMoveChain(platoon, 'M2_ScathisMoveChain')
 		end)
-	elseif Difficulty > 1 then
+	elseif Difficulty > 1 and not ScenarioInfo.M2DontMakeHeavyArtillery then
 		ScenarioUtils.CreateArmyGroup('Cybran','M2_HeavyArtillery')
 	end
+	ScenarioInfo.M2DontMakeHeavyArtillery = true
 	
-	------------
-    -- UEF Air Base
-    ------------
-	M2UEFAI.UEFM2AirBaseAI()
-    ArmyBrains[UEF]:PBMSetCheckInterval(5)
-
-	
-	local UEFM2SMD = ScenarioUtils.CreateArmyGroup('UEF','M2_SMD')
-	for i,SMD in UEFM2SMD do
-		SMD:GiveTacticalSiloAmmo(Difficulty - 1)
-	end
-
-	
-	
-	
-	------------
-    -- Order Fleet Attacks, East and West
-    ------------
-    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M2_DefenseFleetEast_D' .. Difficulty, 'GrowthFormation')
-    ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_AeonFleetAttack')
-	--ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_UEFFleetAttackChain')
-	--ForkThread(function()
-	--	ScenarioPlatoonAI.PlatoonAttackClosestUnit(platoon)
-	--end
-	--)
-	
-    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M2_DefenseFleetWest_D' .. Difficulty, 'GrowthFormation')
-	for k, v in EntityCategoryFilterDown(categories.uas0401, platoon:GetPlatoonUnits()) do
-        --IssueDive({v})
-    end
-    ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_UEFFleetAttack')
-	ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_AeonFleetAttack')
-	
-	------------
-    -- Order Land and Air Patrols
-    ------------
-	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M2_DefensePatrol_D' .. Difficulty, 'GrowthFormation')
-    ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_OrderLandPatrol1')
-	
-	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M2_AirPatrol_D' .. Difficulty, 'GrowthFormation')
-    ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_OrderAirPatrol')
-	
-	
-
 	------------
     -- UEF and Aeon Fleet Attacks
     ------------
 	
+	--Just one attack
     platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M2_FleetAttack_D' .. Difficulty, 'GrowthFormation')
 	for k, v in EntityCategoryFilterDown(categories.uas0401, platoon:GetPlatoonUnits()) do
         --IssueDive({v})
@@ -596,17 +555,18 @@ function IntroMission2()
     ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_AeonFleetAttack')
 	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
 	
+	--Just one attack
     platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_AttackFleetNorth_D' .. Difficulty, 'GrowthFormation')
     ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_UEFFleetAttack')
-	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
+	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')	
 	
 	------------
     -- Experimental Attacks
     ------------
 
-	--Aeon GC Attack
+	--Aeon GC Attack   --lasts 10 minutes. 1 wave for easy, 2 for med, 3 for hard
 	ScenarioInfo.M2RecurringAttacks.AeonGCs = ForkThread(function()
-		WaitSeconds(Difficulty*20)
+		WaitSeconds(40)
 		for i = 1, Difficulty do
 			for i = 1, 2 do
 			platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M1_GC_D' .. Difficulty, 'GrowthFormation')
@@ -615,23 +575,24 @@ function IntroMission2()
 			ScenarioFramework.PlatoonMoveChain(platoon, 'M1_YolonaOss')
 			WaitSeconds(10)
 			end
-		WaitSeconds(60*5)
+		WaitSeconds(60*10/Difficulty)
 		end
 	end
 	)
 	
-	--Cybran Monkey Attack
+	--Cybran Monkey Attack --lasts 10 minutes. 1 wave for easy, 2 for med, 3 for hard
 	ScenarioInfo.M2RecurringAttacks.CybranSpiders = ForkThread(function()
-		for i = 1, (Difficulty * 2) do
+		WaitSeconds(20)
+		for i = 1, (Difficulty) do
 			platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M2_Experimentals_D' .. Difficulty, 'GrowthFormation')
 			ScenarioFramework.PlatoonMoveChain(platoon, 'M1_CybranAmphibiousMove')
 			ScenarioFramework.PlatoonAttackChain(platoon, 'M1_SeraphimBase')
 			ScenarioFramework.PlatoonMoveChain(platoon, 'M1_CybranAmphibiousAttack')
-			WaitSeconds(60*5)
+			WaitSeconds(60*10/Difficulty)
 		end
 	end)
 	
-	--UEF Fatboy Attack
+	--UEF Fatboy Attack, two attacks at the same time, but happens only once
 	ForkThread(function()
 	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_FatBoys_D' .. Difficulty, 'GrowthFormation')
     ScenarioFramework.PlatoonMoveChain(platoon, 'M2_FatBoyMove1')
@@ -650,59 +611,138 @@ function IntroMission2()
     -- Air Raids
     ------------
 	
-	-- Aeon Air Raid
+	-- Aeon Air Raid --Lasts 10 minutes, 2 attacks easy, 4 medium, 6 hard
 	ScenarioInfo.M2RecurringAttacks.AeonAirRaid = ForkThread(function()
-		for i = 1, (3*Difficulty) do
+		for i = 1, (2*Difficulty) do
 			platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M1_AirRaid_D' .. Difficulty, 'GrowthFormation')
 			ScenarioFramework.PlatoonAttackChain(platoon, 'M1_AirRaid_Aeon')
 			ScenarioFramework.PlatoonAttackChain(platoon, 'M1_YolonaOss')
-			WaitSeconds(60)
+			WaitSeconds(10*60/(2*Difficulty))
 		end
 	end)
 	
-	-- Cybran Air Raid
+	-- Cybran Air Raid --Lasts a little over 10 minutes, 2 attacks easy, 4 medium, 6 hard
 	ScenarioInfo.M2RecurringAttacks.CybranAirRaid = ForkThread(function()
-		WaitSeconds(2*60)
-		for i = 1, (3 * Difficulty) do
+		WaitSeconds(30)
+		for i = 1, (2*Difficulty) do
 			for i=1, Difficulty do
 				platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M2_AirRaid_D' .. Difficulty, 'GrowthFormation')
 				ScenarioFramework.PlatoonAttackChain(platoon, 'M1_CybranAmphibiousAttack')
 				ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
 				WaitSeconds(5)
 			end
-			WaitSeconds(60)
+			WaitSeconds(10*60/(2*Difficulty))
 		end
 	end)
 	
-	-- UEF Air Raid
+	-- UEF Air Raid ----Lasts 10 minutes, 3 attacks easy, 6 medium, 9 hard
 	ScenarioInfo.M2RecurringAttacks.UEFAirRaid = ForkThread(function()
 		for i = 1, (Difficulty * 3) do
 			platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_AirRaid_D' .. Difficulty, 'GrowthFormation')
 			ScenarioFramework.PlatoonAttackChain(platoon, 'M2_OrderBase')
 			ScenarioFramework.PlatoonAttackChain(platoon, 'M1_YolonaOss')
-			WaitSeconds(60/Difficulty)
+			WaitSeconds(10*60/(3*Difficulty))
 		end
 	end)
+	
+	
 	------------
-    -- Cybran and Seraphim Fleet Attacks
-    ------------
-	
-	if not ScenarioInfo.SeraphimCommander:IsDead() then 
-		platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M2_FleetAttack_D' .. Difficulty, 'GrowthFormation')
-		for k, v in EntityCategoryFilterDown(categories.xss0201, platoon:GetPlatoonUnits()) do
-			IssueDive({v})
-		end
-		ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_SeraFleetAttack')
-		ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_CybranIslandBase')
-	else
-	end
-	
+	--Cybran Stealth Battleship Attack -- Just one
+	------------
 	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M2_FleetAttack_D' .. Difficulty, 'GrowthFormation')
     ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_SeraFleetAttack')
 	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
+	
+	
+end
 
+function IntroMission2()
+
+    if ScenarioInfo.MissionNumber == 2 or ScenarioInfo.MissionNumber == 3 then
+        return
+    end
+    ScenarioInfo.MissionNumber = 2
+	
+	ScenarioFramework.SetPlayableArea('AREA_2', false)
+	
+	--Stop recurring attacks from previous phase
+	for k,v in ScenarioInfo.M1RecurringAttacks do
+		KillThread(v)
+	end
+	
+	ScenarioInfo.M2RecurringAttacks = {}
+	M2CoalitionAttacks()
+	------------
+    -- Order Base
+    ------------
+	M2OrderAI.OrderBaseAI()
+    ArmyBrains[Order]:PBMSetCheckInterval(5)
+	ScenarioInfo.OrderCommander  = ScenarioFramework.SpawnCommander('Order', 'Commander', false, 'Veronica', false, OrderCommanderKilled,
+		{'Shield','T3Engineering'})
+		--So it doesnt wander away from the main base and get killed building T1 torp defenses
+	ScenarioInfo.OrderCommander:AddBuildRestriction( categories.AEON * ( categories.DEFENSE) )
+
+	------------
+    -- Order Fleet Attacks, East and West
+    ------------
+    ScenarioInfo.M2OrderEastFleet = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M2_DefenseFleetEast_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(ScenarioInfo.M2OrderEastFleet, 'M2_AeonFleetAttack')
+	--ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_UEFFleetAttackChain')
+	--ForkThread(function()
+	--	ScenarioPlatoonAI.PlatoonAttackClosestUnit(platoon)
+	--end
+	--)
+	
+    ScenarioInfo.M2OrderWestFleet = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M2_DefenseFleetWest_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(ScenarioInfo.M2OrderWestFleet, 'M2_UEFFleetAttack')
+	ScenarioFramework.PlatoonPatrolChain(ScenarioInfo.M2OrderWestFleet, 'M2_AeonFleetAttack')
+	
+	------------
+    -- Order Land and Air Patrols
+    ------------
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M2_DefensePatrol_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_OrderLandPatrol1')
+	
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M2_AirPatrol_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_OrderAirPatrol')
+	
+	------------
+    -- Cybran Island Base
+    ------------
+	M2CybranAI.CybranIslandBaseAI()
+    ArmyBrains[Cybran]:PBMSetCheckInterval(5)
+	local M2CybranSMDs = ScenarioUtils.CreateArmyGroup('Cybran','M2_SMD')
+	for i,SMD in M2CybranSMDs do
+		SMD:GiveTacticalSiloAmmo(Difficulty - 1)
+	end
+
+	------------
+    -- UEF Air Base
+    ------------
+	M2UEFAI.UEFM2AirBaseAI()
+    ArmyBrains[UEF]:PBMSetCheckInterval(5)
+
+	local UEFM2SMD = ScenarioUtils.CreateArmyGroup('UEF','M2_SMD')
+	for i,SMD in UEFM2SMD do
+		SMD:GiveTacticalSiloAmmo(Difficulty - 1)
+	end
+	
+	------------
+    -- Seraphim Fleet Attacks
+    ------------
+	
+	if not ScenarioInfo.SeraphimCommander:IsDead() then 
+		ScenarioInfo.M2SeraphimFleet = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M2_FleetAttack_D' .. Difficulty, 'GrowthFormation')
+		for k, v in EntityCategoryFilterDown(categories.xss0201, ScenarioInfo.M2SeraphimFleet:GetPlatoonUnits()) do
+			IssueDive({v})
+		end
+		ScenarioFramework.PlatoonPatrolChain(ScenarioInfo.M2SeraphimFleet, 'M2_SeraFleetAttack')
+		ScenarioFramework.PlatoonPatrolChain(ScenarioInfo.M2SeraphimFleet, 'M2_CybranIslandBase')
+	else
+	end
+	
 	------
-	-- Add Seraphim Tech 3 navy attack
+	-- Add Seraphim Tech 3 navy attack to base build
 	----
 	M1SeraAI.M2SeraphimAttacks()
 	
@@ -782,59 +822,25 @@ function IntroMission2()
 	
 end
 
-function IntroMission3()
-    if ScenarioInfo.MissionNumber == 3 or ScenarioInfo.MissionNumber == 4 then
-        return
-    end
-    ScenarioInfo.MissionNumber = 3
-	
-	ScenarioFramework.SetPlayableArea('AREA_3', false)
-	
-	--Stop recurring attacks from M2
-	for k,v in ScenarioInfo.M2RecurringAttacks do
-		KillThread(v)
-	end
-	
-	ScenarioInfo.M3RecurringAttacks = {}
-	
-	------------
-    -- Seraphim and Order Experimental Attacks
-    ------------
-	if not ScenarioInfo.OrderCommander:IsDead() then 
-		platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M3_GC_D' .. Difficulty, 'GrowthFormation')
-		ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_UEFIslandBase')
-		ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_UEFHeavyArtilleryBase')
-		ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_UEFAirBase')
-		ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_SECityDefense')
-	end
-	
-	if not ScenarioInfo.SeraphimCommander:IsDead() then 
-		platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M3_Ythotha_D' .. Difficulty, 'GrowthFormation')
-		ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_AeonAirBase')	
-		ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_SWCityDefense')
-		ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_NECityDefense')
-	end
-	
-	------------
-    -- Cybran and Aeon Fleet Attacks
-    ------------
-	
+function 	M3CybranFleetAttack()
     platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_FleetAttack_D' .. Difficulty, 'GrowthFormation')
     ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_CybranFleetAttack')
 	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
-	
+end
+
+function M3AeonFleetAttack()
 	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M3_FleetAttack_D' .. Difficulty, 'GrowthFormation')
     ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_AeonFleetAttack')
 	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
-	
-	------------
-    -- UEF and Cybran Submarine Attacks
-    ------------
-	
+end
+
+function 	M3_CybranSubAttack()
 	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_SubAttack_D' .. Difficulty, 'GrowthFormation')
 	ScenarioFramework.PlatoonMoveChain(platoon, 'M3_CybranSubAttack')
 	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
-	
+end
+
+function M3_UEFSubAttack()
 	ScenarioInfo.M3UEFNukeSubs = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M3_NukeSubs_D' .. Difficulty, 'GrowthFormation')
 	ScenarioFramework.PlatoonMoveChain(ScenarioInfo.M3UEFNukeSubs, 'M3_UEFSubAttack')	
 	local counter = 0
@@ -891,20 +897,120 @@ function IntroMission3()
 			end
 		end)
 	end
+end
+
+function M3SeraphimSelens()
+	local Selens = ScenarioUtils.CreateArmyGroup('Seraphim', 'M3_Selens')
+	SetFireState(Selens, 'HoldFire')
+end
+
+function M3CybranMegaliths()
+    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_Megaliths_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonAttackChain(platoon, 'M1_SeraphimBase')
+	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
+end
+
+function M3AeonGCs()
+	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M3_GC_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonAttackChain(platoon, 'M2_OrderBase')
+	ScenarioFramework.PlatoonMoveChain(platoon, 'M1_YolonaOss')
+end
+
+function M3AeonCZAR()
+	ScenarioInfo.M3AeonCZAR = ScenarioUtils.CreateArmyUnit('Aeon', 'M3_CZAR')
+	for i = 1, Difficulty do
+		local CZAREscort = 	ScenarioUtils.CreateArmyGroup('Aeon', 'M3_CZAREscort')
+		IssueGuard(CZAREscort, ScenarioInfo.M3AeonCZAR)
+	end
+    IssueMove({ScenarioInfo.M3AeonCZAR}, ScenarioUtils.MarkerToPosition('M1_AeonAirBase'))
+	ScenarioInfo.M3AeonCZAR:ForkThread(function(self)
+		while self and not self:IsDead() do
+			while not self:IsDead() and self:IsUnitState('Moving') do
+				WaitSeconds(5)
+			end
+			WaitSeconds(10)
+			while self and not self:IsDead() do
+				IssueClearCommands(self)
+				local cargoUnits = ScenarioUtils.CreateArmyGroup('Aeon', 'M3_CZARSquadron')
+				for _, unit in cargoUnits do
+					IssueStop({unit})
+					self:AddUnitToStorage(unit)
+				end
+				IssueClearCommands({self})
+				IssueTransportUnload({self}, self:GetPosition())
+				for _, unit in cargoUnits do
+					while (not unit:IsDead() and unit:IsUnitState('Attached')) do
+						WaitSeconds(2)
+					end
+
+				end
+				IssueClearCommands(cargoUnits)
+				IssuePatrol(cargoUnits, ScenarioUtils.MarkerToPosition('M1_YolonaOss'))
+				WaitSeconds(30 + (120/Difficulty))
+			end
+		end	
+	end)
+end
+
+function IntroMission3()
+    if ScenarioInfo.MissionNumber == 3 or ScenarioInfo.MissionNumber == 4 then
+        return
+    end
+    ScenarioInfo.MissionNumber = 3
+	
+	ScenarioFramework.SetPlayableArea('AREA_3', false)
+	
+	--Stop recurring attacks from M2
+	for k,v in ScenarioInfo.M2RecurringAttacks do
+		KillThread(v)
+	end
+	
+	ScenarioInfo.M3RecurringAttacks = {}
+	
+	------------
+    -- Seraphim and Order Experimental Attacks and Seraphim Selens
+    ------------
+	if not ScenarioInfo.OrderCommander:IsDead() then 
+		platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M3_GC_D' .. Difficulty, 'GrowthFormation')
+		ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_UEFIslandBase')
+		ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_UEFHeavyArtilleryBase')
+		ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_UEFAirBase')
+		ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_SECityDefense')
+	end
+	
+	if not ScenarioInfo.SeraphimCommander:IsDead() then 
+		platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M3_Ythotha_D' .. Difficulty, 'GrowthFormation')
+		ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_AeonAirBase')	
+		ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_SWCityDefense')
+		ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_NECityDefense')
+		
+		M3SeraphimSelens()
+	end
+	
+	------------
+    -- Cybran and Aeon Fleet Attacks
+    ------------
+	
+	M3CybranFleetAttack()
+
+	M3AeonFleetAttack()
+	
+	------------
+    -- UEF and Cybran Submarine Attacks
+    ------------
+	M3_CybranSubAttack()
+
+	M3_UEFSubAttack()
 	
 	------------
     -- UEF, Cybran, and Aeon Experimental Attacks
     ------------
 	
 	--Megaliths
-    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_Megaliths_D' .. Difficulty, 'GrowthFormation')
-    ScenarioFramework.PlatoonAttackChain(platoon, 'M1_SeraphimBase')
-	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
-	
+	M3CybranMegaliths()
+
 	---GCs
-	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M3_GC_D' .. Difficulty, 'GrowthFormation')
-    ScenarioFramework.PlatoonAttackChain(platoon, 'M2_OrderBase')
-	ScenarioFramework.PlatoonMoveChain(platoon, 'M1_YolonaOss')
+	M3AeonGCs()
 	
 	--Cybran Monkey Attack
 	ScenarioInfo.M3RecurringAttacks.CybranSpiders = ForkThread(function()
@@ -946,26 +1052,8 @@ function IntroMission3()
 	end)
 	
 	-- Aeon Air Raid
-
-	ScenarioInfo.M3AeonCZAR = ScenarioUtils.CreateArmyUnit('Aeon', 'M3_CZAR')
-	for i = 1, Difficulty do
-		local CZAREscort = 	ScenarioUtils.CreateArmyGroup('Aeon', 'M3_CZAREscort')
-		IssueGuard(CZAREscort, ScenarioInfo.M3AeonCZAR)
-	end
-    IssueMove({ScenarioInfo.M3AeonCZAR}, ScenarioUtils.MarkerToPosition('M1_AeonAirBase'))
-	ScenarioInfo.M3AeonCZAR:ForkThread(function(self)
-		while self and not self:IsDead() do
-			while not self:IsDead() and self:IsUnitState('Moving') do
-				WaitSeconds(5)
-			end
-			WaitSeconds(10)
-			while self and not self:IsDead() do
-				IssueClearCommands(self)
-				M3AeonAI.CZARFactory()
-			end
-		end	
-	end)
-
+	M3AeonCZAR()
+	
 	--UEF Air Raid, lasts 10 minutes
 	ScenarioInfo.M3RecurringAttacks.CybranAirRaids = ForkThread(function()
 		for i = 1, (5 * Difficulty) do
@@ -984,7 +1072,6 @@ function IntroMission3()
 	ScenarioInfo.M3CivilianCity = ScenarioUtils.CreateArmyGroup('Civilians', 'M3_City' )
 	ScenarioInfo.M3CivilianDefenseLine = ScenarioUtils.CreateArmyGroup('Civilians', 'M3_DefenseLine' )
 
-
 	------------
     -- UEF Air Base, Island Base, and Heavy Artillery Base
     ------------
@@ -999,7 +1086,6 @@ function IntroMission3()
 	M3UEFAI.UEFM3HeavyArtilleryBaseAI()
     ArmyBrains[UEF]:PBMSetCheckInterval(5)
 	
-
 	------------
     -- Aeon Air Base
     ------------
@@ -1017,16 +1103,15 @@ function IntroMission3()
 	for i,SMD in CybranM3SMDs do
 		SMD:GiveTacticalSiloAmmo(Difficulty - 1)
 	end
-	--M3_HeavyArtilleryBaseSupportFactories
 	
 	------------------------------------------
-    -- Primary Objective 4 - Destroy New Sanctuary and the Coalition Bases
+    -- Secondary Objective 3 - Destroy New Sanctuary and the Coalition Bases
     ------------------------------------------
-    ScenarioInfo.M3P4 = Objectives.CategoriesInArea(
+    ScenarioInfo.M3S3 = Objectives.CategoriesInArea(
         'primary',                      -- type
         'incomplete',                   -- complete
-        'Destroy New Sanctuary and the Coalitions bases',    -- title
-        'Crush the human city and Coalition bases.',  -- description
+        'Destroy New Sanctuary',    -- title
+        'Crush the human city and leave no building standing.',  -- description
         'kill',                         -- action
         {                               -- target
             MarkUnits = true,
@@ -1038,6 +1123,36 @@ function IntroMission3()
                     Value = 0,
                     ArmyIndex = Civilians,
                 },
+            },
+        }
+   )
+    ScenarioInfo.M3S3:AddResultCallback(
+        function(result)
+            if(result) then
+                if ScenarioInfo.MissionNumber == 2 then
+                    -- ScenarioFramework.Dialogue(OpStrings.M1_Bases_Destroyed, IntroMission2, true)
+                    --IntroMission4() --> congradulate
+                else
+                    -- ScenarioFramework.Dialogue(OpStrings.M1_Bases_Destroyed, nil, true)
+                end
+            end
+        end
+    )
+    table.insert(AssignedObjectives, ScenarioInfo.M2P3)
+
+	
+	------------------------------------------
+    -- Primary Objective 4 - Destroy New Sanctuary and the Coalition Bases
+    ------------------------------------------
+    ScenarioInfo.M3P4 = Objectives.CategoriesInArea(
+        'primary',                      -- type
+        'incomplete',                   -- complete
+        'Destroy the Coalitions bases',    -- title
+        'Disrupt Coalition counter attacks.',  -- description
+        'kill',                         -- action
+        {                               -- target
+            MarkUnits = true,
+            Requirements = {
 				{   
                     Area = 'M3_UEFAirBase',
                     Category = categories.FACTORY,
@@ -1047,7 +1162,7 @@ function IntroMission3()
                 },
                 {   
                     Area = 'M3_UEFHeavyArtilleryBase',
-                    Category = categories.FACTORY,
+                    Category = categories.FACTORY * (categories.SORTSTRATEGIC + categories.ARTILLERY),
                     CompareOp = '<=',
                     Value = 0,
                     ArmyIndex = UEF,
@@ -1068,7 +1183,7 @@ function IntroMission3()
                 },
 				{   
                     Area = 'M3_CybranHeavyArtilleryBase',
-                    Category = categories.FACTORY,
+                    Category = categories.FACTORY * (categories.SORTSTRATEGIC + categories.ARTILLERY),
                     CompareOp = '<=',
                     Value = 0,
                     ArmyIndex = Cybran,

@@ -51,7 +51,7 @@ function UEFM2AirBaseAttacks()
     opai:SetChildQuantity({'HeavyGunships', 'Gunships'}, quantity[Difficulty])
   
 	--Air Attack against Player
-    quantity = {10, 12, 14}
+    quantity = {8, 12, 14}
     opai = UEFM2AirBase:AddOpAI('AirAttacks', 'M2_UEFAirAttack2',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
@@ -64,7 +64,7 @@ function UEFM2AirBaseAttacks()
     opai:SetChildQuantity({'HeavyGunships', 'Gunships'}, quantity[Difficulty])
 
 		--Air Attack against Order
-	quantity = {10, 12, 14}
+	quantity = {8, 12, 14}
     opai = UEFM2AirBase:AddOpAI('AirAttacks', 'M2_UEFAirAttack3',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
