@@ -39,6 +39,12 @@ ScenarioInfo.Coop2 = 9
 ScenarioInfo.Coop3 = 10
 ScenarioInfo.HumanPlayers = {} --Is this needed????
 
+
+ScenarioInfo.PlayerExists = false
+ScenarioInfo.Coop1Exists = false
+ScenarioInfo.Coop2Exists = false
+ScenarioInfo.Coop3Exists = false
+
 --------
 -- Locals
 --------
@@ -172,13 +178,24 @@ function OnPopulate(scenario)
         ['Coop2'] = {189, 116, 16}, 
         ['Coop3'] = {89, 133, 39}
     }
-    local tblArmy = ListArmies()
+    local ArmyTable = ListArmies()
     for army, color in colors do
-        if tblArmy[ScenarioInfo[army]] then
+        if ArmyTable[ScenarioInfo[army]] then
             ScenarioFramework.SetArmyColor(ScenarioInfo[army], unpack(color))
         end
     end
-
+	if ArmyTable[ScenarioInfo.Player] then
+		ScenarioInfo.PlayerExists = true
+	end
+	if ArmyTable[ScenarioInfo.Coop1] then
+		ScenarioInfo.Coop1Exists = true
+	end
+	if ArmyTable[ScenarioInfo.Coop2] then
+		ScenarioInfo.Coop2Exists = true
+	end
+	if ArmyTable[ScenarioInfo.Coop3] then
+		ScenarioInfo.Coop2Exists = true
+	end
     -- Unit Cap
     --ScenarioFramework.SetSharedUnitCap(1000)
 
@@ -202,41 +219,53 @@ function OnPopulate(scenario)
 	end
 	
 	------------
-    -- Seraphim Base
+    -- Seraphim Base, run by AI if coop1 not present, else given to player
     ------------
-
-	M1SeraAI.SeraphimBaseAI() 
-	ArmyBrains[Seraphim]:PBMSetCheckInterval(6)
+	
+	if not ScenarioInfo.Coop1Exists then
+		M1SeraAI.SeraphimBaseAI() 
+		ArmyBrains[Seraphim]:PBMSetCheckInterval(6)
+	else
+	end
 	
 	------------
     -- Seraphim Defense Patrols
     ------------
-    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M1_DefenseForceSouth_D' .. Difficulty, 'GrowthFormation')
-    ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_SeraLandPatrolSouth')
-    --ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_SeraphimCombined')
+    local DefenseForceSouth = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M1_DefenseForceSouth_D' .. Difficulty, 'GrowthFormation')
+	local DefenseForceEast = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M1_DefenseForceEast_D' .. Difficulty, 'GrowthFormation')
+	local DefenseFleet1 = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'DefenseFleet1_D' .. Difficulty, 'GrowthFormation')
+	local DefenseFleet2 = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'DefenseFleet2_D' .. Difficulty, 'GrowthFormation')
 	
-	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M1_DefenseForceEast_D' .. Difficulty, 'GrowthFormation')
-    ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_SeraLandPatrolEast')
+	--If there's no coop1, set patrols
+	if not ScenarioInfo.Coop1Exists then
+		ScenarioFramework.PlatoonPatrolChain(DefenseForceSouth, 'M1_SeraLandPatrolSouth')
+		ScenarioFramework.PlatoonPatrolChain(DefenseForceEast, 'M1_SeraLandPatrolEast')
+		ScenarioFramework.PlatoonPatrolChain(DefenseFleet1, 'M1_SeraSeaPatrolSouth')	
+		ScenarioFramework.PlatoonPatrolChain(DefenseFleet2, 'M1_SeraSeaPatrolWest')
+	else  --else, just give them to coop1
+		for index, unit in DefenseForceSouth:GetPlatoonUnits() do
+			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Coop1])
+		end
+		for index, unit in DefenseForceEast:GetPlatoonUnits() do
+			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Coop1])
+		end
+		for index, unit in DefenseFleet1:GetPlatoonUnits() do
+			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Coop1])
+		end
+		for index, unit in DefenseFleet2:GetPlatoonUnits() do
+			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Coop1])
+		end
+	end
 	
-	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'DefenseFleet1_D' .. Difficulty, 'GrowthFormation')
-	for k, v in EntityCategoryFilterDown(categories.xss0201, platoon:GetPlatoonUnits()) do
-        IssueDive({v})
-    end
-    ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_SeraSeaPatrolSouth')
+	--If there is no coop1, spawn the Commander
+	if not ScenarioInfo.Coop1Exists then
+		ScenarioInfo.SeraphimCommander  = ScenarioFramework.SpawnCommander('Seraphim', 'Commander', false, 'Ithanyis', false, SeraphimCommanderKilled,
+		{'BlastAttack','DamageStabilization','RateOfFire'})
+		---So it doesnt wander away from the main base and get killed building T1 PD
+		ScenarioInfo.SeraphimCommander:AddBuildRestriction( categories.SERAPHIM * ( categories.DEFENSE + categories.SHIELD) )
+	end
 	
-	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'DefenseFleet2_D' .. Difficulty, 'GrowthFormation')
-	for k, v in EntityCategoryFilterDown(categories.xss0201, platoon:GetPlatoonUnits()) do
-        IssueDive({v})
-    end
-    ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_SeraSeaPatrolWest')
-	
-	--ScenarioInfo.SeraphimCommander = ScenarioUtils.CreateArmyGroup('Seraphim', 'Commander')[1]
-	ScenarioInfo.SeraphimCommander  = ScenarioFramework.SpawnCommander('Seraphim', 'Commander', false, 'Ithanyis', false, SeraphimCommanderKilled,
-	{'BlastAttack','DamageStabilization','RateOfFire'})
-	---So it doesnt wander away from the main base and get killed building T1 PD
-	ScenarioInfo.SeraphimCommander:AddBuildRestriction( categories.SERAPHIM * ( categories.DEFENSE + categories.SHIELD) )
-	
-    -- Resources for Aeon AI, slightly delayed cause army didn't recieve it for some reason
+    -- Resources for Coalition AI, slightly delayed cause army didn't recieve it for some reason
     ForkThread(function()
         WaitSeconds(2)
         ArmyBrains[Aeon]:GiveStorage('ENERGY', 100000)
@@ -346,41 +375,67 @@ function IntroMission1NIS()
 		
 		ForkThread(function()
 		    -- Vision for NIS location
-			local VisMarker	= ScenarioFramework.CreateVisibleAreaLocation(150, 'M1_CybranAmphibiousAttack3', 20, ArmyBrains[Player])
-			ScenarioInfo.NISGate = ScenarioUtils.CreateArmyGroup('Player', 'M1_NISGate')[1]
-			ScenarioInfo.NISGroup = ScenarioUtils.CreateArmyGroup('UEF', 'M1_NISAirRaid')	
-			--for k,v in NISGroup do
-			IssueAttack(ScenarioInfo.NISGroup,ScenarioInfo.NISGate)
-			--end
-			--local NISGroup = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_NISAirRaid','GrowthFormation')	
-			--ScenarioFramework.PlatoonPatrolChain(NISGroup, 'M1_CybranAmphibiousAttack3')
+			local VisMarkerPlayer	= ScenarioFramework.CreateVisibleAreaLocation(150, 'M1_CybranAmphibiousAttack3', 20, ArmyBrains[Player])
+			ScenarioInfo.NISGatePlayer = ScenarioUtils.CreateArmyGroup('Player', 'M1_NISGate')[1]
+			ScenarioInfo.NISGroupPlayer = ScenarioUtils.CreateArmyGroup('UEF', 'M1_NISAirRaid')	
+
+			IssueAttack(ScenarioInfo.NISGroupPlayer ,ScenarioInfo.NISGatePlayer)
+			
+			WaitSeconds(8)
 			ScenarioInfo.PlayerCommander = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true, PlayerCommanderKilled)
 			
-			WaitSeconds(2)
+			--WaitSeconds(1)
 			IssueGuard({ScenarioInfo.PlayerCommander}, ScenarioInfo.YolonaOss)
 		end)
-		Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('M1_CybranAmphibiousAttack3'), 5)
+		
+		Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('M1_CybranAmphibiousAttack3'), 4)
 		
 		-- spawn coop players too
-		ScenarioInfo.CoopCDR = {}
-		local tblArmy = ListArmies()
-		coop = 1
-		for iArmy, strArmy in pairs(tblArmy) do
-			if iArmy >= ScenarioInfo.Coop1 then
-				ScenarioInfo.CoopCDR[coop] = ScenarioFramework.SpawnCommander(strArmy, 'Commander', 'Warp', true, true)
-				#DropReinforcements('Seraphim', strArmy, 'NIS_Bots_' .. strArmy ..'_D' .. Difficulty, 'NIS_Drop_' .. strArmy, 'NIS_Transport_Death')
-				coop = coop + 1
-				WaitSeconds(0.5)
-			end
+		if ScenarioInfo.Coop1Exists or ScenarioInfo.Coop2Exists or ScenarioInfo.Coop3Exists then
+			ForkThread(function()
+				WaitSeconds(10)
+				local VisMarkerPlayer	= ScenarioFramework.CreateVisibleAreaLocation(100, 'M1NISCoop', 10, ArmyBrains[Player])
+				Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('NISCoopGate'), 4)
+				local ArmyTable = ListArmies()
+				ScenarioInfo.NISGateCoop = ScenarioUtils.CreateArmyGroup('Seraphim', 'CoopGate')[1]
+				ScenarioInfo.NISGroupCoop = ScenarioUtils.CreateArmyGroup('UEF', 'M1_NISAirRaid')		
+				IssueAttack(ScenarioInfo.NISGroupCoop ,ScenarioInfo.NISGateCoop)
+				if ScenarioInfo.Coop1Exists then
+					ScenarioInfo.Coop1Commander = ScenarioFramework.SpawnCommander('Coop1', 'Commander', 'Warp', true, true, Coop1CommanderKilled)
+					WaitSeconds(1)
+					IssueMove({ScenarioInfo.Coop1Commander},ScenarioUtils.MarkerToPosition('Coop1Move'))
+					WaitSeconds(1)
+				end
+				if ScenarioInfo.Coop2Exists then
+					ScenarioInfo.Coop2Commander = ScenarioFramework.SpawnCommander('Coop2', 'Commander', 'Warp', true, true, Coop2CommanderKilled)
+					WaitSeconds(1)
+					IssueMove({ScenarioInfo.Coop1Commander},ScenarioUtils.MarkerToPosition('Coop1Move'))
+					WaitSeconds(1)
+				end				
+				if ScenarioInfo.Coop3Exists then
+					ScenarioInfo.Coop3Commander = ScenarioFramework.SpawnCommander('Coop3', 'Commander', 'Warp', true, true, Coop3CommanderKilled)
+					WaitSeconds(1)
+					IssueMove({ScenarioInfo.Coop3Commander},ScenarioUtils.MarkerToPosition('Coop1Move'))
+					WaitSeconds(1)
+				end	
+				for k, v in ScenarioInfo.NISGroupCoop do
+					if not v:IsDead() then
+						v:Kill()
+					end
+				end
+				ScenarioInfo.NISGateCoop:Kill()
+			end)
+		else
+			WaitSeconds(16)
 		end
-		WaitSeconds(10)
+
 		--VisMarker:Destroy()
-		for k, v in ScenarioInfo.NISGroup do
+		for k, v in ScenarioInfo.NISGroupPlayer do
 			if not v:IsDead() then
 				v:Kill()
 			end
 		end
-		ScenarioInfo.NISGate:Kill()
+		ScenarioInfo.NISGatePlayer:Kill()
 		Cinematics.ExitNISMode()
 	else
 		ScenarioInfo.PlayerCommander = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true, PlayerCommanderKilled)
@@ -388,6 +443,17 @@ function IntroMission1NIS()
     IntroMission1()
 end
 
+function Coop1CommanderKilled()
+
+end
+
+function Coop2CommanderKilled()
+
+end
+
+function Coop3CommanderKilled()
+
+end
 
 function IntroMission1()
     ScenarioInfo.MissionNumber = 1
@@ -624,8 +690,15 @@ function M2CoalitionAttacks()
 	-- Cybran Air Raid --Lasts a little over 10 minutes, 2 attacks easy, 4 medium, 6 hard
 	ScenarioInfo.M2RecurringAttacks.CybranAirRaid = ForkThread(function()
 		WaitSeconds(30)
+		local WaveCount
+		if Difficulty > 1 then
+			local WaveCount = 2
+		else
+			local WaveCount = 1
+		end
 		for i = 1, (2*Difficulty) do
-			for i=1, Difficulty do
+
+			for i=1, WaveCount do
 				platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M2_AirRaid_D' .. Difficulty, 'GrowthFormation')
 				ScenarioFramework.PlatoonAttackChain(platoon, 'M1_CybranAmphibiousAttack')
 				ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
@@ -656,7 +729,23 @@ function M2CoalitionAttacks()
 	
 end
 
+function Mission2NIS()
+    if not SkipNIS3 then
+        Cinematics.EnterNISMode()
+
+        local VisMarkerM2 = ScenarioFramework.CreateVisibleAreaLocation(200, 'M2_UEFAirBase', 0, ArmyBrains[Player])
+
+        Cinematics.CameraMoveToMarker('M2NISTempest', 4)
+        WaitSeconds(10)
+
+        VisMarkerM2:Destroy()
+        Cinematics.ExitNISMode()
+    end
+end
+
 function IntroMission2()
+
+
 
     if ScenarioInfo.MissionNumber == 2 or ScenarioInfo.MissionNumber == 3 then
         return
@@ -745,6 +834,8 @@ function IntroMission2()
 	-- Add Seraphim Tech 3 navy attack to base build
 	----
 	M1SeraAI.M2SeraphimAttacks()
+	
+	ForkThread(Mission2NIS)
 	
 	------------------------------------------
     -- Secondary Objective 2 - Protect the Order Ally
