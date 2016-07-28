@@ -5,6 +5,7 @@ local ScenarioUtils = import('/lua/sim/ScenarioUtilities.lua')
 local Utilities = import('/lua/utilities.lua')
 local Cinematics = import('/lua/cinematics.lua')
 local OpStrings = import('/maps/JJ_Mission2/jj_mission2_strings.lua')
+local CustomFunctions = import('/maps/JJ_Mission2/jj_mission2_CustomFunctions.lua')
 local M1UEFPowerAI = import('/maps/JJ_Mission2/M1_UEF_Power_AI.lua')
 local M2UEFNavyAI = import('/maps/JJ_Mission2/M2_UEF_Navy_AI.lua')
 local M3FirebaseAI = import('/maps/JJ_Mission2/M3_UEF_Firebase_AI.lua')
@@ -15,9 +16,10 @@ local M3FirebaseAI = import('/maps/JJ_Mission2/M3_UEF_Firebase_AI.lua')
 ScenarioInfo.Player = 1
 ScenarioInfo.UEF = 2
 ScenarioInfo.NeutralUEF = 3
-ScenarioInfo.Coop1 = 4
-ScenarioInfo.Coop2 = 5
-ScenarioInfo.Coop3 = 6
+ScenarioInfo.UEFAlly = 4
+ScenarioInfo.Coop1 = 5
+ScenarioInfo.Coop2 = 6
+ScenarioInfo.Coop3 = 7
 
 --------
 -- Locals
@@ -25,6 +27,7 @@ ScenarioInfo.Coop3 = 6
 local Player = ScenarioInfo.Player
 local UEF = ScenarioInfo.UEF
 local NeutralUEF = ScenarioInfo.NeutralUEF
+local UEFAlly = ScenarioInfo.UEFAlly
 local Coop1 = ScenarioInfo.Coop1
 local Coop2 = ScenarioInfo.Coop2
 local Coop3 = ScenarioInfo.Coop3
@@ -39,6 +42,7 @@ local MaxwellDeath = false
 local PrisonCaptured = false
 
 local HumanPlayerCounter
+local M2ObjectivesComplete = 0
 
 --------
 -- Tables
@@ -46,6 +50,8 @@ local HumanPlayerCounter
 local HumanPlayers = {}
 local AttackTriggerTimer = {600, 450, 300}
 local UEFAttackCoolDown = {120, 85, 60}
+local AllyVehicleSpawn = {50, 100, 150}
+local M3BuildTime = {300, 250, 200}
 
 function OnPopulate()
 	ScenarioUtils.InitializeScenarioArmies()
@@ -53,11 +59,15 @@ function OnPopulate()
 	ScenarioFramework.SetUEFPlayerColor(Player)
 	SetArmyColor('UEF', 133, 148, 255)
 	SetArmyColor('NeutralUEF', 133, 148, 255)
+    SetArmyColor('UEFAlly', 71, 134, 226)
+
+    ScenarioFramework.SetPlayableArea('M1_Play_Area', false)
 end
   
 function OnStart(self)
 	-- Create a Trigger for scripted UEF attacks.
 	ScenarioFramework.CreateTimerTrigger(UEFAttackPlan, AttackTriggerTimer[Difficulty])
+    ScenarioInfo.CityCaptured = false
 
     --------------
     -- M1 UEF AI
@@ -91,7 +101,6 @@ function M1IntroNIS()
 	Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('M1_NIS_Cam1'), 2)
 	WaitSeconds(4)
 	Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('M1_NIS_Cam2'), 3)
-	ScenarioFramework.SetPlayableArea('M1_Play_Area', false)
 	WaitSeconds(1)
 	ForkThread(
 		function()
@@ -111,6 +120,7 @@ function M1IntroNIS()
             ScenarioInfo.PlayerCDR = ScenarioUtils.CreateArmyUnit('Player', 'UEFPlayer')
         end
         ScenarioInfo.PlayerCDR:PlayCommanderWarpInEffect()
+        ScenarioInfo.PlayerCDR:SetCustomName(ArmyBrains[Player].Nickname)
         ScenarioFramework.PauseUnitDeath(ScenarioInfo.PlayerCDR)
         ScenarioFramework.CreateUnitDeathTrigger(PlayerLose, ScenarioInfo.PlayerCDR)
 
@@ -129,6 +139,7 @@ function M1IntroNIS()
                 ScenarioInfo.CoopCDR[coop] = ScenarioUtils.CreateArmyUnit(strArmy, 'UEFPlayer')
             end
                 ScenarioInfo.CoopCDR[coop]:PlayCommanderWarpInEffect()
+                ScenarioInfo.CoopCDR[coop]:SetCustomName(ArmyBrains[iArmy].Nickname)
                 coop = coop + 1
                 HumanPlayerCounter = coop
                 WaitSeconds(0.5)
@@ -178,42 +189,83 @@ end
 function M2NISIntro()
 	ScenarioFramework.SetPlayableArea('M2_Play_Area', true)
 
-	local City = ScenarioUtils.CreateArmyGroup('NeutralUEF', 'City')
+	ScenarioInfo.City = ScenarioUtils.CreateArmyGroup('NeutralUEF', 'City')
+    ScenarioInfo.CityDefenses = ScenarioUtils.CreateArmyGroup('NeutralUEF', 'Defenses')
+    ScenarioInfo.Prison = ScenarioUtils.CreateArmyGroup('UEF', 'Prison')
+
+    local M2_Land_Patrol = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_Land_Patrol', 'NoFormation')
+    local M2_Sea_Patrol_1 = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_Navy_Patrol_1', 'AttackFormation')
+    local M2_Sea_Patrol_2 = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_Navy_Patrol_2', 'AttackFormation')
+    local M2_Sea_Patrol_3 = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_Navy_Patrol_3', 'AttackFormation')
+
+    -- Assign Patrol Units to Routes --
+
+    for k, v in M2_Land_Patrol:GetPlatoonUnits() do
+        ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M2_Guard_Chain_1')))
+    end
+
+    for k, v in M2_Sea_Patrol_1:GetPlatoonUnits() do
+        ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M2_Guard_Navy_Chain_1')))
+    end
+
+    for k, v in M2_Sea_Patrol_2:GetPlatoonUnits() do
+        ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M2_Guard_Navy_Chain_2')))
+    end
+
+    for k, v in M2_Sea_Patrol_3:GetPlatoonUnits() do
+        ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M2_Guard_Navy_Chain_3')))
+    end
 
 	local VisMarker2_1 = ScenarioFramework.CreateVisibleAreaLocation(45, ScenarioUtils.MarkerToPosition('M2_NIS_Vis_Marker_1'), 0, ArmyBrains[Player])
 	Cinematics.EnterNISMode()
 	WaitSeconds(1)
 	Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('M2_NIS_Cam1'), 2)
 	ScenarioFramework.Dialogue(OpStrings.JJ2_NIS2_Intro, nil, true)
-	if(HumanPlayerCounter == 2) then
+	if HumanPlayerCounter == 2 then
 		ScenarioFramework.Dialogue(OpStrings.JJ2_NIS2_Intro_1, nil, true)
-	elseif(HumanPlayerCounter == 3) then
+	elseif HumanPlayerCounter == 3 then
 		ScenarioFramework.Dialogue(OpStrings.JJ2_NIS2_Intro_2, nil, true)
-	elseif(HumanPlayerCounter == 4) then
+	elseif HumanPlayerCounter == 4 then
 		ScenarioFramework.Dialogue(OpStrings.JJ2_NIS2_Intro_3, nil, true)
 	else
 		ScenarioFramework.Dialogue(OpStrings.JJ2_NIS2_Intro_0, nil, true)
 	end
 
+    if HumanPlayerCounter >= 2 then
+        ScenarioInfo.M2S1 = Objectives.Basic(
+        'secondary',
+        'incomplete', 
+        'Move ACU to Complex',
+        'CDR Richards has ordered one of you to move your ACU to the Complex to start fortifying that area, move your ACU to the Complex.',
+        Objectives.GetActionIcon('move'),
+            {
+                Area = "M4_Objective_Area",
+                MarkArea= true,
+            }
+        )
+
+        CustomFunctions.CreateAreaTrigger(ACUAtComplex, 'M4_Objective_Area', categories.uel0001, true, false)
+    end
+
 	ScenarioFramework.Dialogue(OpStrings.JJ2_NIS2_Intro_Final, nil, true)
-    WaitSeconds(3)
+    WaitSeconds(10)
 	Cinematics.ExitNISMode()
 
     VisMarker2_1:Destroy()
 
 	ScenarioInfo.CityNode = ScenarioInfo.UnitNames[NeutralUEF]['CentralStation']
-	ScenarioInfo.CityNode:SetCustomName("City Central Node")
+	ScenarioInfo.CityNode:SetCustomName("Complex Central Node")
+
+    if(ScenarioInfo.M1S1.Active) then
+        ScenarioInfo.M1S1:ManualResult(true)
+        ScenarioFramework.Dialogue(OpStrings.JJ2_M1S1_Complete, nil, true)
+    end
 
     ForkThread(M2)
 end
 
 function M2()
     M2UEFNavyAI.M2NavyBaseFunction()
-
-    if(ScenarioInfo.M1S1.Active) then
-        ScenarioInfo.M1S1:ManualResult(true)
-        ScenarioFramework.Dialogue(OpStrings.JJ2_M1S1_Complete, nil, true)
-    end
 
     ScenarioInfo.M2P1 = Objectives.CategoriesInArea(        
         'primary',                      -- type
@@ -232,13 +284,16 @@ function M2()
     ScenarioInfo.M2P1:AddResultCallback(
         function(result)
             if(result) then
-                M3NISIntro()
+                M2ObjectivesComplete = M2ObjectivesComplete + 1
+                if M2ObjectivesComplete == 2 then
+                    ForkThread(M3NISIntro)
+                end
             end
         end
    )
 
-    ScenarioInfo.M2S1 = Objectives.Capture(
-        'secondary',
+    ScenarioInfo.M2P2 = Objectives.Capture(
+        'primary',
         'incomplete',
         'Capture Civilian Complex',
         'There is a small Civilian Complex to the West. Capture it so we can house the prisoners.',
@@ -248,12 +303,18 @@ function M2()
         }
     )
 
-    ScenarioInfo.M2S1:AddResultCallback(
+    ScenarioInfo.M2P2:AddResultCallback(
         function(result)
-            for k, v in City do
+            for k, v in ScenarioInfo.CityDefenses do
                 if(v and not v:IsDead()) then
                     ScenarioFramework.GiveUnitToArmy(v, Player)
+                    ScenarioInfo.CityCaptured = true
                 end
+            end
+            ScenarioFramework.Dialogue(OpStrings.JJ2_NIS2_Complete, nil, true)
+            M2ObjectivesComplete = M2ObjectivesComplete + 1
+            if M2ObjectivesComplete == 2 then
+                ForkThread(M3NISIntro)
             end
         end
    )
@@ -261,8 +322,6 @@ end
 
 function M3NISIntro()
     WaitSeconds(5)
-
-    ScenarioInfo.Prison = ScenarioUtils.CreateArmyGroup('UEF', 'Prison')
     ScenarioInfo.Shields = ScenarioUtils.CreateArmyGroup('NeutralUEF', 'PrisonShields')
 
     local VisMarker3_1 = ScenarioFramework.CreateVisibleAreaLocation(20, ScenarioUtils.MarkerToPosition('M3_NIS_Vis_Marker_1'), 0, ArmyBrains[Player])
@@ -270,6 +329,8 @@ function M3NISIntro()
     for _, v in ScenarioInfo.Shields do
         v:ToggleScriptBit('RULEUTC_ShieldToggle')
     end
+
+    ScenarioFramework.CreateTimerTrigger(UEFAttackComplex, M3BuildTime[Difficulty])
 
     ScenarioUtils.CreateArmyGroup('UEF', 'Power')
     ScenarioInfo.PrisonStructure = ScenarioInfo.UnitNames[UEF]['PrisonStructure']
@@ -292,7 +353,7 @@ function M3NISIntro()
 
     ScenarioUtils.CreateArmyGroup('UEF', 'PrisonExpGuards')
 
-    local units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'Prison_Guards_' .. Difficulty, 'NoFormation')
+    local units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'Prison_Guards_' .. Difficulty, 'AttackFormation')
     for k, v in units:GetPlatoonUnits() do
         ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M3_Prison_Guard_Chain_1')))
     end
@@ -303,6 +364,7 @@ function M3NISIntro()
     Cinematics.EnterNISMode()
     ScenarioFramework.Dialogue(OpStrings.JJ2_Enemy_Intro, nil, true)
     Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('M3_NIS_Cam1'), 3)
+    ScenarioFramework.Dialogue(OpStrings.JJ2_NIS3_Intro1, nil, true)
 
     WaitSeconds(4)
 
@@ -325,7 +387,7 @@ function M3()
         'primary',                      -- type
         'incomplete',                   -- complete
         'Capture UEF Prison',  -- title
-        'Commander, you need to free our men by capturing that prison.',  -- description
+        'Commander, you need to free our men by capturing that prison. Do NOT destroy the structure!',  -- description
         {
             MarkUnits = true,
             Units = {ScenarioInfo.PrisonStructure},
@@ -334,34 +396,66 @@ function M3()
 
     ScenarioInfo.M3P1:AddResultCallback(
         function(result)
-            WaitSeconds(4)
-            ForkThread(M4)
+            ForkThread(M4Intro)
         end
    )
 end
 
+function M4Intro()
+    ScenarioFramework.Dialogue(OpStrings.JJ_Mission4_Intro, nil, true)
+    ScenarioInfo.PrisonStructure:SetCanTakeDamage(true)
+    ScenarioInfo.PrisonStructure:SetCanBeKilled(true)
+
+    WaitSeconds(AllyVehicleSpawn[Difficulty])
+
+    ScenarioInfo.Truck1 = ScenarioUtils.CreateArmyUnit('Player', 'truck_1')
+    ScenarioInfo.Truck2 = ScenarioUtils.CreateArmyUnit('Player', 'truck_2')
+
+    ScenarioInfo.TrucksDestroyed = 0
+
+    ScenarioFramework.CreateUnitDeathTrigger(Truck, ScenarioInfo.Truck1)
+    ScenarioFramework.CreateUnitDeathTrigger(Truck, ScenarioInfo.Truck2)
+    ForkThread(M4)
+end
+
 function M4()
+    ScenarioFramework.Dialogue(OpStrings.JJ_Mission4_Objective1, nil, true)
 
-end
+    -- Create an objective
+    ScenarioInfo.M4P1 = Objectives.CategoriesInArea(
+    'primary',
+    'incomplete', 
+    'Escort Ally Trucks',
+    'Escord the trucks to the City. Ensure their safety. We CANNOT lose those Trucks Colonel.',
+    'Move',
+    {
+        MarkUnits = true,
+        MarkArea= true,
+        ShowFaction = 'UEF',
+        Requirements = {
+            {Area = "M4_Objective_Area", Category = categories.uec0001, CompareOp = '>=', Value = 1, ArmyIndex = Player},
+            {Area = "M4_Objective_Area", Category = categories.uec0001, CompareOp = '>=', Value = 1, ArmyIndex = Player},
+        },
+    }
+    )
 
-function M4UEFPrisonReCaptureFunction()
+    ScenarioInfo.M4P2 = Objectives.Protect(
+    'prmary',
+    'incomplete',
+    'Protect Ally Trucks',
+    'If we lose those our allies then we cannot complete our main objective. You must ensure the protection of the Rebel Commanders.',
+    Objectives.GetActionIcon('protect'),
+        {
+            MarkUnits = false,
+        }
+    )
 
-end
-
-function M5()
-
-end
-
-function M6()
-
-end
-
-function M7()
-
-end
-
-function UEFCityAttacks()
-
+    ScenarioInfo.M4P1:AddResultCallback(
+        function(result)
+            ScenarioInfo.M4P2:ManualResult(true)
+            ScenarioFramework.Dialogue(OpStrings.JJ_M4Complete, nil, true)
+        end
+    )
 end
 
 function UEFAttackPlan()
@@ -442,6 +536,37 @@ function DestroyUnit(unit)
     unit:Destroy()
 end
 
+function Truck(truck)
+    ScenarioInfo.TrucksDestroyed = ScenarioInfo.TrucksDestroyed + 1
+
+    if ScenarioInfo.TrucksDestroyed >= 2 and ScenarioInfo.M4P2.Active then
+        ScenarioFramework.PlayerLose(OpStrings.JJ_Mission4_Failed)
+    end
+end
+
+function UEFAttackComplex()
+    if HumanPlayerCounter >= 2 then
+        ScenarioFramework.Dialogue(OpStrings.JJ_Mission3_Attack, nil, true)
+    end
+end
+
+function ACUAtComplex()
+    ScenarioFramework.Dialogue(OpStrings.JJ2_Fortify_Dialogue, nil, true)
+    ScenarioInfo.M2S1:ManualResult(true)
+
+    ScenarioInfo.M2S2 = Objectives.Protect(
+    'secondary',
+    'incomplete',
+    'Fortify Complex',
+    'Fortify the Complex so you are able to defend it in the event of any UEF attacks. Focus on AA Defenses and Point Defenses. You only have a limited amount of time.',
+    Objectives.GetActionIcon('protect'),
+        {
+            Units = {ScenarioInfo.CityNode},
+            MarkUnits = true,
+        }
+    )
+end
+
 function M1ReminderFirst()
 
 end
@@ -474,6 +599,29 @@ function M3ReminderSecond()
 end
 
 function M3ReminderThird()
+
+end
+
+function M4ReminderFirst()
+end
+
+function M4ReminderSecond()
+
+end
+
+function M4ReminderThird()
+
+end
+
+function M5ReminderFirst()
+
+end
+
+function M5ReminderSecond()
+
+end
+
+function M5ReminderThird()
 
 end
 

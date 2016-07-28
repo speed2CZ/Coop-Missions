@@ -14,4 +14,33 @@ function M2NavyBaseFunction()
 	UEFNavyBase:SetActive('AirScouting', true)
     UEFNavyBase:SetActive('LandScouting', false)
     UEFNavyBase:SetBuild('Defenses', true)
+
+    EnableAirAttacks()
+    EnableNavyAttacks()
+    EnableTransportAttacks()
+end
+
+function EnableAirAttacks()
+
+end
+
+
+function EnableNavyAttacks()
+
+end
+
+function EnableTransportAttacks()
+    -- Transport Builder
+    opai = UEFNavyBase:AddOpAI('EngineerAttack', 'M2_UEF_TransportBuilder',
+    {
+        MasterPlatoonFunction = {'/lua/ScenarioPlatoonAI.lua', 'LandAssaultWithTransports'},
+        PlatoonData = {
+            TransportReturn = 'M2_Navy_Base_Marker',
+        },
+        Priority = 1000,
+    })
+    opai:SetChildQuantity('T2Transports', 3)
+    opai:SetLockingStyle('None')
+    opai:AddBuildCondition('/lua/editor/unitcountbuildconditions.lua',
+        'HaveLessThanUnitsWithCategory', {'default_brain', 5, categories.uea0104})
 end
