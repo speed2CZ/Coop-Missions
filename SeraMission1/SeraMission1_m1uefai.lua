@@ -18,6 +18,8 @@ local UEFM1Base = BaseManager.CreateBaseManager()
 function UEFM1BaseAI()
     UEFM1Base:InitializeDifficultyTables(ArmyBrains[UEF], 'M1_UEF_Base', 'M1_UEF_Base_Marker', 80, {M1_UEF_Base = 100,})
     UEFM1Base:StartNonZeroBase({{10, 15, 20}, {9, 13, 17}})
+
+    -- UEFM1Base:SetACUUpgrades({'ResourceAllocation', 'AdvancedEngineering', 'Shield'})
     
     UEFM1Base:SetActive('AirScouting', true)
 
@@ -68,7 +70,7 @@ function UEFM1BaseAirAttacks()
     opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
     	'BrainGreaterThanOrEqualNumCategory', {'default_brain', 'Player', trigger[Difficulty], categories.AIR * categories.TECH2})
 
-    trigger = {23, 21, 18}
+    trigger = {9, 7, 5}
 	opai = UEFM1Base:AddOpAI('AirAttacks', 'M1_UEF_AirAttack_3',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
@@ -80,9 +82,9 @@ function UEFM1BaseAirAttacks()
             Priority = 140,
         }
     )
-    opai:SetChildQuantity('CombatFighters', 4)
+    opai:SetChildQuantity('TorpedoBombers', 4)
     opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
-    	'BrainGreaterThanOrEqualNumCategory', {'default_brain', 'Player', trigger[Difficulty], categories.AIR * categories.TECH2})
+    	'BrainGreaterThanOrEqualNumCategory', {'default_brain', 'Player', trigger[Difficulty], categories.NAVAL * categories.TECH2})
 
 	-- Air Patrol
 	quantity = {1, 2, 3}
@@ -163,7 +165,11 @@ function UEFM1BaseNavalAttacks()
 	            DisableTypes = {['T2Submarine'] = true},
 		    }
 		)
+		opai:SetChildActive('T3', false)
+		opai:SetFormation('AttackFormation')
 		opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
-        	'BrainGreaterThanOrEqualNumCategory', {'default_brain', 'Player', trigger[Difficulty], categories.AIR * categories.TECH2})
+			'BrainGreaterThanOrEqualNumCategory', {'default_brain', 'Player', trigger[Difficulty], categories.AIR * categories.TECH2})
+		--opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
+			--'BrainsCompareNumCategory', {'default_brain', {'HumanPlayers'}, 3, categories.NAVAL * categories.TECH3, '>='})
 	end
 end

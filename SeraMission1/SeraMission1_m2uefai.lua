@@ -1,24 +1,15 @@
 --#####################################################################
---###                      ### North Base ###                       ###
+--###                       ### UEF Base ###                        ###
 --#####################################################################
 --# Available Chain
 --# Air:
---# {'M2_UEF_North_Base_AirDef_Chain'}
+--# {'M2_UEF_Base_AirDef_Chain'}
 --#
 --# Naval:
 --# 1, 2 goes to the left; 3, 4 to the right
---# {'M2_UEFNorth_NavalAttack_Chain_1', 'M2_UEFNorth_NavalAttack_Chain_2', 'M2_UEFNorth_NavalAttack_Chain_3', 'M2_UEFNorth_NavalAttack_Chain_4'},
+--# {'M2_UEF_Base_NavalAttack_Chain_1', 'M2_UEF_Base_NavalAttack_Chain_2', 'M2_UEF_Base_NavalAttack_Chain_3', 'M2_UEF_Base_NavalAttack_Chain_4'},
 --#
---# {'M2_UEFNorth_NavalDefense_Chain_1', 'M2_UEFNorth_NavalDefense_Chain_2'},
---#####################################################################
---# Move Positions:
---# Land:
---# Left, right side
---# {'M2_Fatboy_Move_North_1', 'M2_Fatboy_Move_North_2'},
---#
---# Naval:
---# From left to right 1, 5, 3, 4, 2
---# {'M2_Battleship_North_1', 'M2_Battleship_North_2', 'M2_Battleship_North_3', 'M2_Battleship_North_4', 'M2_Battleship_North_5'}
+--# {'M2_UEF_Base_NavalDefense_Chain_1', 'M2_UEF_Base_NavalDefense_Chain_2'},
 --#####################################################################
 --#
 --#####################################################################
@@ -36,7 +27,6 @@
 
 local BaseManager = import('/lua/ai/opai/basemanager.lua')
 local SPAIFileName = '/lua/ScenarioPlatoonAI.lua'
-import('/maps/SeraMission1/SeraMission1_Buffs.lua')
 
 ---------
 -- Locals
@@ -47,60 +37,59 @@ local Difficulty = ScenarioInfo.Options.Difficulty
 ----------------
 -- Base Managers
 ----------------
-local UEFM2NorthBase = BaseManager.CreateBaseManager()
-local UEFM2NorthArtyBase = BaseManager.CreateBaseManager()
-local UEFM2WestArtyBase = BaseManager.CreateBaseManager()
+local UEFM2Base = BaseManager.CreateBaseManager()
+local UEFM2IslandBase = BaseManager.CreateBaseManager()
 
---------------------
--- UEF M2 North Base
---------------------
-function UEFM2NorthBaseAI()
-    UEFM2NorthBase:InitializeDifficultyTables(ArmyBrains[UEF], 'M2_UEF_North_Base', 'M2_UEF_North_Base_Marker', 160, {M2_UEF_North_Base = 100,})
-    UEFM2NorthBase:StartNonZeroBase({{18, 21, 24}, {14, 17, 20}})
-    UEFM2NorthBase:SetMaximumConstructionEngineers(4)
+-------------------
+-- UEF M2 Main Base
+-------------------
+function UEFM2BaseAI()
+    UEFM2Base:InitializeDifficultyTables(ArmyBrains[UEF], 'M2_UEF_Base', 'M2_UEF_Base_Marker', 160, {M2_UEF_Base = 100,})
+    UEFM2Base:StartNonZeroBase({{18, 21, 24}, {14, 17, 20}})
+    UEFM2Base:SetMaximumConstructionEngineers(4)
     
-    UEFM2NorthBase:SetActive('AirScouting', true)
-    UEFM2NorthBase:SetSupportACUCount(2)
-    UEFM2NorthBase:SetSACUUpgrades({'ResourceAllocation', 'RadarJammer', 'SensorRangeEnhancer'}, true)
+    UEFM2Base:SetActive('AirScouting', true)
+    UEFM2Base:SetSupportACUCount(1)
+    --UEFM2Base:SetSACUUpgrades({'ResourceAllocation', 'RadarJammer', 'SensorRangeEnhancer'}, true)
     ForkThread(
         function()
             WaitSeconds(1)
-            UEFM2NorthBase:AddBuildGroup('M2_North_Factories', 110, true)
+            UEFM2Base:AddBuildGroupDifficulty('M2_UEF_Base_Support_Factories', 110, true)
         end
     )
 
-    --UEFM2NorthBaseLandAttacks()
-    --UEFM2NorthBaseAirAttacks()
-    --UEFM2NorthBaseNavalAttacks()
+    --UEFM2BaseLandAttacks()
+    --UEFM2BaseAirAttacks()
+    --UEFM2BaseNavalAttacks()
 end
 
-function UEFM2NorthBaseAirAttacks()
+function UEFM2BaseAirAttacks()
     local opai = nil
     local quantity = {}
 
     -- Transport Builder
-    opai = UEFM2NorthBase:AddOpAI('EngineerAttack', 'M2_UEF_TransportBuilder',
+    opai = UEFM2Base:AddOpAI('EngineerAttack', 'M2_UEF_TransportBuilder',
     {
         MasterPlatoonFunction = {'/lua/ScenarioPlatoonAI.lua', 'LandAssaultWithTransports'},
         PlatoonData = {
-            LandingChain = 'M2_UEFNorth_NavalAttack_Chain_1',
-            TransportReturn = 'M2_UEF_North_Base_Marker',
+            LandingChain = 'M2_UEF_Base_NavalAttack_Chain_1',
+            TransportReturn = 'M2_UEF_Base_Marker',
         },
         Priority = 1000,
     })
     opai:SetChildActive('All', false)
-    opai:SetChildActive('T3Transports', true)
+    opai:SetChildActive('T2Transports', true)
     opai:AddBuildCondition('/lua/editor/unitcountbuildconditions.lua',
         'HaveLessThanUnitsWithCategory', {'default_brain', 8, categories.uea0104})
 
     -- Air Defense
     for i = 1, 3 do
         quantity = {3, 4, 5}
-        opai = UEFM2NorthBase:AddOpAI('AirAttacks', 'M2_UEF_North_Base_AirDefense1_' .. i,
+        opai = UEFM2Base:AddOpAI('AirAttacks', 'M2_UEF_Base_AirDefense1_' .. i,
             {
                 MasterPlatoonFunction = {SPAIFileName, 'RandomDefensePatrolThread'},
                 PlatoonData = {
-                    PatrolChain = 'M2_UEF_North_Base_AirDef_Chain',
+                    PatrolChain = 'M2_UEF_Base_AirDef_Chain',
                 },
                 Priority = 100,
             }
@@ -110,11 +99,11 @@ function UEFM2NorthBaseAirAttacks()
     end
     for i = 1, 3 do
         quantity = {3, 4, 5}
-        opai = UEFM2NorthBase:AddOpAI('AirAttacks', 'M2_UEF_North_Base_AirDefense2_' .. i,
+        opai = UEFM2Base:AddOpAI('AirAttacks', 'M2_UEF_Base_AirDefense2_' .. i,
             {
                 MasterPlatoonFunction = {SPAIFileName, 'RandomDefensePatrolThread'},
                 PlatoonData = {
-                    PatrolChain = 'M2_UEF_North_Base_AirDef_Chain',
+                    PatrolChain = 'M2_UEF_Base_AirDef_Chain',
                 },
                 Priority = 100,
             }
@@ -124,11 +113,11 @@ function UEFM2NorthBaseAirAttacks()
     end
     for i = 1, 2 do
         quantity = {2, 2, 3}
-        opai = UEFM2NorthBase:AddOpAI('AirAttacks', 'M2_UEF_North_Base_AirDefense3_' .. i,
+        opai = UEFM2Base:AddOpAI('AirAttacks', 'M2_UEF_Base_AirDefense3_' .. i,
             {
                 MasterPlatoonFunction = {SPAIFileName, 'RandomDefensePatrolThread'},
                 PlatoonData = {
-                    PatrolChain = 'M2_UEF_North_Base_AirDef_Chain',
+                    PatrolChain = 'M2_UEF_Base_AirDef_Chain',
                 },
                 Priority = 100,
             }
@@ -138,11 +127,11 @@ function UEFM2NorthBaseAirAttacks()
     end
     for i = 1, 2 do
         quantity = {3, 3, 4}
-        opai = UEFM2NorthBase:AddOpAI('AirAttacks', 'M2_UEF_North_Base_AirDefense4_' .. i,
+        opai = UEFM2Base:AddOpAI('AirAttacks', 'M2_UEF_Base_AirDefense4_' .. i,
             {
                 MasterPlatoonFunction = {SPAIFileName, 'RandomDefensePatrolThread'},
                 PlatoonData = {
-                    PatrolChain = 'M2_UEF_North_Base_AirDef_Chain',
+                    PatrolChain = 'M2_UEF_Base_AirDef_Chain',
                 },
                 Priority = 100,
             }
@@ -152,7 +141,7 @@ function UEFM2NorthBaseAirAttacks()
     end
 end
 
-function UEFM2NorthBaseLandAttacks()
+function UEFM2BaseLandAttacks()
     local opai = nil
     
     local Temp = {
@@ -167,20 +156,20 @@ function UEFM2NorthBaseLandAttacks()
         Priority = 300,
         PlatoonType = 'Gate',
         RequiresConstruction = true,
-        LocationType = 'M2_UEF_North_Base',
+        LocationType = 'M2_UEF_Base',
         PlatoonAIFunction = {SPAIFileName, 'RandomDefensePatrolThread' },       
         PlatoonData = {
-            PatrolChain = 'M2_UEF_North_Base_EngineerChain',
+            PatrolChain = 'M2_UEF_Base_EngineerChain',
         },
     }
     ArmyBrains[UEF]:PBMAddPlatoon( Builder )
     --[[
-    opai = UEFM2NorthBase:AddOpAI('EngineerAttack', 'M2_EngAttack1',
+    opai = UEFM2Base:AddOpAI('EngineerAttack', 'M2_EngAttack1',
         {
             MasterPlatoonFunction = {'/lua/ScenarioPlatoonAI.lua', 'StartBaseEngineerThread'},
             PlatoonData = {
                 LandingLocation = 'M2_North_Arty_Base_Marker',
-                TransportReturn = 'M2_UEF_North_Base_Marker',
+                TransportReturn = 'M2_UEF_Base_Marker',
                 UseTransports = true,
                 BaseName = 'M2_North_Arty_Base',
             },
@@ -192,8 +181,12 @@ function UEFM2NorthBaseLandAttacks()
     ]]--
 end
 
-function UEFM2NorthBaseNavalAttacks()
+function UEFM2BaseNavalAttacks()
+    local opai = nil
+    local quantity = {}
+    local trigger = {}
 
+    --[[
     local opai = nil
     local maxQuantity = {}
     local minQuantity = {}
@@ -202,7 +195,7 @@ function UEFM2NorthBaseNavalAttacks()
     local builder = {}
 
     Temp = {
-        'M2_UEF_North_Destroyer_Attack_1',
+        'M2_UEF_Base_Destroyer_Attack_1',
         'NoPlan',
         { 'ues0201', 1, 4, 'Attack', 'AttackFormation' },  -- Destroyer
         { 'ues0103', 1, 4, 'Attack', 'AttackFormation' },  -- Frigate
@@ -211,26 +204,26 @@ function UEFM2NorthBaseNavalAttacks()
 
     }
     Builder = {
-        BuilderName = 'M2_UEF_North_Destroyer_Builder_1',
+        BuilderName = 'M2_UEF_Base_Destroyer_Builder_1',
         PlatoonTemplate = Temp,
         InstanceCount = 1,
         Priority = 110,
         PlatoonType = 'Sea',
         RequiresConstruction = true,
-        LocationType = 'M2_UEF_North_Base',
+        LocationType = 'M2_UEF_Base',
         PlatoonAIFunction = {SPAIFileName, 'PatrolChainPickerThread' },       
         PlatoonData = {
-            PatrolChains = {'M2_UEFNorth_NavalAttack_Chain_1',
-                            'M2_UEFNorth_NavalAttack_Chain_2',
-                            'M2_UEFNorth_NavalAttack_Chain_3',
-                            'M2_UEFNorth_NavalAttack_Chain_4'}
+            PatrolChains = {'M2_UEF_Base_NavalAttack_Chain_1',
+                            'M2_UEF_Base_NavalAttack_Chain_2',
+                            'M2_UEF_Base_NavalAttack_Chain_3',
+                            'M2_UEF_Base_NavalAttack_Chain_4'}
         },
     }
     ArmyBrains[UEF]:PBMAddPlatoon( Builder )
 
     trigger = {16, 14, 12}
     Temp = {
-        'M2_UEF_North_Battlecruiser_Attack_1',
+        'M2_UEF_Base_Battlecruiser_Attack_1',
         'NoPlan',
         { 'xes0307', 1, 2, 'Attack', 'AttackFormation' },  -- Battlecruiser
         { 'ues0203', 1, 4, 'Attack', 'AttackFormation' },  -- Submarine
@@ -238,19 +231,19 @@ function UEFM2NorthBaseNavalAttacks()
 
     }
     Builder = {
-        BuilderName = 'M2_UEF_North_Battlecruiser_Builder_1',
+        BuilderName = 'M2_UEF_Base_Battlecruiser_Builder_1',
         PlatoonTemplate = Temp,
         InstanceCount = 1,
         Priority = 120,
         PlatoonType = 'Sea',
         RequiresConstruction = true,
-        LocationType = 'M2_UEF_North_Base',
+        LocationType = 'M2_UEF_Base',
         PlatoonAIFunction = {SPAIFileName, 'PatrolChainPickerThread' },       
         PlatoonData = {
-            PatrolChains = {'M2_UEFNorth_NavalAttack_Chain_1',
-                            'M2_UEFNorth_NavalAttack_Chain_2',
-                            'M2_UEFNorth_NavalAttack_Chain_3',
-                            'M2_UEFNorth_NavalAttack_Chain_4'}
+            PatrolChains = {'M2_UEF_Base_NavalAttack_Chain_1',
+                            'M2_UEF_Base_NavalAttack_Chain_2',
+                            'M2_UEF_Base_NavalAttack_Chain_3',
+                            'M2_UEF_Base_NavalAttack_Chain_4'}
         },
         BuildConditions = {
             { '/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
@@ -261,7 +254,7 @@ function UEFM2NorthBaseNavalAttacks()
 
     trigger = {2, 2, 1}
     Temp = {
-        'M2_UEF_North_Battlecruiser_Attack_2',
+        'M2_UEF_Base_Battlecruiser_Attack_2',
         'NoPlan',
         { 'xes0307', 1, 2, 'Attack', 'AttackFormation' },  -- Battlecruiser
         { 'ues0203', 1, 4, 'Attack', 'AttackFormation' },  -- Submarine
@@ -269,19 +262,19 @@ function UEFM2NorthBaseNavalAttacks()
 
     }
     Builder = {
-        BuilderName = 'M2_UEF_North_Battlecruiser_Builder_2',
+        BuilderName = 'M2_UEF_Base_Battlecruiser_Builder_2',
         PlatoonTemplate = Temp,
         InstanceCount = 1,
         Priority = 120,
         PlatoonType = 'Sea',
         RequiresConstruction = true,
-        LocationType = 'M2_UEF_North_Base',
+        LocationType = 'M2_UEF_Base',
         PlatoonAIFunction = {SPAIFileName, 'PatrolChainPickerThread' },       
         PlatoonData = {
-            PatrolChains = {'M2_UEFNorth_NavalAttack_Chain_1',
-                            'M2_UEFNorth_NavalAttack_Chain_2',
-                            'M2_UEFNorth_NavalAttack_Chain_3',
-                            'M2_UEFNorth_NavalAttack_Chain_4'}
+            PatrolChains = {'M2_UEF_Base_NavalAttack_Chain_1',
+                            'M2_UEF_Base_NavalAttack_Chain_2',
+                            'M2_UEF_Base_NavalAttack_Chain_3',
+                            'M2_UEF_Base_NavalAttack_Chain_4'}
         },
         BuildConditions = {
             { '/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
@@ -292,14 +285,14 @@ function UEFM2NorthBaseNavalAttacks()
 
     -- Battleship, 2 BCs, 2 sheilds if Player has more than 1 Battleship
     trigger = {3, 2, 1}
-    opai = UEFM2NorthBase:AddNavalAI('M2_UEFNorth_BattleshipAttack_1',
+    opai = UEFM2Base:AddNavalAI('M2_UEF_Base_BattleshipAttack_1',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M2_UEFNorth_NavalAttack_Chain_1',
-                                'M2_UEFNorth_NavalAttack_Chain_2',
-                                'M2_UEFNorth_NavalAttack_Chain_3',
-                                'M2_UEFNorth_NavalAttack_Chain_4'}
+                PatrolChains = {'M2_UEF_Base_NavalAttack_Chain_1',
+                                'M2_UEF_Base_NavalAttack_Chain_2',
+                                'M2_UEF_Base_NavalAttack_Chain_3',
+                                'M2_UEF_Base_NavalAttack_Chain_4'}
             },
             MaxFrigates = 25,
             MinFrigates = 25,
@@ -315,14 +308,14 @@ function UEFM2NorthBaseNavalAttacks()
 
     -- 2 Batteships, 2 Battlecruisers, 4 shields
     trigger = {5, 4, 3}
-    opai = UEFM2NorthBase:AddNavalAI('M2_UEFNorth_BattleshipAttack_2',
+    opai = UEFM2Base:AddNavalAI('M2_UEF_Base_BattleshipAttack_2',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M2_UEFNorth_NavalAttack_Chain_1',
-                                'M2_UEFNorth_NavalAttack_Chain_2',
-                                'M2_UEFNorth_NavalAttack_Chain_3',
-                                'M2_UEFNorth_NavalAttack_Chain_4'}
+                PatrolChains = {'M2_UEF_Base_NavalAttack_Chain_1',
+                                'M2_UEF_Base_NavalAttack_Chain_2',
+                                'M2_UEF_Base_NavalAttack_Chain_3',
+                                'M2_UEF_Base_NavalAttack_Chain_4'}
             },
             MaxFrigates = 50,
             MinFrigates = 50,
@@ -339,14 +332,14 @@ function UEFM2NorthBaseNavalAttacks()
 
     -- 5 Batteships
     trigger = {7, 6, 5}
-    opai = UEFM2NorthBase:AddNavalAI('M2_UEFNorth_BattleshipAttack_3',
+    opai = UEFM2Base:AddNavalAI('M2_UEF_Base_BattleshipAttack_3',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M2_UEFNorth_NavalAttack_Chain_1',
-                                'M2_UEFNorth_NavalAttack_Chain_2',
-                                'M2_UEFNorth_NavalAttack_Chain_3',
-                                'M2_UEFNorth_NavalAttack_Chain_4'}
+                PatrolChains = {'M2_UEF_Base_NavalAttack_Chain_1',
+                                'M2_UEF_Base_NavalAttack_Chain_2',
+                                'M2_UEF_Base_NavalAttack_Chain_3',
+                                'M2_UEF_Base_NavalAttack_Chain_4'}
             },
             MaxFrigates = 125,
             MinFrigates = 125,
@@ -365,14 +358,14 @@ function UEFM2NorthBaseNavalAttacks()
 
     -- 5 Batteships
     trigger = {9, 8, 7}
-    opai = UEFM2NorthBase:AddNavalAI('M2_UEFNorth_BattleshipAttack_4',
+    opai = UEFM2Base:AddNavalAI('M2_UEF_Base_BattleshipAttack_4',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
             PlatoonData = {
-                PatrolChains = {'M2_UEFNorth_NavalAttack_Chain_1',
-                                'M2_UEFNorth_NavalAttack_Chain_2',
-                                'M2_UEFNorth_NavalAttack_Chain_3',
-                                'M2_UEFNorth_NavalAttack_Chain_4'}
+                PatrolChains = {'M2_UEF_Base_NavalAttack_Chain_1',
+                                'M2_UEF_Base_NavalAttack_Chain_2',
+                                'M2_UEF_Base_NavalAttack_Chain_3',
+                                'M2_UEF_Base_NavalAttack_Chain_4'}
             },
             MaxFrigates = 150,
             MinFrigates = 150,
@@ -390,13 +383,13 @@ function UEFM2NorthBaseNavalAttacks()
         {'default_brain', 'Player', trigger[Difficulty], categories.BATTLESHIP})
 
     for i = 1, 2 do
-        opai = UEFM2NorthBase:AddOpAI({'M2_Sonar_' .. i},
+        opai = UEFM2Base:AddOpAI({'M2_Sonar_' .. i},
             {
                 Amount = 1,
                 KeepAlive = true,
                 PlatoonAIFunction = {SPAIFileName, 'PatrolThread'},
                 PlatoonData = {
-                    PatrolChain = 'M2_UEF_North_Sonar_Patrol_Chain_' .. i,
+                    PatrolChain = 'M2_UEF_Base_Sonar_Patrol_Chain_' .. i,
                 },
 
                 MaxAssist = 1,
@@ -404,15 +397,15 @@ function UEFM2NorthBaseNavalAttacks()
             }
         )
     end
-    
+    ]]--
     --[[
-    opai = UEFM2NorthBase:AddOpAI({'M2_Atlantis_1', 'M2_Atlantis_2'},
+    opai = UEFM2Base:AddOpAI({'M2_Atlantis_1', 'M2_Atlantis_2'},
         {
             Amount = 2,
             KeepAlive = true,
             PlatoonAIFunction = {SPAIFileName, 'PatrolThread'},
             PlatoonData = {
-                PatrolChain = 'M2_UEFNorth_NavalAttack_Chain_1',
+                PatrolChain = 'M2_UEF_Base_NavalAttack_Chain_1',
             },
 
             MaxAssist = 6,
@@ -422,98 +415,85 @@ function UEFM2NorthBaseNavalAttacks()
     ]]--
 end
 
-function UEFM2NorthArtyBaseAI()
-    UEFM2NorthBase:AddExpansionBase('M2_North_Arty_Base', 2, {'TransportPlatoon'})
-    UEFM2NorthArtyBase:Initialize(ArmyBrains[UEF], 'M2_North_Arty_Base', 'M2_North_Arty_Base_Marker', 40, {M2_North_Arty_Base = 100})
-    UEFM2NorthArtyBase:StartEmptyBase(2)
-    UEFM2NorthArtyBase:SetEngineerBuildRateBuff('ExpansionEngiesBuildRate')
-end
+---------------------
+-- UEF M2 Island Base
+---------------------
+function UEFM2IslandBaseAI(baseType)
+    if baseType == 'Eco' then
+        -- Economy Base
+        UEFM2IslandBase:InitializeDifficultyTables(
+            ArmyBrains[UEF],
+            'M2_UEF_Island_Base',
+            'M2_UEF_Island_Base_Marker',
+            30,
+            {
+                M2_UEF_Island_Mass = 100,
+                M2_UEF_Island_Eco = 100,
+            }
+        )
+        UEFM2IslandBase:StartNonZeroBase(1)
+        UEFM2Base:AddExpansionBase('M2_UEF_Island_Base', 1)
 
-function UEFM2WestArtyBaseAI()
-    UEFM2WestBase:AddExpansionBase('M2_West_Arty_Base', 2, {'TransportPlatoon'})
-    UEFM2WestArtyBase:Initialize(ArmyBrains[UEF], 'M2_West_Arty_Base', 'M2_West_Arty_Base_Marker', 40, {M2_West_Arty_Base = 100})
-    UEFM2WestArtyBase:StartEmptyBase(2)
-    UEFM2WestArtyBase:SetEngineerBuildRateBuff('ExpansionEngiesBuildRate')
-end
+    elseif baseType == 'Gate' then
+        -- Gate Base
+        UEFM2IslandBase:InitializeDifficultyTables(
+            ArmyBrains[UEF],
+            'M2_UEF_Island_Base',
+            'M2_UEF_Island_Base_Marker',
+            30,
+            {
+                M2_UEF_Island_Gate = 100,
+                M2_UEF_Island_Mass = 100,
+                M2_UEF_Island_Defense = 100,
+            }
+        )
+        UEFM2IslandBase:StartNonZeroBase(1)
+        UEFM2IslandBase:SetSupportACUCount(1)
+        UEFM2IslandBase:SetSACUUpgrades({'ResourceAllocation', 'RadarJammer', 'SensorRangeEnhancer'}, true)
 
-function BattleshipRebuild1()
-    local opai = UEFM2NorthBase:AddNavalAI('M2_UEFNorth_NavalBattleship_1',
-        {
-            MasterPlatoonFunction = {SPAIFileName, 'MoveToThread'},
-            PlatoonData = {
-                MoveRoute = {'M2_Battleship_North_1'},
-            },
-            MaxFrigates = 25,
-            MinFrigates = 25,
-            Priority = 100,
-        }
-    )
-end
+        UEFM2IslandBaseSACUAttacks()
 
-function BattleshipRebuild2()
-    local opai = UEFM2NorthBase:AddNavalAI('M2_UEFNorth_NavalBattleship_2',
-        {
-            MasterPlatoonFunction = {SPAIFileName, 'MoveToThread'},
-            PlatoonData = {
-                MoveRoute = {'M2_Battleship_North_2'},
-            },
-            MaxFrigates = 25,
-            MinFrigates = 25,
-            Priority = 100,
-        }
-    )
-end
+    elseif baseType == 'Nuke' then
+        -- Nuke Base
+        UEFM2IslandBase:InitializeDifficultyTables(
+            ArmyBrains[UEF],
+            'M2_UEF_Island_Base',
+            'M2_UEF_Island_Base_Marker',
+            30,
+            {
+                M2_UEF_Island_Nuke = 100,
+                M2_UEF_Island_Mass = 100,
+                M2_UEF_Island_Defense = 100,
+            }
+        )
+        UEFM2IslandBase:StartNonZeroBase({1, 2, 3})
 
-function BattleshipRebuild3()
-    local opai = UEFM2NorthBase:AddNavalAI('M2_UEFNorth_NavalBattleship_3',
-        {
-            MasterPlatoonFunction = {SPAIFileName, 'MoveToThread'},
-            PlatoonData = {
-                MoveRoute = {'M2_Battleship_North_3'},
-            },
-            MaxFrigates = 25,
-            MinFrigates = 25,
-            Priority = 100,
-        }
-    )
-end
+        ForkThread(UEFM2IslandBaseNukeAI)
 
-function BattleshipRebuild4()
-    local opai = UEFM2NorthBase:AddNavalAI('M2_UEFNorth_NavalBattleship_4',
-        {
-            MasterPlatoonFunction = {SPAIFileName, 'MoveToThread'},
-            PlatoonData = {
-                MoveRoute = {'M2_Battleship_North_4'},
-            },
-            MaxFrigates = 25,
-            MinFrigates = 25,
-            Priority = 100,
-        }
-    )
-end
-
-function BattleshipRebuild5()
-    local opai = UEFM2NorthBase:AddNavalAI('M2_UEFNorth_NavalBattleship_5',
-        {
-            MasterPlatoonFunction = {SPAIFileName, 'MoveToThread'},
-            PlatoonData = {
-                MoveRoute = {'M2_Battleship_North_5'},
-            },
-            MaxFrigates = 25,
-            MinFrigates = 25,
-            Priority = 100,
-        }
-    )
-end
-
-function StopSACU()
-    if(UEFM2NorthBase) then
-        LOG('UEFM2NorthBase stopped')
-        UEFM2NorthBase:BaseActive(false)
+    else
+        WARN('UEFM2IslandBase: "baseType" NOT DEFINED')
     end
-    for k, platoon in ArmyBrains[UEF]:GetPlatoonsList() do
-        platoon:Stop()
-        ArmyBrains[UEF]:DisbandPlatoon(platoon)
+end
+
+-- Island Nuke Ai
+function UEFM2IslandBaseNukeAI()
+    local nuke = ArmyBrains[UEF]:GetListOfUnits(categories.NUKE * categories.STRATEGIC * categories.STRUCTURE * categories.TECH3, false)[1]
+
+    if not nuke then
+        return
     end
-    LOG('All Platoons of UEFM2NorthBase stopped')
+
+    local waitTime = {Random(27.0, 21.0), Random(23.0, 27.0), Random(19.0, 23.0)}
+    LOG('*speed2: Nuke activation wait time: ' .. waitTime[Difficulty])
+    WaitSeconds(waitTime[Difficulty] * 60.0)
+
+    -- Activate Nuke
+    local plat = ArmyBrains[UEF]:MakePlatoon('', '')
+    ArmyBrains[UEF]:AssignUnitsToPlatoon(plat, {nuke}, 'Attack', 'NoFormation')
+    plat:ForkAIThread(plat.NukeAI)
+end
+
+-- Island SACU Attacks
+function UEFM2IslandBaseSACUAttacks()
+
 end

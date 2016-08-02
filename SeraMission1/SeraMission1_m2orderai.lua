@@ -43,10 +43,10 @@ local Difficulty = ScenarioInfo.Options.Difficulty
 ----------------
 local OrderM2Base = BaseManager.CreateBaseManager()
 
+----------------
+-- Order M2 Base
+----------------
 function OrderM2BaseAI()
-    ----------------
-    -- Order M2 Base
-    ----------------
     OrderM2Base:Initialize(ArmyBrains[Order], 'M2_Order_Base', 'M2_Order_Base_Marker', 80,
         {
             M2_Order_Mass_1 = 290,
@@ -54,14 +54,15 @@ function OrderM2BaseAI()
             M2_Order_Air_Factory_1 = 270,
             M2_Order_Energy_1 = 260,
             M2_Order_Air_Factory_2 = 250,
+            M2_Order_Def_1 = 245,
             M2_Order_Mass_3 = 240,
-            M2_Order_Mass_4 = 230,
-            M2_Order_Factory_3 = 220,
+            M2_Order_Factory_3 = 230,
+            M2_Order_Mass_4 = 220,
             M2_Order_Energy_2 = 210,
             M2_Order_Factory_4 = 200,
             M2_Order_North = 190,
-            M2_Order_Main_1 = 180,
-            M2_Order_Factory_5 = 170,
+            M2_Order_Factory_5 = 180,
+            M2_Order_Main_1 = 170,
             M2_Order_Main_2 = 160,
             M2_Order_Main_3 = 150,
             M2_Order_Torp = 140,
@@ -77,6 +78,14 @@ function OrderM2BaseEngieCount()
     OrderM2Base:SetMaximumConstructionEngineers(3)
 end
 
+function OrderM2BuildAntiNuke()
+    LOG('OrderM2Base: Building Antinuke')
+    OrderM2Base:AddBuildGroup('M2_Order_Antinuke', 135)
+end
+
+-------------------
+-- Order M2 Attacks
+-------------------
 function OrderM2BaseAirAttacks()
     -- Enable air scouting
     OrderM2Base:SetActive('AirScouting', true)
@@ -94,7 +103,7 @@ function OrderM2BaseAirAttacks()
                 PlatoonData = {
                     PatrolChain = 'M2_Order_Base_AirDef_Chain',
                 },
-                Priority = 100,
+                Priority = 90 + i * 10,
             }
         )
         opai:SetChildQuantity('AirSuperiority', quantity[Difficulty])
@@ -108,7 +117,7 @@ function OrderM2BaseAirAttacks()
                 PlatoonData = {
                     PatrolChain = 'M2_Order_Base_AirDef_Chain',
                 },
-                Priority = 100,
+                Priority = 90 + i * 10,
             }
         )
         opai:SetChildQuantity('HeavyTorpedoBombers', quantity[Difficulty])
@@ -123,7 +132,7 @@ function OrderM2BaseAirAttacks()
                 PlatoonData = {
                     PatrolChain = 'M2_Order_Base_AirDef_Chain',
                 },
-                Priority = 100,
+                Priority = 90 + i * 10,
             }
         )
         opai:SetChildQuantity('HeavyGunships', quantity[Difficulty])
@@ -189,6 +198,33 @@ function OrderM2BaseNavalAttacks()
             MaxFrigates = 50,
             MinFrigates = 50,
             Priority = 100,
+        }
+    )
+end
+
+function OrderM2RebuildTempest()
+    if not ScenarioInfo.M1_Order_Tempest or ScenarioInfo.M1_Order_Tempest:IsDead() then
+        return
+    end
+
+    while not ScenarioInfo.M1_Order_Tempest:IsDead() and ScenarioInfo.M1_Order_Tempest:IsUnitState('Building') do
+        WaitSeconds(1)
+    end
+
+    if not ScenarioInfo.M1_Order_Tempest:IsDead() then
+        ScenarioInfo.M1_Order_Tempest:Kill()
+    end
+
+    local opai = OrderM2Base:AddOpAI('M2_Tempest_1',
+        {
+            Amount = 1,
+            KeepAlive = true,
+            PlatoonAIFunction = {SPAIFileName, 'MoveToThread'},
+            PlatoonData = {
+                MoveRoute = {'M2_Order_Starting_Tempest'},
+            },
+            MaxAssist = 3,
+            Retry = true,
         }
     )
 end
@@ -345,22 +381,70 @@ function OrderM2TempestAI(unit)
 end
 
 function OrderM2TempestAttacks()
-    local Temp = {
+    local Temp = {}
+    local Builder = {}
+
+    -- Engineers patrols
+    Temp = {
         'M2_Order_Tempest_Engineers_1',
         'NoPlan',
-        { 'ual0105', 1, 8, 'Attack', 'AttackFormation' },  -- T1 Engineer
+        { 'ual0105', 1, 4, 'Attack', 'AttackFormation' },  -- T1 Engineer
     }
-    local Builder = {
-        BuilderName = 'M2_Order_Tempest_Engineer_Builder_1',
+    local Chains = {'M2_Order_Base_EngineerChain', 'M1_UEF_Base_Naval_Patrol_Chain', 'M2_Order_Base_Tempest_Engineers_Chain'}
+    for i = 1, 3 do
+        Builder = {
+            BuilderName = 'M2_Order_Tempest_Engineer_Builder_' .. i,
+            PlatoonTemplate = Temp,
+            InstanceCount = 1,
+            Priority = 200,
+            PlatoonType = 'Sea',
+            RequiresConstruction = true,
+            LocationType = 'M2_Tempest1',
+            PlatoonAIFunction = {SPAIFileName, 'RandomDefensePatrolThread'},
+            PlatoonData = {
+                PatrolChain = Chains[i],
+            },    
+        }
+        ArmyBrains[Order]:PBMAddPlatoon( Builder )
+    end
+
+    -- Naval Defense
+    Temp = {
+        'M2_Order_Tempest_Naval_1',
+        'NoPlan',
+        { 'uas0103', 1, 8, 'Attack', 'AttackFormation' },  -- Frigate
+    }
+    Builder = {
+        BuilderName = 'M2_Order_Tempest_Naval_Builder_1',
+        PlatoonTemplate = Temp,
+        InstanceCount = 1,
+        Priority = 110,
+        PlatoonType = 'Sea',
+        RequiresConstruction = true,
+        LocationType = 'M2_Tempest1',
+        PlatoonAIFunction = {SPAIFileName, 'PatrolThread'},
+        PlatoonData = {
+            PatrolChain = 'M2_Order_Defensive_Chain_West',
+        },    
+    }
+    ArmyBrains[Order]:PBMAddPlatoon( Builder )
+
+    Temp = {
+        'M2_Order_Tempest_Naval_2',
+        'NoPlan',
+        { 'uas0201', 1, 2, 'Attack', 'AttackFormation' },  -- Destroyer
+    }
+    Builder = {
+        BuilderName = 'M2_Order_Tempest_Naval_Builder_2',
         PlatoonTemplate = Temp,
         InstanceCount = 1,
         Priority = 100,
         PlatoonType = 'Sea',
         RequiresConstruction = true,
         LocationType = 'M2_Tempest1',
-        PlatoonAIFunction = {SPAIFileName, 'SplitPatrolThread'},
+        PlatoonAIFunction = {SPAIFileName, 'PatrolThread'},
         PlatoonData = {
-            PatrolChains = {'M2_Order_Base_EngineerChain', 'M2_Order_Base_Tempest_Engineers_Chain', 'M1_UEF_Base_Naval_Patrol_Chain'},
+            PatrolChain = 'M2_Order_Defensive_Chain_West',
         },    
     }
     ArmyBrains[Order]:PBMAddPlatoon( Builder )
