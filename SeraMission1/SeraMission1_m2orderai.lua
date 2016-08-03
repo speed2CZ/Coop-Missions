@@ -366,6 +366,9 @@ function OrderM2CarriersAI()
     ArmyBrains[Order]:PBMAddPlatoon( Builder )
 end
 
+----------
+-- Tempest
+----------
 function OrderM2TempestAI(unit)
     ArmyBrains[Order]:PBMAddBuildLocation('M2_Order_Starting_Tempest', 60, 'M2_Tempest1')
 

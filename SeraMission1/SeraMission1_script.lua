@@ -34,30 +34,15 @@ ScenarioInfo.OperationScenarios = {
         Events = {
             {
                 CallFunction = function() M1RiptideAttack() end,
-                Delay = 10,
-                --[[Delay = {
-                    { * 60,  * 60}, -- Easy
-                    { * 60,  * 60}, -- Medium
-                    { * 60,  * 60}, -- Hard
-                },]]--
+                Delay = 2,
             },
             {
                 CallFunction = function() M1TorpedoBomberAttack() end,
-                Delay = 10,
-                --[[Delay = {
-                    { * 60,  * 60}, -- Easy
-                    { * 60,  * 60}, -- Medium
-                    { * 60,  * 60}, -- Hard
-                },]]--
+                Delay = 2,
             },
             {
                 CallFunction = function() M1SubmarineAttack() end,
-                Delay = 10,
-                --[[Delay = {
-                    { * 60,  * 60}, -- Easy
-                    { * 60,  * 60}, -- Medium
-                    { * 60,  * 60}, -- Hard
-                },]]--
+                Delay = 2,
             },
         },
     },
@@ -75,27 +60,18 @@ ScenarioInfo.OperationScenarios = {
         Events = {
             {
                 CallFunction = function() M2BattleshipAttack() end,
-                Delay = {
-                    {15 * 60, 19 * 60}, -- Easy
-                    {11 * 14, 18 * 60}, -- Medium
-                    {7 * 60, 10 * 60}, -- Hard
-                },
+                Delay = {15*60, 11*60, 7*60},
+                Randomness = 4*60,
             },
             {
                 CallFunction = function() M2CybranNukeSubAttack() end,
-                Delay = {
-                    {19 * 60, 22 * 60}, -- Easy
-                    {15 * 60, 18 * 60}, -- Medium
-                    {11 * 60, 14 * 60}, -- Hard
-                },
+                Delay = {19*60, 15*60, 11*60},
+                Randomness = 3*60,
             },
             {
                 CallFunction = function() M2ExperimentalAttack() end,
-                Delay = {
-                    {17 * 60, 20 * 60}, -- Easy
-                    {13 * 60, 16 * 60}, -- Medium
-                    {9 * 60, 12 * 60}, -- Hard
-                },
+                Delay = {17*60, 13*60, 9*60},
+                Randomness = 4*60,
             },
         },
     },
@@ -117,15 +93,13 @@ local Coop3 = ScenarioInfo.Coop3
 local AssignedObjectives = {}
 local Difficulty = ScenarioInfo.Options.Difficulty
 
-local useOrderAI = false
-
 -- How long should we wait at the beginning of the NIS to allow slower machines to catch up?
 local NIS1InitialDelay = 3
 
 --------------
 -- Debug only!
 --------------
-local Debug = true
+local Debug = false
 local SkipDialogues = false
 local SkipNIS1 = false
 local SkipNIS2 = false
@@ -161,6 +135,12 @@ function OnPopulate(scenario)
 
     -- Disable resource sharing from friendly AI
     GetArmyBrain(Order):SetResourceSharing(false)
+
+    -- If there is not Coop1 player use Order AI
+    local tblArmy = ListArmies()
+    if not tblArmy[ScenarioInfo.Coop1] then
+        ScenarioInfo.UseOrderAI = true
+    end
 
     --------
     -- Order
@@ -213,7 +193,12 @@ function OnPopulate(scenario)
                 WaitSeconds(3)
             end
             IssueClearCommands({unit})
-            local tempUnit = ScenarioFramework.GiveUnitToArmy(unit, 'Player')
+            local tempUnit
+            if ScenarioInfo.UseOrderAI then
+                tempUnit = ScenarioFramework.GiveUnitToArmy(unit, 'Player')
+            else
+                tempUnit = ScenarioFramework.GiveUnitToArmy(unit, 'Coop1')
+            end
             table.insert(givenAirUnits, tempUnit) 
         end
 
@@ -298,6 +283,8 @@ function OnPopulate(scenario)
     -- Objective target
     ScenarioInfo.M1ResearchStation = ScenarioUtils.CreateArmyUnit('Objective', 'M1_Research_Station')
     ScenarioInfo.M1ResearchStation:SetCustomName('Station') -- TODO: Name for the research station
+    ScenarioInfo.M1ResearchStation:SetMaxHealth(6250)
+    ScenarioInfo.M1ResearchStation:SetHealth(ScenarioInfo.M1ResearchStation, 6250)
 
     -- Other buildings
     ScenarioUtils.CreateArmyGroup('Objective', 'M1_Civilian_Complex')
@@ -576,15 +563,15 @@ end
 
 -- Random Events
 function M1RiptideAttack()
-
+    LOG('Riptide')
 end
 
 function M1TorpedoBomberAttack()
-
+    LOG('TorpBomber')
 end
 
 function M1SubmarineAttack()
-
+    LOG('Submarine')
 end
 
 ------------
@@ -607,7 +594,6 @@ function IntroMission2()
         ScenarioInfo.CoopCDR1 = ScenarioFramework.SpawnCommander('Coop1', 'Commander', 'Warp', true, true, false,
             {'ResourceAllocation', 'AdvancedEngineering', 'T3Engineering'})
     else
-        useOrderAI = true
         ScenarioInfo.OrderACU = ScenarioFramework.SpawnCommander('Order', 'M2_Order_ACU', 'Warp', 'Violet', false, false, -- TODO: Come up with a name
             {'ResourceAllocationAdvanced', 'EnhancedSensors', 'AdvancedEngineering', 'T3Engineering'})
 
@@ -635,10 +621,32 @@ function IntroMission2()
     IssueMove({ScenarioInfo.M1_Order_Carrier}, ScenarioUtils.MarkerToPosition('M2_Order_Carrier_Marker_1'))
     IssueMove({ScenarioInfo.M1_Order_Tempest}, ScenarioUtils.MarkerToPosition('M2_Order_Starting_Tempest'))
 
-    if useOrderAI then
+    if ScenarioInfo.UseOrderAI then
         -- Order base AI and mobile factories AI
         M2OrderAI.OrderM2BaseAI()
-        -- M2OrderAI.OrderM2CarriersAI()
+
+        -- If there are any units left in the carrier, make them patrol once carrier arrives to the island
+        ForkThread(function()
+            while (ScenarioInfo.M1_Order_Carrier and not ScenarioInfo.M1_Order_Carrier:IsDead() and ScenarioInfo.M1_Order_Carrier:IsUnitState('Moving')) do
+                WaitSeconds(.5)
+            end
+
+            if table.getn(ScenarioInfo.M1_Order_Carrier:GetCargo()) > 0  then
+                IssueClearCommands({ScenarioInfo.M1_Order_Carrier})
+                IssueTransportUnload({ScenarioInfo.M1_Order_Carrier}, ScenarioInfo.M1_Order_Carrier:GetPosition())
+
+                -- Just to be sure all units are out
+                WaitSeconds(5)
+
+                local plat = ArmyBrains[Order]:MakePlatoon('', '')
+                for _, unit in ArmyBrains[Order]:GetListOfUnits(categories.AIR * categories.MOBILE, false) do
+                    ArmyBrains[Order]:AssignUnitsToPlatoon(plat, {unit}, 'Attack', 'NoFormation')
+                    ScenarioFramework.GroupPatrolRoute({unit}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M2_Order_Base_AirDef_Chain')))
+                end
+            end
+        end)
+        
+        -- M2OrderAI.OrderM2CarriersAI() -- TODO: Make Order use carrier is some good way
 
         -- Temporary unit production from the tempest
         M2OrderAI.OrderM2TempestAI(ScenarioInfo.M1_Order_Tempest)
@@ -697,7 +705,9 @@ function IntroMission2()
     -- Temporary restrict T1 and T2 engineers for Order so it builds T3 in the base
     ScenarioFramework.AddRestriction(Order, categories.ual0105 + categories.ual0208)
 
+    -- Spawn small island bases for both Cybran and UEF, type picked randomly
     CustomFunctions.ChooseRandomBases()
+
     ------------
     -- Cybran AI
     ------------
@@ -755,11 +765,15 @@ function IntroMission2()
         plat:ForkAIThread(plat.TacticalAI)
     end
 
-    ---------------
-    -- Random Bases
-    ---------------
-    -- Pick type for bases from OperationScenarios table and activates them. Needs to be done after main bases are activated.
-    -- CustomFunctions.ChooseRandomBases()
+    --------
+    -- Other
+    --------
+    -- Destroy all wrecks that are offmap
+    for _, prop in GetReclaimablesInRect(ScenarioUtils.AreaToRect('M2_Offmap_Area')) do
+        if prop.IsWreckage then
+            prop:Destroy()
+        end
+    end
 
     -- Give resources armies
     --ArmyBrains[UEF]:GiveResource('MASS', 25000)
@@ -771,6 +785,17 @@ end
 
 function IntroMission2NIS()
     ScenarioFramework.SetPlayableArea('M2_Area', false)
+
+    -- Move players' units to the new playable area and patrol
+    for _, unit in GetUnitsInRect(ScenarioUtils.AreaToRect('M2_Offmap_Area')) do
+        if EntityCategoryContains(categories.AIR, unit ) and unit:GetAIBrain() ~= Order then
+            IssueClearCommands({unit})
+            ScenarioFramework.GroupPatrolRoute({unit}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M2_Order_Base_AirDef_Chain')))
+        elseif EntityCategoryContains(categories.NAVAL, unit ) and unit:GetAIBrain() ~= Order then
+            IssueClearCommands({unit})
+            ScenarioFramework.GroupPatrolChain({unit}, 'M2_Order_Defensive_Chain_West')
+        end
+    end
 
     local tblArmy = ListArmies()
 
@@ -1166,6 +1191,7 @@ end
 
 function OnShiftF4()
     CustomFunctions.ChooseRandomEvent(true)
+    -- LOG(repr(ScenarioInfo.HumanPlayers))
 end
 
 function OnCtrlF3()
