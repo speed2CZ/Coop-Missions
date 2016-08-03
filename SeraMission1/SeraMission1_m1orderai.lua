@@ -26,7 +26,7 @@ function OrderCarrierFactory()
     end
 	location.PrimaryFactories.Air = Carrier
 	
-	while (Carrier and not Carrier:IsDead()) do
+	while (ScenarioInfo.MissionNumber == 1 and Carrier and not Carrier:IsDead()) do
         if  table.getn(Carrier:GetCargo()) > 0 and Carrier:IsIdleState() then
             IssueClearCommands({Carrier})
             IssueTransportUnload({Carrier}, Carrier:GetPosition())
@@ -112,6 +112,9 @@ function OrderTempestAttacks()
     ArmyBrains[Order]:PBMAddPlatoon( Builder )
 end
 
+-----------------------
+-- Platoon AI Functions
+-----------------------
 function GivePlatoonToPlayer(platoon)
     local givenUnits = {}
     local data = platoon.PlatoonData
@@ -120,7 +123,12 @@ function GivePlatoonToPlayer(platoon)
         while (not unit:IsDead() and unit:IsUnitState('Attached')) do
             WaitSeconds(1)
         end
-        local tempUnit = ScenarioFramework.GiveUnitToArmy(unit, 'Player')
+        local tempUnit
+        if ScenarioInfo.HumanPlayers[2] then
+            tempUnit = ScenarioFramework.GiveUnitToArmy(unit, 'Coop1')
+        else
+            tempUnit = ScenarioFramework.GiveUnitToArmy(unit, 'Player')
+        end
         table.insert(givenUnits, tempUnit)
     end
 
