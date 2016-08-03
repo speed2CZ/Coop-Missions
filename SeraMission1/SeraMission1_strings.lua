@@ -83,7 +83,7 @@ M1_Kill_Research_Station_2 = {
 -- Timer reveal / Actor: TBD / Update 1/08/2016 / VO TODO
 M1_Reveal_Timer = {
 	{text = '[Seraphim]: Warrior, our intel indicates there are several Experimental Defense Satellites approaching the carrier\'s location.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
-	{text = '[UEF Commander]: You\'ve came to the wrong planet you freak!', vid = '', bank = '', cue = '', delay = 5, faction = 'UEF'},
+	{text = '[UEF Commander]: You\'ve come to the wrong planet you freak!', vid = '', bank = '', cue = '', delay = 5, faction = 'UEF'},
 	{text = '[QAI]: I will make a virus that will disable the satellites. However uploading it will require an ACU to be on the planet.', vid = '', bank = '', cue = '', faction = 'Cybran'},
 }
 
