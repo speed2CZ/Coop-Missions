@@ -2,17 +2,15 @@ local ScenarioFramework = import('/lua/ScenarioFramework.lua')
 local ScenarioUtils = import('/lua/sim/ScenarioUtilities.lua')
 
 function ChooseRandomBases()
+    local data = ScenarioInfo.OperationScenarios['M' .. ScenarioInfo.MissionNumber].Bases
+
     if not ScenarioInfo.MissionNumber then
         error('*RANDOM BASE: ScenarioInfo.MissionNumber needs to be set.')
-    end
-
-    local currentMissionBases = ScenarioInfo.OperationScenarios['M' .. ScenarioInfo.MissionNumber].Bases
-
-    if not currentMissionBases then
+    elseif not data then
         error('*RANDOM BASE: No bases specified for mission number: ' .. ScenarioInfo.MissionNumber, 2)
     end
 
-    for name, base in currentMissionBases do
+    for name, base in data do
         local num = Random(1, table.getn(base.Types))
         LOG('*RANDOM BASE: Name: ' .. tostring(name) .. ', type: ' .. base.Types[num])
         if base.CallFunction then
@@ -61,7 +59,8 @@ function ChooseRandomEvent(useDelay)
             for _, event in tblEvents do
                 event.Used = false
             end
-            PickEvent(tblEvents)
+            
+            return PickEvent(tblEvents)
         end
     end
 
@@ -73,42 +72,28 @@ function ChooseRandomEvent(useDelay)
     ForkThread(StartEvent, event, num, useDelay)
 end
 
--- If we have a delay table, we have various possible ways
--- { { eNum1, eNum2 }, { mNum1, mNum2 }, { hNum1, hNum2 } } - This is a difficulty defined random delay
--- { eNum, mNum, hNum } - This is a difficulty defined delay
--- { Num,1 Num2 } - This is a random delay
--- Num - This is the delay
 function StartEvent(event, missionNumber, useDelay)
     if useDelay then
-        local num
-        local tblDelay = event.Delay
+        local seconds
+        local waitTime = event.Delay
         local Difficulty = ScenarioInfo.Options.Difficulty
 
-        if type(tblDelay) == 'table' then
-
-            -- Table of tables means to use Random() on the inner table to get always slightly different delay
-            if type(tblDelay[1]) == 'table' then
-                num = Random(tblDelay[Difficulty][1], tblDelay[Difficulty][2])
-
-            -- Table with 3 entries is a dificulty table
-            elseif table.getn(tblDelay) == 3 then
-                num = tblDelay[Difficulty]
-
-            -- Table with 2 entries to use Random() on them
-            elseif table.getn(tblDelay) == 2 then
-                num = Random(tblDelay[1], tblDelay[2])
-
-            -- Unknown number of entries
+        if type(waitTime) == 'table' then
+            if event.Randomness then
+                seconds = Random(waitTime[Difficulty], waitTime[Difficulty] + event.Randomness)
             else
-                error('*RANDOM EVENT: Unknown number of entries passed to Delay')
+                seconds = waitTime[Difficulty]
             end
         else
-            -- Last option is a single number
-            num = tblDelay
+            if event.Randomness then
+                seconds = Random(waitTime, waitTime + event.Randomness)
+            else
+                seconds = waitTime
+            end
         end
 
-        LOG('*speed2: RANDOM EVENT: Delay: ' .. num)
-        WaitSeconds(num)
+        LOG('*speed2: RANDOM EVENT: Delay: ' .. seconds)
+        WaitSeconds(seconds)
     end
 
     -- Check if the mission didn't end while we were waiting
