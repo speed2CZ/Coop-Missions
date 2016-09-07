@@ -15,11 +15,15 @@ JJ2_M1P1_Complete = {
 }
 
 JJ2_M1S1_Complete = {
-	{text = '[Richards]: The UEF have called off their attacks but keep your eye out Colonel.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_07', faction = 'UEF'},
+	{text = '[Richards]: The UEF have called off their attacks but keep your eye out Colonel.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_08', faction = 'UEF'},
+}
+
+JJ2_M1_Fatty_Started = {
+	{text = "[Richards]: Engineers have started building a Fatboy Colonel, you better destroy it before it's operational. Richards out.", vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_09', faction = 'UEF'},
 }
 
 JJ2_NIS2_Intro = {
-	{text = '[Richards]: Colonel, there is a Civilian Complex to the West of the Prison. We can house the men there.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_08', faction = 'UEF'},
+	{text = '[Richards]: Colonel, there is a Civilian Complex to the West of the Prison. We can house the men there.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_10', faction = 'UEF'},
 	{text = '[Richards]: Capture the Central Node and we will gain control of the Complex.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_11', faction = 'UEF'},
 }
 
@@ -48,7 +52,7 @@ JJ2_Fortify_Dialogue = {
 }
 
 JJ2_NIS2_Complete = {
-	{text = "[Richards]: Colonel, we've tapped in to the Central Node. All active defense structures have been transfered to your control. Richards out.", vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_17', faction = 'UEF'},
+	{text = "[Richards]: Colonel, we've tapped in to the Central Node. All active defense structures have been transfered to your control. Richards out.", vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_18', faction = 'UEF'},
 }
 
 JJ2_Enemy_Intro = {
@@ -56,40 +60,52 @@ JJ2_Enemy_Intro = {
 }
 
 JJ_CaptureCity = {
-	{text = '[Richards]: Colonel you need to capture that City before moving the Trucks!', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_17', faction = 'UEF'},
+	{text = '[Richards]: Colonel you need to capture that City before moving the Trucks!', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_19', faction = 'UEF'},
 }
 
 JJ2_NIS3_Intro1 = {
-	{text = '[Richards]: Colonel, the prison complex is heavily defended and it will be very hard to get to.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_18', faction = 'UEF'},
-	{text = '[Richards]: There are enemy experimentals moving around the island and SAM sites positioned closer to the prison.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_19', faction = 'UEF'},
-	{text = '[Richards]: A handful of enemy attack vessels are also guarding the island. Looks like you will have quite a fight on your hands.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_20', faction = 'UEF'},
-	{text = '[Richards]: Free our allies and move them to the civilian complex. Richards out.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_21', faction = 'UEF'},
+	{text = '[Richards]: Colonel, the prison complex is heavily defended and it will be very hard to get to.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_20', faction = 'UEF'},
+	{text = '[Richards]: There are enemy experimentals moving around the island and SAM sites positioned closer to the prison.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_21', faction = 'UEF'},
+	{text = '[Richards]: A handful of enemy attack vessels are also guarding the island. Looks like you will have quite a fight on your hands.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_22', faction = 'UEF'},
+	{text = '[Richards]: Free our allies and move them to the civilian complex. Richards out.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_23', faction = 'UEF'},
 }
 
 JJ_Mission3_Attack = {
-	{text = '[Richards]: Colonel, the UEF are sending units towards the Complex, defend it. Richards out.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_17', faction = 'UEF'},
+	{text = '[Richards]: Colonel, the UEF are sending units towards the Complex, defend it. Richards out.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_24', faction = 'UEF'},
 }
 
 JJ_Mission4_Intro = {
-	{text = '[Richards]: The Prison is ours. The Prisoners are trying to find a way to escape. It will take some time, protect the Prison. Richards out.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_21', faction = 'UEF'},
+	{text = '[Richards]: The Prison is ours. The Prisoners are trying to find a way to escape. It will take some time, protect the Prison. Richards out.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_25', faction = 'UEF'},
 }
 
 JJ_Mission4_Objective1 = {
-	{text = '[Richards]: The men have found some trucks and have taken control of them. They have exited the prison and are now under your control Colonel. Ensure they are safely escorted to the City.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_22', faction = 'UEF'},
+	{text = '[Richards]: The men have found some trucks and have taken control of them. They have exited the prison and are now under your control Colonel. Ensure they are safely escorted to the City.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_26', faction = 'UEF'},
 }
 
 JJ_M4Complete = {
-	{text = '[Richards]: The Trucks have reached the village safely Colonel, well done.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_23', faction = 'UEF'},
+	{text = '[Richards]: The Trucks have reached the Complex safely Colonel, well done.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_27', faction = 'UEF'},
 }
 
 JJ_Mission4_Failed = {
-	{text = '[Richards]: The Trucks have been destroyed. This Mission is over.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_24', faction = 'UEF'},	
+	{text = '[Richards]: The Trucks have been destroyed. This Mission is over.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_28', faction = 'UEF'},	
+}
+
+JJ_Mission5_Start = {
+	{text = "[Goodwyn]: You don't stand a chance! You were a fool to betray the UEF. I shall teach you the error of your ways!", vid = 'C05_Godwyn_M01_00510.sfd', bank = 'JJ_VO2', cue = 'JJ2_Goodwyn_01', faction = 'UEF'},
+	{text = '[Richards]: No! You are a fool to believe the Coalition lies. Get ready for the end Goodwyn!', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_28', faction = 'UEF'},
+	{text = "[Goodwyn]: I will end your pathetic alliance once and for all!", vid = 'C05_Godwyn_M01_00510.sfd', bank = 'JJ_VO2', cue = 'JJ2_Goodwyn_01', faction = 'UEF'},
+	{text = '[Richards]: Colonel, eliminate Commander Goodwyn, do not let that bastard live.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_28', faction = 'UEF'},
+}
+
+JJ_Mission5_Complex_Attacks = {
+	{text = '[Richards]: Hostile forces are attacking the Complex, defend it. Richards out.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_28', faction = 'UEF'},	
+}
+
+JJ_SmithDeployed = {
+	{text = '[Richards]: One of the Commanders you rescued has deployed in the Complex Colonel. We have assigned all available Complex resources to him. You must assist him as much as possible. Richards out.', vid = 'C03_Berry_M03_0454.sfd', bank = 'JJ_VO2', cue = 'JJ2_Richards_28', faction = 'UEF'},
 }
 
 JJ2_Maxwell_Death = {
   {text = '[Maxwell]: Aaaaargh', vid = 'A05_Blake_M02_00998.sfd', bank = 'A05_VO', cue = 'A05_Blake_M02_00998', faction = 'UEF'},
-}
-
-JJ2_Enemy_Payback_Line = {
-	{text = '[Goodwyn]: You will pay for the blood you spilt!', vid = 'C05_Godwyn_M01_00510.sfd', bank = 'JJ_VO2', cue = 'JJ2_Goodwyn_02', faction = 'UEF'},
+  {text = '[Goodwyn]: You will pay for the blood you spilt!', vid = 'C05_Godwyn_M01_00510.sfd', bank = 'JJ_VO2', cue = 'JJ2_Goodwyn_02', faction = 'UEF'},
 }

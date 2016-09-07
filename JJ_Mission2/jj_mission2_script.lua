@@ -4,11 +4,14 @@ local ScenarioPlatoonAI = import('/lua/ScenarioPlatoonAI.lua')
 local ScenarioUtils = import('/lua/sim/ScenarioUtilities.lua')
 local Utilities = import('/lua/utilities.lua')
 local Cinematics = import('/lua/cinematics.lua')
+local Buff = import('/lua/sim/Buff.lua')
 local OpStrings = import('/maps/JJ_Mission2/jj_mission2_strings.lua')
 local CustomFunctions = import('/maps/JJ_Mission2/jj_mission2_CustomFunctions.lua')
 local M1UEFPowerAI = import('/maps/JJ_Mission2/M1_UEF_Power_AI.lua')
 local M2UEFNavyAI = import('/maps/JJ_Mission2/M2_UEF_Navy_AI.lua')
 local M3FirebaseAI = import('/maps/JJ_Mission2/M3_UEF_Firebase_AI.lua')
+local M5MainBase = import('/maps/JJ_Mission2/M5_UEF_Mainbase_AI.lua')
+local M5ComplexAttackBase = import('/maps/JJ_Mission2/M5_UEF_ComplexAttackBase_AI.lua')
 
 ---------
 -- Globals
@@ -49,9 +52,11 @@ local M2ObjectivesComplete = 0
 --------
 local HumanPlayers = {}
 local AttackTriggerTimer = {600, 450, 300}
+local ExpTimer = {1200, 900, 750}
 local UEFAttackCoolDown = {120, 85, 60}
 local AllyVehicleSpawn = {50, 100, 150}
 local M3BuildTime = {300, 250, 200}
+local NukeDifficulty = {4, 3, 3}
 
 function OnPopulate()
 	ScenarioUtils.InitializeScenarioArmies()
@@ -61,19 +66,35 @@ function OnPopulate()
 	SetArmyColor('NeutralUEF', 133, 148, 255)
     SetArmyColor('UEFAlly', 71, 134, 226)
 
+    -- UEF Buff
+    buffDef = Buffs['CheatIncome']
+    buffAffects = buffDef.Affects
+    buffAffects.EnergyProduction.Mult = 1.8
+    buffAffects.MassProduction.Mult = 2
+
+    for _, u in GetArmyBrain(UEF):GetPlatoonUniquelyNamed('ArmyPool'):GetPlatoonUnits() do
+        Buff.ApplyBuff(u, 'CheatIncome')
+    end
+
     ScenarioFramework.SetPlayableArea('M1_Play_Area', false)
 end
   
 function OnStart(self)
 	-- Create a Trigger for scripted UEF attacks.
 	ScenarioFramework.CreateTimerTrigger(UEFAttackPlan, AttackTriggerTimer[Difficulty])
+    ScenarioFramework.CreateTimerTrigger(ConstructFirstFatty, ExpTimer[Difficulty])
     ScenarioInfo.CityCaptured = false
+
+    local M1_Walls = ScenarioUtils.CreateArmyGroup('UEF', 'M1_Walls')
 
     --------------
     -- M1 UEF AI
     --------------
     M1UEFPowerAI.M1UEFPowerAIFunction()
 
+    --------------
+    -- Begin M1
+    --------------
 	ForkThread(M1IntroNIS)
 end
 
@@ -90,24 +111,53 @@ function KillGameWin()
 end
 
 function M1IntroNIS()
+    --------------
+    -- Spawn M1 Patrols
+    --------------
 	LeaderFaction, LocalFaction = ScenarioFramework.GetLeaderAndLocalFactions()
+
     local units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_Air_Guards_D' .. Difficulty, 'NoFormation')
+
     for k, v in units:GetPlatoonUnits() do
         ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M1_Guard_Chain_1')))
     end
+
+    WaitSeconds(1)
+    --------------
+    -- Spawn Support Structures
+    --------------
+    local LandFactorySupport = ScenarioUtils.CreateArmyUnit('UEF', 'M1_Base_Land_Sup')
+    local AirFactories = ScenarioUtils.CreateArmyGroup('UEF', 'M1_Base_Air_Sup_Group')
+    local MainLandFactory = ScenarioInfo.UnitNames[UEF]['MainLandFactory']
+    local MainAirFactory = ScenarioInfo.UnitNames[UEF]['MainAirFactory']
+
+    IssueFactoryAssist(LandFactorySupport, MainLandFactory)
+
+    for k, v in AirFactories do
+        IssueFactoryAssist({v}, MainAirFactory)
+    end
+
+    --------------
+    -- Start Cinematics
+    --------------
     Cinematics.EnterNISMode()
+
 	ScenarioFramework.Dialogue(OpStrings.JJ2_NIS1_Intro, nil, true)
+
 	local VisMarker1_1 = ScenarioFramework.CreateVisibleAreaLocation(90, ScenarioUtils.MarkerToPosition('M1_NIS_Vis_Marker_1'), 0, ArmyBrains[Player])
+
 	Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('M1_NIS_Cam1'), 2)
 	WaitSeconds(4)
 	Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('M1_NIS_Cam2'), 3)
 	WaitSeconds(1)
+
 	ForkThread(
 		function()
 			VisMarker1_1:Destroy()
 			ScenarioFramework.ClearIntel(ScenarioUtils.MarkerToPosition('M1_NIS_Vis_Marker_1'), 110)
 		end
 	)
+
 	Cinematics.ExitNISMode()
 
     ForkThread(function()
@@ -154,6 +204,7 @@ function M1IntroNIS()
     end)
 
     WaitSeconds(1)
+    
     ForkThread(M1)
 end
 
@@ -179,7 +230,6 @@ function M1()
             if(result) then
                 ScenarioFramework.Dialogue(OpStrings.JJ2_M1P1_Complete, nil, true)
                 M1P1Done = true
-                WaitSeconds(5)
                 ForkThread(M2NISIntro)
             end
         end
@@ -187,16 +237,22 @@ function M1()
 end
 
 function M2NISIntro()
+    M1UEFPowerAI.DisableBase()
+
+    WaitSeconds(5)
+
 	ScenarioFramework.SetPlayableArea('M2_Play_Area', true)
 
 	ScenarioInfo.City = ScenarioUtils.CreateArmyGroup('NeutralUEF', 'City')
+    ScenarioInfo.Resources = ScenarioUtils.CreateArmyGroup('NeutralUEF', 'Resources')
     ScenarioInfo.CityDefenses = ScenarioUtils.CreateArmyGroup('NeutralUEF', 'Defenses')
     ScenarioInfo.Prison = ScenarioUtils.CreateArmyGroup('UEF', 'Prison')
 
     local M2_Land_Patrol = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_Land_Patrol', 'NoFormation')
-    local M2_Sea_Patrol_1 = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_Navy_Patrol_1', 'AttackFormation')
-    local M2_Sea_Patrol_2 = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_Navy_Patrol_2', 'AttackFormation')
-    local M2_Sea_Patrol_3 = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_Navy_Patrol_3', 'AttackFormation')
+    local M2_Sea_Patrol_1 = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_Navy_Patrol_1', 'GrowthFormation')
+    local M2_Sea_Patrol_2 = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_Navy_Patrol_2', 'GrowthFormation')
+    local M2_Sea_Patrol_3 = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_Navy_Patrol_3', 'GrowthFormation')
+    local M2_Walls = ScenarioUtils.CreateArmyGroup('UEF', 'M2_Walls')
 
     -- Assign Patrol Units to Routes --
 
@@ -274,7 +330,7 @@ function M2()
         'The UEF has the river locked down. You need to destroy the Naval Base before capturing the city.',  -- description
         'kill',
         {
-            MarkUnits = true,
+            MarkUnits = false,
             Requirements = {
                 { Area = 'M2_Navy_Base', Category = categories.FACTORY + categories.ENGINEER, CompareOp = '<=', Value = 0, ArmyIndex = UEF},
             },
@@ -321,7 +377,9 @@ function M2()
 end
 
 function M3NISIntro()
-    WaitSeconds(5)
+    M2UEFNavyAI.DisableBase()
+
+    WaitSeconds(10)
     ScenarioInfo.Shields = ScenarioUtils.CreateArmyGroup('NeutralUEF', 'PrisonShields')
 
     local VisMarker3_1 = ScenarioFramework.CreateVisibleAreaLocation(20, ScenarioUtils.MarkerToPosition('M3_NIS_Vis_Marker_1'), 0, ArmyBrains[Player])
@@ -340,6 +398,7 @@ function M3NISIntro()
     ScenarioInfo.PrisonStructure:SetCanTakeDamage(false)
     ScenarioInfo.PrisonStructure:SetCanBeKilled(false)
     ScenarioInfo.PrisonStructure:SetIntelRadius('Vision', 0)
+    ScenarioInfo.PrisonStructure:SetDoNotTarget(true)
 
     ScenarioInfo.SupCommander = ScenarioUtils.CreateArmyUnit('UEF', 'SupCommander')
     ScenarioInfo.SupCommander:SetCustomName("sCDR Maxwell")
@@ -351,9 +410,10 @@ function M3NISIntro()
 
     ScenarioFramework.SetPlayableArea('M3_Play_Area', true)
 
-    ScenarioUtils.CreateArmyGroup('UEF', 'PrisonExpGuards')
+    local Fatty1 = ScenarioUtils.CreateArmyUnit('UEF', 'Fatty_1')
+    local Fatty2 = ScenarioUtils.CreateArmyUnit('UEF', 'Fatty_2')
 
-    local units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'Prison_Guards_' .. Difficulty, 'AttackFormation')
+    local units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'Prison_Guards_' .. Difficulty, 'GrowthFormation')
     for k, v in units:GetPlatoonUnits() do
         ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M3_Prison_Guard_Chain_1')))
     end
@@ -405,6 +465,20 @@ function M4Intro()
     ScenarioFramework.Dialogue(OpStrings.JJ_Mission4_Intro, nil, true)
     ScenarioInfo.PrisonStructure:SetCanTakeDamage(true)
     ScenarioInfo.PrisonStructure:SetCanBeKilled(true)
+    ScenarioInfo.PrisonStructure:SetDoNotTarget(false)
+
+    M3FirebaseAI.DisableBase()
+
+    ScenarioInfo.M4P1 = Objectives.Protect(
+    'primary',                    # type
+    'incomplete',                   # complete
+    'Protect Prison',  # title
+    'Protect the Prison whilst our men find transport. Do not let the UEF destroy the Prison Structure', # description
+        {                               # target
+            Units = {ScenarioInfo.PrisonStructure},
+            MarkUnits = true,
+        }
+    )
 
     WaitSeconds(AllyVehicleSpawn[Difficulty])
 
@@ -413,6 +487,7 @@ function M4Intro()
 
     ScenarioInfo.TrucksDestroyed = 0
 
+    ScenarioInfo.M4P1:ManualResult(true)
     ScenarioFramework.CreateUnitDeathTrigger(Truck, ScenarioInfo.Truck1)
     ScenarioFramework.CreateUnitDeathTrigger(Truck, ScenarioInfo.Truck2)
     ForkThread(M4)
@@ -422,11 +497,11 @@ function M4()
     ScenarioFramework.Dialogue(OpStrings.JJ_Mission4_Objective1, nil, true)
 
     -- Create an objective
-    ScenarioInfo.M4P1 = Objectives.CategoriesInArea(
+    ScenarioInfo.M4P2 = Objectives.CategoriesInArea(
     'primary',
     'incomplete', 
     'Escort Ally Trucks',
-    'Escord the trucks to the City. Ensure their safety. We CANNOT lose those Trucks Colonel.',
+    'Escort the trucks to the City. Ensure their safety. We CANNOT lose those Trucks Colonel.',
     'Move',
     {
         MarkUnits = true,
@@ -439,27 +514,101 @@ function M4()
     }
     )
 
-    ScenarioInfo.M4P2 = Objectives.Protect(
-    'prmary',
-    'incomplete',
-    'Protect Ally Trucks',
-    'If we lose those our allies then we cannot complete our main objective. You must ensure the protection of the Rebel Commanders.',
-    Objectives.GetActionIcon('protect'),
-        {
-            MarkUnits = false,
+    ScenarioInfo.M4P3 = Objectives.Protect(
+    'primary',                    # type
+    'incomplete',                   # complete
+    'Protect Ally Trucks',  # title
+    'If we lose those our allies then we cannot complete our main objective. You must ensure the safety of the Rebel Commanders.', # description
+        {                               # target
+            Units = {ScenarioInfo.Truck1, ScenarioInfo.Truck2},
         }
     )
 
-    ScenarioInfo.M4P1:AddResultCallback(
-        function(result)
-            ScenarioInfo.M4P2:ManualResult(true)
-            ScenarioFramework.Dialogue(OpStrings.JJ_M4Complete, nil, true)
-        end
-    )
+    CustomFunctions.CreateAreaTrigger(M4Complete, 'M4_Objective_Area', categories.uec0001, true, false, 2)
 end
 
+function M4Attacks()
+
+end
+
+function M4Complete()
+    ScenarioInfo.M4P3:ManualResult(true)
+    ScenarioFramework.Dialogue(OpStrings.JJ_M4Complete, M5Intro, true)
+end
+
+function M5Intro()
+    local LandFactory = ScenarioInfo.UnitNames[NeutralUEF]['Factory']
+
+    --------------
+    -- Create M5 Essentials
+    --------------
+    ScenarioInfo.GoodwynCommander = ScenarioUtils.CreateArmyUnit('UEF', 'M5_Commander')
+    ScenarioInfo.GoodwynCommander:SetCustomName("CDR Goodwyn")
+    ScenarioInfo.GoodwynCommander:CreateEnhancement('ResourceAllocation')
+    ScenarioInfo.GoodwynCommander:CreateEnhancement('ShieldGeneratorField')
+    ScenarioInfo.GoodwynCommander:CreateEnhancement('T3Engineering')
+
+    local Engineers = ScenarioUtils.CreateArmyGroup('UEF', 'M5_Engineers')
+    local sACUEngineers = ScenarioUtils.CreateArmyGroup('UEF', 'sACUGroup')
+
+    for k, v in sACUEngineers do
+        v:CreateEnhancement('ResourceAllocation')
+        v:CreateEnhancement('Pod')
+        v:CreateEnhancement('AdvancedCoolingUpgrade')
+    end
+
+    --------------
+    -- Create M5 Patrols
+    --------------
+    local AirPatrol = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'AirPatrol_1', 'GrowthFormation')
+    for k, v in AirPatrol:GetPlatoonUnits() do
+        ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M5_AirPatrol')))
+    end
+
+    --------------
+    -- Call M5 AI Files
+    --------------
+    M5MainBase.M5UEFMainBaseFunction()
+    M5ComplexAttackBase.M5ComplexAttackerFunction()
+
+    --------------
+    -- Load Nukes
+    --------------
+    local NukeLauncher = ScenarioInfo.UnitNames[UEF]['NukeLauncher']
+    local NukeDefenses = ScenarioUtils.CreateArmyGroup('UEF', 'NukeDefenses')
+    NukeLauncher:GiveNukeSiloAmmo(NukeDifficulty[Difficulty])
+
+    --------------
+    -- Start M5
+    --------------
+    WaitSeconds(5)
+    ScenarioFramework.SetPlayableArea('M5_Play_Area', true)
+
+    --------------
+    -- Spawn Ally AI
+    --------------
+    if HumanPlayerCounter < 2 then
+        local AICommander = ScenarioUtils.CreateArmyUnit('UEFAlly', 'AIComm')
+        AICommander:SetCustomName("sCDR Smith")
+        ScenarioFramework.Dialogue(OpStrings.JJ_SmithDeployed, nil, true)
+
+        --------------
+        -- Give Neutral Resources to AI
+        --------------
+        for k, v in ScenarioInfo.Resources do
+            if(v and not v:IsDead()) then
+                ScenarioFramework.GiveUnitToArmy(v, UEFAlly)
+            end
+        end
+    end
+end
+
+-----------------------
+-- MISC FUNCTIONS
+-----------------------
+
 function UEFAttackPlan()
-    if (M1P1Done == false) then
+    if M1P1Done == false then
     	ScenarioFramework.Dialogue(OpStrings.JJ2_M1_Secondary_Intro, nil, true)
 
         # Secondary Objective 1
@@ -478,7 +627,7 @@ function UEFAttackPlan()
 end
 
 function StartUEFTransportAttacks()
-    if (M1P1Done == false) then
+    if M1P1Done == false then
         local allUnits = {}
 
         for i = 1, 3 do
@@ -506,13 +655,20 @@ function StartUEFTransportAttacks()
 end
 
 function UEFAmphibiousTankAttack()
-	if (M1P1Done == false) then
+	if M1P1Done == false then
 		local units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_Amphibious_Attack_Group_D' .. Difficulty, 'NoFormation')
 		units.PlatoonData = {}
         units.PlatoonData.PatrolChain = 'M1_Attack_Chain_2'
         ScenarioPlatoonAI.PatrolThread(units)
 		ScenarioFramework.CreateTimerTrigger(StartUEFTransportAttacks, 90)
 	end
+end
+
+function ConstructFirstFatty()
+    if M1P1Done == false then
+        M1UEFPowerAI.UEFExpBaseLandAttacks()
+        ScenarioFramework.Dialogue(OpStrings.JJ2_M1_Fatty_Started, nil, true)
+    end
 end
 
 function MarkSupportCommanderOnVisible()
@@ -566,6 +722,9 @@ function ACUAtComplex()
         }
     )
 end
+-----------------------
+-- REMINDERS
+-----------------------
 
 function M1ReminderFirst()
 
