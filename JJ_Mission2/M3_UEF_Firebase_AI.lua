@@ -15,3 +15,9 @@ function M3PrisonFireBaseFunction()
     UEFFireBase:SetActive('LandScouting', false)
     UEFFireBase:SetBuild('Defenses', true)
 end
+
+function DisableBase()
+    if(UEFFireBase) then
+        UEFFireBase:BaseActive(false)
+    end
+end

@@ -2,6 +2,7 @@ local BaseManager = import('/lua/ai/opai/basemanager.lua')
 local SPAIFileName = '/lua/scenarioplatoonai.lua'
 
 local UEFPowerBase = BaseManager.CreateBaseManager()
+local UEFM1ExpBase = BaseManager.CreateBaseManager()
 
 local Difficulty = ScenarioInfo.Options.Difficulty
 
@@ -13,7 +14,6 @@ function M1UEFPowerAIFunction()
 	UEFPowerBase:StartNonZeroBase({10, 5})
 	UEFPowerBase:SetActive('AirScouting', true)
   UEFPowerBase:SetActive('LandScouting', true)
-  UEFPowerBase:SetBuild('Defenses', true)
 
   UEFM1PowerBaseAirAttacks()
   UEFM1PowerBaseLandAttacks()
@@ -31,7 +31,7 @@ function UEFM1PowerBaseAirAttacks()
       {
         MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
         PlatoonData = {
-            PatrolChain = 'M1_Attack_Chain_2'
+            PatrolChain = 'M1_Attack_Chain_2',
         },
         Priority = 150,
       }
@@ -48,7 +48,7 @@ function UEFM1PowerBaseAirAttacks()
     {
       MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
       PlatoonData = {
-          PatrolChain = 'M1_Attack_Chain_2'
+          PatrolChain = 'M1_Attack_Chain_2',
       },
       Priority = 140,
       }
@@ -63,7 +63,7 @@ function UEFM1PowerBaseAirAttacks()
     {
       MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
       PlatoonData = {
-          PatrolChain = 'M1_Attack_Chain_2'
+          PatrolChain = 'M1_Attack_Chain_2',
       },
       Priority = 140,
       }
@@ -95,7 +95,7 @@ function UEFM1PowerBaseLandAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
             PlatoonData = {
-                PatrolChain = 'M1_Attack_Chain_2'
+                PatrolChain = 'M1_Attack_Chain_2',
             },
             Priority = 150,
         }
@@ -109,7 +109,7 @@ function UEFM1PowerBaseLandAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
             PlatoonData = {
-                PatrolChain = 'M1_Attack_Chain_3'
+                PatrolChain = 'M1_Attack_Chain_3',
             },
             Priority = 145,
         }
@@ -123,7 +123,7 @@ function UEFM1PowerBaseLandAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
             PlatoonData = {
-                PatrolChain = 'M1_Attack_Chain_2'
+                PatrolChain = 'M1_Attack_Chain_2',
             },
             Priority = 140,
         }
@@ -139,7 +139,7 @@ function UEFM1PowerBaseLandAttacks()
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
             PlatoonData = {
-                PatrolChain = 'M1_Attack_Chain_1'
+                PatrolChain = 'M1_Attack_Chain_1',
             },
             Priority = 135,
         }
@@ -170,7 +170,7 @@ function UEFM1PowerBaseLandAttacks()
       {
           MasterPlatoonFunction = {SPAIFileName, 'SplitPatrolThread'},
           PlatoonData = {
-             PatrolChains = {'M1_Attack_Chain_2'},
+             PatrolChains = {'M1_Attack_Chain_1', 'M1_Attack_Chain_2'},
           },
           Priority = 150,
       }
@@ -184,7 +184,7 @@ function UEFM1PowerBaseLandAttacks()
       {
         MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
         PlatoonData = {
-            PatrolChain = 'M1_Attack_Chain_2'
+            PatrolChain = 'M1_Attack_Chain_2',
         },
         Priority = 120,
       }
@@ -213,11 +213,25 @@ end
 function UEFRebuildPatrols()
   local opai = nil
   quantity = {5, 6, 7}
-  opai = UEFPowerBase:AddOpAI('BasicLandAttack', 'M1_T3PatrolGroup',
+  opai = UEFPowerBase:AddOpAI('BasicLandAttack', 'M1_T3PatrolGroup_1',
     {
-      MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+      MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
       PlatoonData = {
-          PatrolChains = {'M1_Maintain_Patrol_1', 'M1_Maintain_Patrol_2'},
+          PatrolChain = 'M1_Maintain_Patrol_1',
+      },
+      Priority = 150,
+    }
+  )
+  opai:SetChildQuantity('SiegeBots', quantity[Difficulty])
+  opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainGreaterThanOrEqualNumCategory',
+  {'default_brain', 'Player', 1, categories.LAND * categories.FACTORY * categories.TECH3})
+
+  quantity = {5, 6, 7}
+  opai = UEFPowerBase:AddOpAI('BasicLandAttack', 'M1_T3PatrolGroup_2',
+    {
+      MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+      PlatoonData = {
+          PatrolChain = 'M1_Maintain_Patrol_2',
       },
       Priority = 150,
     }
@@ -229,12 +243,53 @@ function UEFRebuildPatrols()
   quantity = {4, 6, 8}
   opai = UEFPowerBase:AddOpAI('AirAttacks', 'M1_T2GunshipPatrol',
     {
-      MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
+      MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
       PlatoonData = {
-          PatrolChains = {'M1_Maintain_Patrol_1', 'M1_Maintain_Patrol_2'},
+          PatrolChain = 'M1_Guard_Chain_1',
       },
       Priority = 150,
     }
   )
   opai:SetChildQuantity('Gunships', quantity[Difficulty])
+
+  if Difficulty >= 2 then
+      quantity = {3, 5, 7}
+      opai = UEFPowerBase:AddOpAI('AirAttacks', 'M1_T2CombatPatrol',
+        {
+          MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
+          PlatoonData = {
+              PatrolChain = 'M1_Guard_Chain_1',
+          },
+          Priority = 150,
+        }
+      )
+      opai:SetChildQuantity('CombatFighters', quantity[Difficulty]) 
+  end
+end
+
+function UEFExpBaseLandAttacks()
+    local opai = nil
+
+    ------------------------------------------
+    -- UEF M1 Exp Base Op AI, Land Attacks
+    ------------------------------------------
+    opai = UEFPowerBase:AddOpAI('M1_Fatty',
+        {
+            Amount = 1,
+            KeepAlive = true,
+            PlatoonAIFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M1_Attack_Chain_2',
+            },
+
+            MaxAssist = 3,
+            Retry = true,
+        }
+    )
+end
+
+function DisableBase()
+    if(UEFPowerBase) then
+        UEFPowerBase:BaseActive(false)
+    end
 end
