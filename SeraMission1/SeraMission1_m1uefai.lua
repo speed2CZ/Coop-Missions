@@ -52,7 +52,7 @@ function UEFM1BaseAirAttacks()
     )
     opai:SetChildQuantity('CombatFighters', 4)
     opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
-    	'BrainGreaterThanOrEqualNumCategory', {'default_brain', 'Player', trigger[Difficulty], categories.AIR * categories.TECH2})
+    	'BrainsCompareNumCategory', {'default_brain', {'HumanPlayers'}, trigger[Difficulty], categories.AIR * categories.TECH2, '>='})
 
     trigger = {19, 16, 14}
 	opai = UEFM1Base:AddOpAI('AirAttacks', 'M1_UEF_AirAttack_2',
@@ -68,7 +68,7 @@ function UEFM1BaseAirAttacks()
     )
     opai:SetChildQuantity('CombatFighters', 4)
     opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
-    	'BrainGreaterThanOrEqualNumCategory', {'default_brain', 'Player', trigger[Difficulty], categories.AIR * categories.TECH2})
+    	'BrainsCompareNumCategory', {'default_brain', {'HumanPlayers'}, trigger[Difficulty], categories.AIR * categories.TECH2, '>='})
 
     trigger = {9, 7, 5}
 	opai = UEFM1Base:AddOpAI('AirAttacks', 'M1_UEF_AirAttack_3',
@@ -84,7 +84,7 @@ function UEFM1BaseAirAttacks()
     )
     opai:SetChildQuantity('TorpedoBombers', 4)
     opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
-    	'BrainGreaterThanOrEqualNumCategory', {'default_brain', 'Player', trigger[Difficulty], categories.NAVAL * categories.TECH2})
+    	'BrainsCompareNumCategory', {'default_brain', {'HumanPlayers'}, trigger[Difficulty], categories.NAVAL * categories.TECH2, '>='})
 
 	-- Air Patrol
 	quantity = {1, 2, 3}
@@ -168,8 +168,6 @@ function UEFM1BaseNavalAttacks()
 		opai:SetChildActive('T3', false)
 		opai:SetFormation('AttackFormation')
 		opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
-			'BrainGreaterThanOrEqualNumCategory', {'default_brain', 'Player', trigger[Difficulty], categories.AIR * categories.TECH2})
-		--opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
-			--'BrainsCompareNumCategory', {'default_brain', {'HumanPlayers'}, 3, categories.NAVAL * categories.TECH3, '>='})
+			'BrainsCompareNumCategory', {'default_brain', {'HumanPlayers'}, trigger[Difficulty], categories.AIR * categories.TECH2, '>='})
 	end
 end

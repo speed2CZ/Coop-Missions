@@ -1,6 +1,6 @@
 version = 3
 ScenarioInfo = {
-    name = 'Sera Mission',
+    name = 'Novax Station Assault',
     description = '',
     type = 'campaign_coop',
     starts = true,

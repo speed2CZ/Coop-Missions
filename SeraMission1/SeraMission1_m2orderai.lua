@@ -229,6 +229,21 @@ function OrderM2RebuildTempest()
     )
 end
 
+function OrderM2RebuildT3Sonar()
+    local opai = OrderM2Base:AddOpAI('M2_Order_T3_Sonar',
+        {
+            Amount = 1,
+            KeepAlive = true,
+            PlatoonAIFunction = {SPAIFileName, 'PatrolThread'},
+            PlatoonData = {
+                PatrolChain = 'M2_Order_Defensive_Chain_Full',
+            },
+            MaxAssist = 1,
+            Retry = true,
+        }
+    )
+end
+
 -----------
 -- Carriers
 -----------

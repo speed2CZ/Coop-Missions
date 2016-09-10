@@ -1,37 +1,63 @@
 local ScenarioFramework = import('/lua/ScenarioFramework.lua')
 local ScenarioUtils = import('/lua/sim/ScenarioUtilities.lua')
 
+-----------------------------------
+-- Example OperationScenarios Table
+----------------------------------- 
+--     ScenarioInfo.OperationScenarios = {
+--          M1 = {
+--              Bases = {
+--                  {
+--                      CallFunction = function(baseType) end,
+--                      Types = {'Type1', 'Type2', 'Type3', ...},
+--                  },
+--                  {
+--                      CallFunction = function(baseType) end,
+--                      Types = {'Type1', 'Type2', 'Type3', ...},
+--                  },
+--              },
+--              Events = {
+--                  {
+--                      CallFunction = function() end,
+--                      Delay = {10*60, 8*60, 6*60},
+--                  },
+--                  {
+--                      CallFunction = function() end,
+--                      Delay = 10*60,
+--                  },
+--              },
+--          },
+--          M2 = {
+--               ...
+--          },
+--     }
+--------------------------------
+-- Delay - in seconds, can be either single number or table with 3 values, 1 for each difficulty settings
+
 function ChooseRandomBases()
     local data = ScenarioInfo.OperationScenarios['M' .. ScenarioInfo.MissionNumber].Bases
 
     if not ScenarioInfo.MissionNumber then
         error('*RANDOM BASE: ScenarioInfo.MissionNumber needs to be set.')
     elseif not data then
-        error('*RANDOM BASE: No bases specified for mission number: ' .. ScenarioInfo.MissionNumber, 2)
+        error('*RANDOM BASE: No bases specified for mission number: ' .. ScenarioInfo.MissionNumber)
     end
 
-    for name, base in data do
+    for _, base in data do
         local num = Random(1, table.getn(base.Types))
-        LOG('*RANDOM BASE: Name: ' .. tostring(name) .. ', type: ' .. base.Types[num])
-        if base.CallFunction then
-            base.CallFunction(base.Types[num])
-        end
+
+        base.CallFunction(base.Types[num])
     end
 end
 
-function ChooseRandomEvent(useDelay)
-    local data = ScenarioInfo.OperationScenarios
+function ChooseRandomEvent(useDelay, customDelay)
+    local data = ScenarioInfo.OperationScenarios['M' .. ScenarioInfo.MissionNumber].Events
     local num = ScenarioInfo.MissionNumber
 
-    -- Table with events for current mission number
-    local currentEvents = data['M' .. num].Events
-
-    if not data then
-        error('*RANDOM EVENT: ScenarioInfo.OperationScenarios does not exist.')
-    elseif not num then
+    if not num then
         error('*RANDOM EVENT: ScenarioInfo.MissionNumber needs to be set.')
-    elseif not currentEvents or table.getn(currentEvents) == 0 then
-        error('*RANDOM EVENT: No events specified for mission number: ' .. num .. ', inside "M' .. num .. '" table')
+    elseif not data then
+        error('*RANDOM EVENT: No events specified for mission number: ' .. num)
     end
     
     -- Randomly pick one event
@@ -64,40 +90,25 @@ function ChooseRandomEvent(useDelay)
         end
     end
 
-    local event = PickEvent(currentEvents)
+    local event = PickEvent(data)
 
-    -- LOG('*speed2: RANDOM EVENT: Mission Number: ' .. num .. ', chosen event: ' .. event.Log)
-    LOG(repr(currentEvents))
-
-    ForkThread(StartEvent, event, num, useDelay)
+    ForkThread(StartEvent, event, num, useDelay, customDelay)
 end
 
-function StartEvent(event, missionNumber, useDelay)
+function StartEvent(event, missionNumber, useDelay, customDelay)
     if useDelay then
-        local seconds
-        local waitTime = event.Delay
+        local waitTime = customDelay or event.Delay -- Delay passed as a function parametr can over ride the delay from the OperationScenarios table
         local Difficulty = ScenarioInfo.Options.Difficulty
 
         if type(waitTime) == 'table' then
-            if event.Randomness then
-                seconds = Random(waitTime[Difficulty], waitTime[Difficulty] + event.Randomness)
-            else
-                seconds = waitTime[Difficulty]
-            end
+            WaitSeconds(waitTime[Difficulty])
         else
-            if event.Randomness then
-                seconds = Random(waitTime, waitTime + event.Randomness)
-            else
-                seconds = waitTime
-            end
+            WaitSeconds(waitTime)
         end
-
-        LOG('*speed2: RANDOM EVENT: Delay: ' .. seconds)
-        WaitSeconds(seconds)
     end
 
     -- Check if the mission didn't end while we were waiting
-    if not ScenarioInfo.MissionNumber == missionNumber then
+    if ScenarioInfo.MissionNumber ~= missionNumber then
         return
     end
 
