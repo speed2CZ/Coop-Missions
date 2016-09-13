@@ -6,6 +6,7 @@ local M1OrderAI = import('/maps/SeraMission1/SeraMission1_m1orderai.lua')
 local M1UEFAI = import('/maps/SeraMission1/SeraMission1_m1uefai.lua')
 local M2CybranAI = import('/maps/SeraMission1/SeraMission1_m2cybranai.lua')
 local M2OrderAI = import('/maps/SeraMission1/SeraMission1_m2orderai.lua')
+local M2QAIAI = import('/maps/SeraMission1/SeraMission1_m2qaiai.lua')
 local M2UEFAI = import('/maps/SeraMission1/SeraMission1_m2uefai.lua')
 local Objectives = import('/lua/ScenarioFramework.lua').Objectives
 local OpStrings = import('/maps/SeraMission1/SeraMission1_strings.lua')
@@ -25,9 +26,10 @@ ScenarioInfo.UEF = 2
 ScenarioInfo.Order = 3
 ScenarioInfo.Cybran = 4
 ScenarioInfo.Objective = 5
-ScenarioInfo.Coop1 = 6
-ScenarioInfo.Coop2 = 7
-ScenarioInfo.Coop3 = 8
+ScenarioInfo.QAI = 6
+ScenarioInfo.Coop1 = 7
+ScenarioInfo.Coop2 = 8
+ScenarioInfo.Coop3 = 9
 
 ScenarioInfo.OperationScenarios = {
     M1 = {
@@ -89,6 +91,7 @@ local UEF = ScenarioInfo.UEF
 local Order = ScenarioInfo.Order
 local Cybran = ScenarioInfo.Cybran
 local Objective = ScenarioInfo.Objective
+local QAI = ScenarioInfo.QAI
 local Coop1 = ScenarioInfo.Coop1
 local Coop2 = ScenarioInfo.Coop2
 local Coop3 = ScenarioInfo.Coop3
@@ -106,6 +109,7 @@ local Debug = false
 local SkipDialogues = false
 local SkipNIS1 = false
 local SkipNIS2 = false
+local M2NoCounterAttack = false
 
 -----------
 -- Start Up
@@ -113,23 +117,35 @@ local SkipNIS2 = false
 function OnPopulate(scenario)
     ScenarioUtils.InitializeScenarioArmies()
 
+    local tblArmy = ListArmies()
+
+    -- If there is not Coop1 player then use Order AI
+    if not tblArmy[ScenarioInfo.Coop1] then
+        ScenarioInfo.UseOrderAI = true
+    end
+
     -- Sets Army Colors
+    -- Players
     ScenarioFramework.SetSeraphimColor(Player)
     ScenarioFramework.SetUEFPlayerColor(UEF)
     ScenarioFramework.SetCybranPlayerColor(Cybran)
     ScenarioFramework.SetNeutralColor(Objective)
-    ScenarioFramework.SetAeonEvilColor(Order)
+    ScenarioFramework.SetCybranEvilColor(QAI)
+    if ScenarioInfo.UseOrderAI then
+        ScenarioFramework.SetAeonEvilColor(Order)
+    else
+        SetArmyColor(Order, 15, 148, 72)
+    end
 
-    -- TODO: check colors, coop1,3 should have something similar to Order color, coop 1 order color maybe, coop 2 some seraphim-ish color
     local colors = {
-        ['Coop1'] = {132, 10, 10}, 
-        ['Coop2'] = {47, 79, 79}, 
-        ['Coop3'] = {46, 139, 87}
+        ['Coop1'] = {159, 216, 2}, 
+        ['Coop2'] = {255, 200, 0}, 
+        ['Coop3'] = {123, 255, 125}
     }
     local tblArmy = ListArmies()
     for army, color in colors do
         if tblArmy[ScenarioInfo[army]] then
-            ScenarioFramework.SetArmyColor(ScenarioInfo[army], unpack(color))
+            SetArmyColor(ScenarioInfo[army], unpack(color))
         end
     end
 
@@ -138,11 +154,7 @@ function OnPopulate(scenario)
 
     -- Disable resource sharing from friendly AI
     GetArmyBrain(Order):SetResourceSharing(false)
-
-    -- If there is not Coop1 player then use Order AI
-    if not tblArmy[ScenarioInfo.Coop1] then
-        ScenarioInfo.UseOrderAI = true
-    end
+    GetArmyBrain(QAI):SetResourceSharing(false)
 
     --------
     -- Order
@@ -152,7 +164,6 @@ function OnPopulate(scenario)
 
     -- Carrier
     ScenarioInfo.M1_Order_Carrier = ScenarioUtils.CreateArmyUnit('Order', 'M1_Order_Carrier')
-    -- ScenarioInfo.M1_Order_Carrier:SetVeterancy(4 - Difficulty)
 
     -- Carrier fleet
     ScenarioInfo.M1_Carrier_Fleet = ScenarioUtils.CreateArmyGroup('Order', 'M1_Order_Carrier_Fleet_D' .. Difficulty)
@@ -404,10 +415,10 @@ function StartMission1()
     ScenarioInfo.M1P1:AddResultCallback(
         function(result)
             if(result) then
-                if ScenarioInfo.M1S1.Active then
+                if ScenarioInfo.MissionNumber == 1 then
                     ScenarioFramework.Dialogue(OpStrings.M1_Research_Station_Killed_1, nil, true)
-                else
-                    ScenarioFramework.Dialogue(OpStrings.M1_Research_Station_Killed_2, nil, true)
+                elseif ScenarioInfo.MissionNumber == 2 then
+                    ScenarioFramework.Dialogue(OpStrings.M1_Research_Station_Killed_2)
                 end
             end
         end
@@ -494,7 +505,7 @@ function M1ProtectCarriersObjective()
         function(result, unit)
             if(not result and not ScenarioInfo.OpEnded) then
                 ScenarioFramework.Dialogue(OpStrings.M1_Carriers_Died, nil, true)
-                M1CarriersDead(unit)
+                PlayerLose(unit)
             end
         end
     )
@@ -530,7 +541,7 @@ function M1TimerObjective()
     ScenarioInfo.M1P3:AddResultCallback(
         function(result)
             if not result then
-                M1TimeRunsOut()
+                PlayerLose()
             end
         end
     )
@@ -748,19 +759,23 @@ function IntroMission2()
                 -- Spawn Coop player 3 or sACU for Coop1
                 local tblArmy = ListArmies()
                 if tblArmy[ScenarioInfo.Coop3] then
-                    ScenarioInfo.CoopCDR3 = ScenarioFramework.SpawnCommander('Coop3', 'sACU', 'Warp', true, false, false,
+                    -- TODO: make sACU warp effect
+                    ScenarioInfo.CoopCDR3 = ScenarioFramework.SpawnCommander('Coop3', 'sACU', false, true, false, false,
                         {'EngineeringFocusingModule', 'ResourceAllocation'})
                 else
-                    -- TODO: make sACU warp effect, name for the sACU
+                    -- TODO: make sACU warp effect
                     ScenarioFramework.SpawnCommander('Coop1', 'sACU', false, false, false, false,
                         {'EngineeringFocusingModule', 'ResourceAllocation'})
                 end
 
                 -- Give Carrier to coop player, once near island
                 ForkThread(function()
+                    WaitSeconds(1) -- This makes sure that the carrier gets moving before we start the check below
+
                     while (ScenarioInfo.M1_Order_Carrier and not ScenarioInfo.M1_Order_Carrier:IsDead() and ScenarioInfo.M1_Order_Carrier:IsUnitState('Moving')) do
                         WaitSeconds(.5)
                     end
+
                     if (ScenarioInfo.M1_Order_Carrier and not ScenarioInfo.M1_Order_Carrier:IsDead()) then
                         IssueClearCommands({ScenarioInfo.M1_Order_Carrier})
                         ScenarioFramework.GiveUnitToArmy(ScenarioInfo.M1_Order_Carrier, 'Coop1')
@@ -768,20 +783,24 @@ function IntroMission2()
                 end)
 
                 -- Give Tempest to coop player once near island
-                -- TODO: Find out if the hidden gun isn't causing problems.
-                --       Alternative solution: Ctrl-K once it's arrives / secondary objective to reclaim
                 ForkThread(function()
+                    WaitSeconds(1) -- This makes sure that the tempest gets moving before we start the check below
+
                     while (ScenarioInfo.M1_Order_Tempest and not ScenarioInfo.M1_Order_Tempest:IsDead() and ScenarioInfo.M1_Order_Tempest:IsUnitState('Moving')) do
                         WaitSeconds(.5)
                     end
+
                     if (ScenarioInfo.M1_Order_Tempest and not ScenarioInfo.M1_Order_Tempest:IsDead()) then
                         IssueClearCommands({ScenarioInfo.M1_Order_Tempest})
-                        ScenarioFramework.GiveUnitToArmy(ScenarioInfo.M1_Order_Tempest, 'Coop1')
+                        local tempest = ScenarioFramework.GiveUnitToArmy(ScenarioInfo.M1_Order_Tempest, 'Coop1')
+                        tempest:SetWeaponEnabledByLabel('MainGun', false) -- Disable the main gun again
                     end
                 end)
 
                 -- Give Sonar to coop player once near island
                 ForkThread(function()
+                    WaitSeconds(1) -- This makes sure that the sonar gets moving before we start the check below
+                    
                     while (ScenarioInfo.M1_Order_Sonar and not ScenarioInfo.M1_Order_Sonar:IsDead() and ScenarioInfo.M1_Order_Sonar:IsUnitState('Moving')) do
                         WaitSeconds(.5)
                     end
@@ -856,6 +875,15 @@ function IntroMission2()
             ---------
             M2UEFAI.UEFM2BaseAI()
 
+            -- Initial Patrols
+            -- Main Base
+
+            -- Air Patrol
+            platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_UEF_Base_Init_Air_Patrol_D' .. Difficulty, 'NoFormation')
+            for _, v in platoon:GetPlatoonUnits() do
+                ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M2_UEF_Base_AirDef_Chain')))
+            end
+
             -- Walls
             ScenarioUtils.CreateArmyGroup('UEF', 'M2_UEF_Walls')
               
@@ -883,8 +911,8 @@ function IntroMission2()
             end
 
             -- Give resources armies
-            --ArmyBrains[UEF]:GiveResource('MASS', 25000)
-            --ArmyBrains[Order]:GiveResource('MASS', 8000)
+            ArmyBrains[UEF]:GiveResource('MASS', 10000)
+            ArmyBrains[Cybran]:GiveResource('MASS', 10000)
             --ArmyBrains[Player]:GiveResource('MASS', 6000)
 
             ForkThread(IntroMission2NIS)
@@ -946,7 +974,7 @@ function IntroMission2NIS()
         Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('Cam_2_2'), 3)
 
         -- Spawn Player and Coop 2
-        ScenarioInfo.PlayerCDR = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true, false,
+        ScenarioInfo.PlayerCDR = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true, PlayerDeath,
             {'AdvancedEngineering', 'T3Engineering', 'ResourceAllocation'})
 
         if tblArmy[ScenarioInfo.Coop2] then
@@ -1079,6 +1107,9 @@ end
 
 -- Initial counter attack
 function M2CounterAttack()
+    if M2NoCounterAttack then
+        return
+    end
     local platoon = nil
 
     ---------
@@ -1107,10 +1138,29 @@ function M2CounterAttack()
     ------
     -- UEF
     ------
+    -- Air
+    for i = 1, 2 do
+        platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_UEF_CA_Air_' .. i .. '_D' .. Difficulty, 'GrowthFormation')
+        --ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_UEF_Init_Air_Attack_Chain_' .. i)
+        for _, v in platoon:GetPlatoonUnits() do
+            ScenarioFramework.GroupPatrolChain({v}, 'M2_UEF_Init_Air_Attack_Chain_' .. i)
+        end
+    end
+
+    -- Riptides
+    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_UEF_CA_Riptides_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_UEF_Init_Riptide_Attack_Chain')
+
+    -- Naval
+    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_UEF_CA_Destroyers_D' .. Difficulty, 'AttackFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, 'M2_UEF_Init_Naval_Attack_Chain')
 end
 
 -- Post Intro Satellites
 function M2PostIntro()
+    -- Pick a random event for second part of the mission
+    CustomFunctions.ChooseRandomEvent(true)
+
     -- Attack the player with satellites, trigger to destroy them with a dialogue when they get close
     for _, unit in ScenarioInfo.M2_Intro_Satellites do
         -- Mark the units as in objective
@@ -1151,44 +1201,113 @@ function M2DestroyPostIntroSatellites()
         unit:Kill()
         WaitSeconds(Random(0.5, 0.9))
     end
-    ScenarioFramework.Dialogue(OpStrings.M2_Post_Intro_2, StartMission2, true) -- What's going on to my HBO??
+    ScenarioFramework.Dialogue(OpStrings.M2_Post_Intro_2, M2SpawnQAI, true) -- What's happened to my HBO??
+end
+
+-- Spawn QAI
+function M2SpawnQAI()
+    ForkThread(
+        function()
+            -- Gate in ACU
+            ScenarioInfo.QAI_Commander = ScenarioFramework.SpawnCommander('QAI', 'QAI_Commander', 'Warp', 'QAI', false, false,
+                {'AdvancedEngineering', 'T3Engineering', 'ResourceAllocation'})
+
+            -- TODO: Reclaim the walls with ACU
+            local objSturctures = ArmyBrains[Objective]:GetListOfUnits(categories.ALLUNITS - categories.WALL, false)
+            if table.getn(objSturctures) > 0 then
+                IssueClearCommands({ScenarioInfo.QAI_Commander})
+                for _, structure in objSturctures do
+                    IssueReclaim({ScenarioInfo.QAI_Commander}, structure)
+                end
+            end
+
+            -- ScenarioUtils.CreateArmyGroup('QAI', 'M2_QAI_Civs') -- TODO: Make QAI build this untis
+
+            WaitSeconds(2)
+
+            while ScenarioInfo.QAI_Commander and not ScenarioInfo.QAI_Commander:IsDead() and not ScenarioInfo.QAI_Commander:IsIdleState() do
+                WaitSeconds(1)
+            end
+
+            ForkThread(function()
+                while ScenarioInfo.QAI_Commander and not ScenarioInfo.QAI_Commander:IsDead() do
+                    ArmyBrains[QAI]:GiveResource('MASS', 500)
+                    ArmyBrains[QAI]:GiveResource('ENERGY', 3000)
+                    WaitSeconds(1)
+                end
+            end)
+
+            -- Start QAI's base
+            M2QAIAI.QAIM2BaseAI()
+
+            local function PerimetrBuilt()
+                -- Dialogue to introduce Timer objective
+                ScenarioFramework.Dialogue(OpStrings.M2TimerObjective, M2TimerObjective, true)
+            end
+
+            -- Trigger for timer objectiveee
+            ScenarioFramework.CreateArmyStatTrigger(PerimetrBuilt, ArmyBrains[QAI], 'PerimetrBuilt',
+                {{StatType = 'Units_Active', CompareType = 'GreaterThanOrEqual', Value = 1, Category = categories.xrb3301}})
+
+            StartMission2()
+        end
+    )
 end
 
 -- Assign objectives
 function StartMission2()
-    -----------------------------------------
-    -- Primary Objective 1 - Destroy Factories
-    -----------------------------------------
-    ScenarioInfo.M2P1 = Objectives.CategoriesInArea(
+    ------------------------------------
+    -- Primary Objective 4 - Protect QAI
+    ------------------------------------
+    ScenarioInfo.M2P4 = Objectives.Protect(
         'primary',                      -- type
-        'incomplete',                   -- status
-        'Destroy UEF Bases',  -- title
-        'Yes yes',  -- description
-        'kill',
+        'incomplete',                   -- complete
+        OpStrings.M2_P4_Title,          -- title
+        OpStrings.M2_P4_Description,    -- description
         {                               -- target
-            MarkUnits = true,
-            Requirements = {
-                {Area = 'M2_UEF_Base_Area', Category = categories.FACTORY * categories.STRUCTURE, CompareOp = '<=', Value = 0, ArmyIndex = UEF},
-            },
+            Units = {ScenarioInfo.QAI_Commander},
         }
     )
-    ScenarioInfo.M2P1:AddResultCallback(
-        function(result)
-            if(result) then
-                ScenarioFramework.Dialogue(OpStrings.M2_Bases_Killed, IntroMission3, true)
+    ScenarioInfo.M2P4:AddResultCallback(
+        function(result, unit)
+            if(not result and not ScenarioInfo.OpEnded) then
+                ScenarioFramework.Dialogue(OpStrings.M2_QAI_Dead, nil, true)
+                PlayerLose(unit)
             end
         end
     )
-    table.insert(AssignedObjectives, ScenarioInfo.M2P1)
-
-    -- Pick a random event for second part of the mission
-    CustomFunctions.ChooseRandomEvent(true)
-
-    WIPDialogue('You\'ve reached a stage of the mission that is still under development. Bugs and issues might appear. Thank you for testing, speed2', {'OK'})
+    table.insert(AssignedObjectives, ScenarioInfo.M2P4)
 end
 
--- function M2SecondaryObjective()
--- end
+function M2TimerObjective()
+    ------------------------------
+    -- Primary Objective 5 - Timer
+    ------------------------------
+    ScenarioInfo.M2P5 = Objectives.Timer(
+        'primary',                      -- type
+        'incomplete',                   -- complete
+        OpStrings.M2_P5_Title,          -- title
+        OpStrings.M2_P5_Description,    -- description
+        {                               -- target
+            Timer = 15 * 60,
+            ExpireResult = 'complete',
+        }
+    )
+    ScenarioInfo.M2P5:AddResultCallback(
+        function(result)
+            if result then
+                local dialogue = CreateDialogue('If you read this you managed to complete all objectives sucessfully. Rest of the mission is still under development. Thank you for testing, speed2', {'Continue', 'Quit'})
+                dialogue.OnButtonPressed = function(self, info)
+                    dialogue:Destroy()
+                    if info.buttonID == 2 then
+                        PlayerWin()
+                    end
+                end
+            end
+        end
+    )
+    table.insert(AssignedObjectives, ScenarioInfo.M2P5)
+end
 
 -- Other M2 functions
 function M2CybranASFsPatrol()
@@ -1316,6 +1435,27 @@ function M2ExperimentalAttack()
     ScenarioFramework.PlatoonAttackChain(platoon, 'M2_Player_Island_Drop_Chain')
 end
 
+-- Reminders
+function M2TimerObjReminder1()
+    if not ScenarioInfo.M2P5.Active then
+        return
+    end
+
+    -- 10 minutes remain
+    ScenarioFramework.Dialogue(OpStrings.M2_Timer_Obj_Reminder_1)
+
+    ScenarioFramework.CreateTimerTrigger(M2TimerObjReminder2, 5 * 60)
+end
+
+function M2TimerObjReminder2()
+    if not ScenarioInfo.M2P5.Active then
+        return
+    end
+
+    -- 5 minutes remain
+    ScenarioFramework.Dialogue(OpStrings.M2_Timer_Obj_Reminder_2)
+end
+
 ------------
 -- Mission 3
 ------------
@@ -1349,70 +1489,73 @@ end
 -- End Game
 -----------
 function PlayerWin()
+    if(not ScenarioInfo.OpEnded) then
+        ScenarioFramework.EndOperationSafety()
+        ScenarioInfo.OpComplete = true
+
+        --[[
+        ScenarioFramework.FlushDialogueQueue()
+        while(ScenarioInfo.DialogueLock) do
+            WaitSeconds(0.2)
+        end
+        ScenarioFramework.Dialogue(OpStrings.X06_M03_105, nil, true)
+        ]]--
+
+        ForkThread(KillGame)
+    end
 end
 
-function M1CarriersDead(unit)
-    ForkThread(
-        function()
-            -- AI kills the carriers
+function PlayerLose(unit)
+    ForkThread(function()
+        if unit then
+            -- Unit from protect objective dies
+            -- Circle camera around the unit
             ScenarioFramework.CDRDeathNISCamera(unit)
             WaitSeconds(8)
-            PlayerLose()
+        else
+            -- Timer runs out (Mission 1)
+            if ScenarioInfo.MissionNumber ~= 1 then
+                WARN('Timer from the first mission didn\'t end.')
+                return
+            end
+            -- Attack with sattelites
+            local units = ScenarioUtils.CreateArmyGroup('UEF', 'M1_Satellites')
+
+            for i = 1, 2 do
+                units[i]:Open()
+                IssueAttack({units[i]}, ScenarioInfo.M1_Order_Carrier)
+            end
+            for i = 3, 5 do
+                units[i]:Open()
+                IssueAttack({units[i]}, ScenarioInfo.M1_Order_Tempest)
+            end
+
+            -- Move camera to carriers
+            Cinematics.EnterNISMode()
+
+            Cinematics.CameraMoveToMarker('Cam_1_Fail_1', 3)
+            ScenarioFramework.Dialogue(OpStrings.M1_Time_Ran_Out, nil, true)
+            WaitSeconds(2)
+            Cinematics.CameraMoveToMarker('Cam_1_Fail_2', 3)
+            WaitSeconds(2)
+
+            -- Track one satellite
+            Cinematics.CameraTrackEntity(units[4], 95)
+
+            WaitSeconds(11)
+            ScenarioInfo.M1_Order_Carrier:Kill()
+            ScenarioInfo.M1_Order_Tempest:Kill()
+
+            WaitSeconds(4)
         end
-    )
-end
 
-function M1TimeRunsOut()
-    -- Attack with sattelites
-    local units = ScenarioUtils.CreateArmyGroup('UEF', 'M1_Satellites')
-
-    for i = 1, 2 do
-        units[i]:Open()
-        IssueAttack({units[i]}, ScenarioInfo.M1_Order_Carrier)
-    end
-    for i = 3, 5 do
-        units[i]:Open()
-        IssueAttack({units[i]}, ScenarioInfo.M1_Order_Tempest)
-    end
-
-    -- Move camera to carriers
-    Cinematics.EnterNISMode()
-
-    Cinematics.CameraMoveToMarker('Cam_1_Fail_1', 3)
-    ScenarioFramework.Dialogue(OpStrings.M1_Time_Ran_Out, nil, true)
-    WaitSeconds(2)
-    Cinematics.CameraMoveToMarker('Cam_1_Fail_2', 3)
-    WaitSeconds(2)
-
-    -- Track one satellite
-    Cinematics.CameraTrackEntity(units[4], 95)
-
-    WaitSeconds(11)
-    ScenarioInfo.M1_Order_Carrier:Kill()
-    ScenarioInfo.M1_Order_Tempest:Kill()
-
-    WaitSeconds(4)
-    PlayerLose()
-end
-
-function PlayerLose()
-    -- ScenarioFramework.PlayerLose(OpStrings.M1_Time_Ran_Out, AssignedObjectives) -- TODO: fix this in the coop mod
-
-    ScenarioFramework.EndOperationSafety()
-    ScenarioInfo.OpComplete = false
-
-    -- Mark objectives as failed
-    for k, v in AssignedObjectives do
-        if(v and v.Active) then
-            v:ManualResult(false)
-        end
-    end
-
-    -- Play dialogue and end the game
-    ScenarioFramework.Dialogue(OpStrings.Kill_Game_Dialogue, KillGame, true)
+        -- End the mission
+        ScenarioFramework.PlayerLose(OpStrings.Kill_Game_Dialogue, AssignedObjectives)
+    end)
 end
 
 function PlayerDeath(deadCommander)
+    ScenarioFramework.PlayerDeath(deadCommander, OpStrings.Player_Dead, AssignedObjectives)
 end
 
 function KillGame()
@@ -1424,7 +1567,7 @@ end
 -- Debug Functions
 ------------------
 function OnCtrlF3()
-    GateInACUsButton()
+    ScenarioInfo.M2P5:ManualResult(true)
 
     --LOG('platoon tables:', repr(ArmyBrains[UEF]:GetPlatoonsList()))
     --LOG(repr(ArmyBrains[UEF]:GetPlatoonUniquelyNamed( 'BaseManager_CDRPlatoon_M1_UEF_Base' )))
@@ -1444,82 +1587,12 @@ function OnCtrlF4()
 end
 
 function OnShiftF4()
-    WIPDialogue('You\'ve reached a stage of the mission that is still under development. Bugs and issues might appear. Thank you for testing, speed2', {'OK'})
+    ScenarioUtils.CreateArmyGroup('Player', 'DEBUG_ARMY')
 end
 
 -------------------
 -- Custom Functions
 -------------------
-function CreateAreaTrigger(callbackFunction, rectangle, category, onceOnly, invert, number, requireBuilt)
-    return ForkThread(AreaTriggerThread, callbackFunction, {rectangle}, category, onceOnly, invert, number, requireBuilt)
-end
-
-function AreaTriggerThread(callbackFunction, rectangleTable, category, onceOnly, invert, number, requireBuilt, name)
-    local recTable = {}
-    for k,v in rectangleTable do
-        if type(v) == 'string' then
-            table.insert(recTable,ScenarioUtils.AreaToRect(v))
-        else
-            table.insert(recTable, v)
-        end
-    end
-    while true do
-        local amount = 0
-        local totalEntities = {}
-        for k, v in recTable do
-            local entities = GetUnitsInRect( v )
-            if entities then
-                for ke, ve in entities do
-                    totalEntities[table.getn(totalEntities) + 1] = ve
-                end
-            end
-        end
-        local triggered = false
-        local triggeringEntity
-        local numEntities = table.getn(totalEntities)
-        if numEntities > 0 then
-            for k, v in totalEntities do
-                local contains = EntityCategoryContains(category, v)
-                if contains and (not requireBuilt or (requireBuilt and not v:IsBeingBuilt())) then
-                    amount = amount + 1
-                    --If we want to trigger as soon as one of a type is in there, kick out immediately.
-                    if not number then
-                        triggeringEntity = v
-                        triggered = true
-                        break
-                    --If we want to trigger on an amount, then add the entity into the triggeringEntity table
-                    --so we can pass that table back to the callback function.
-                    else
-                        if not triggeringEntity then
-                            triggeringEntity = {}
-                        end
-                        table.insert(triggeringEntity, v)
-                    end
-                end
-            end
-        end
-        --Check to see if we have a triggering amount inside in the area.
-        if number and ((amount >= number and not invert) or (amount < number and invert)) then
-            triggered = true
-        end
-        --TRIGGER IF:
-        --You don't want a specific amount and the correct unit category entered
-        --You don't want a specific amount, there are no longer the category inside and you wanted the test inverted
-        --You want a specific amount and we have enough.
-        if ( triggered and not invert and not number) or (not triggered and invert and not number) or (triggered and number) then
-            if name then
-                callbackFunction(TriggerManager, name, triggeringEntity)
-            else
-                callbackFunction(triggeringEntity)
-            end
-            if onceOnly then
-                return
-            end
-        end
-        WaitTicks(1)
-    end
-end
-
 function WIPDialogue(title, tblButtons)
     local dialogue = CreateDialogue(title, tblButtons)
     dialogue.OnButtonPressed = function(self, info)

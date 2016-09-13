@@ -42,6 +42,11 @@
 
 
 
+-- Player wins / Actor: TBD / Update 13/9/2016 / VO TODO
+Player_Win = {
+	{text = '[Seraphim]: TODO.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+}
+
 -- Both mobile factories dead / Actor: TBD / Update 9/9/2016 / VO TODO
 M1_Carriers_Died = {
 	{text = '[Seraphim]: You let the UEF to destroy your mobile factories!', vid = '', bank = '', cue = '', faction = 'Seraphim'},
@@ -55,6 +60,11 @@ M1_Time_Ran_Out = {
 -- Kill Game Dialogue / Actor: TBD / Update 1/8/2016 / VO TODO
 Kill_Game_Dialogue = {
 	{text = '[Seraphim]: You have failed us.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+}
+
+-- Player dead / Actor: TBD / Update 11/9/2016 / VO TODO
+Player_Dead = {
+	{text = '[Seraphim]: TODO.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
 }
 
 
@@ -221,9 +231,10 @@ M2_Intro_1 = {
 	{text = '[QAI]: Gating in AUCs... Virus upload started.', vid = '', bank = '', cue = '', faction = 'Cybran'},
 }
 
--- Incoming attack / Actor: TBD / Update 8/9/2016 / VO TODO
+-- Incoming attack / Actor: TBD / Update 12/9/2016 / VO TODO
 M2_Intro_2 = {
 	{text = '[Seraphim]: Warrior, enemy units are approaching your position, destroy them all and establish a base. The Order commander will support your assault.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+	{text = '[QAI]: Scanning area for the main UEF research station.', vid = '', bank = '', cue = '', faction = 'Cybran'},
 }
 
 
@@ -233,12 +244,13 @@ M2_Post_Intro_1 = {
 	{text = '[QAI]: Virus successfully uploaded. Executing.', vid = '', bank = '', cue = '', faction = 'Cybran'},
 }
 
--- Satellites dying / Actor: TBD / Update 8/9/2016 / VO TODO
+-- Satellites dying / Actor: TBD / Update 12/9/2016 / VO TODO
 M2_Post_Intro_2 = {
 	{text = '[UEF Commander]: What the hell is going on? I\'m losing control of the satellites, they are falling down from the sky!.', vid = '', bank = '', cue = '', faction = 'UEF'},
 	{text = '[Seraphim]: Ha-ha-ha!.', vid = '', bank = '', cue = '', delay = 2, faction = 'Seraphim'},
 	{text = '[Research]: Seems like our network got infected with some kind of virus. It is disturbing the communication between the control center and the satellite.', vid = '', bank = '', cue = '', faction = 'UEF'},
-	{text = '[UEF Commander]: Fix it ASAP!.', vid = '', bank = '', cue = '', faction = 'UEF'},
+	{text = '[UEF Commander]: Fix it ASAP!.', vid = '', bank = '', cue = '', delay = 5, faction = 'UEF'},
+	{text = '[QAI]: I am unable to locate the main UEF research facility. Monitoring station on the planet is required. Sending it ACU.', vid = '', bank = '', cue = '', faction = 'Cybran'},
 }
 
 
@@ -252,19 +264,50 @@ M2_Post_Intro_2 = {
 -------------
 -- Objectives
 -------------
+-- Primary Objective 4 - Protct QAI
+M2_P4_Title = 'Protect QAI\'s ACU'
+M2_P4_Description = 'QAI will construct a monitoring station to locate UEF research facility, protect it.'
+
+-- Primary Objective 5 - Timer
+M2_P5_Title = 'Wait until QAI locates UEF'
+M2_P5_Description = 'Location the research facility will take some time, prepare your army meanwhile.'
 
 
 
 ------------
 -- Dialogues
 ------------
+-- Protect QAI / Actor: TBD / Update 12/9/2016 / VO TODO
+M2_Protect_QAI = {
+	{text = '[Seraphim]: Warrior, make sure QAI\'s ACU won\'t die. Must must succeed!', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+}
+
+-- QAI dies / Actor: TBD / Update 12/9/2016 / VO TODO
+M2_QAI_Dead = {
+	{text = '[Seraphim]: QAI\'s ACU was destroyed. We can\'t locate UEF research station anymore!', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+}
+
+-- Reveal Timer objective / Actor: TBD / Update 12/9/2016 / VO TODO
+M2TimerObjective = {
+	{text = '[QAI]: Monitoring station finished. Recieving data...', vid = '', bank = '', cue = '', delay = 5, faction = 'Cybran'},
+	{text = '[QAI]: Location of the main research facility will be known in 15 minutes.', vid = '', bank = '', cue = '', faction = 'Cybran'},
+}
+
 
 
 
 ------------
 -- Reminders
 ------------
+-- 10 min until finding research station / Actor: TBD / Update 12/9/2016 / VO TODO
+M2_Timer_Obj_Reminder_1 = {
+	{text = '[QAI]: 10 minutes remain.', vid = '', bank = '', cue = '', faction = 'Cybran'},
+}
 
+-- 5 min until finding research station / Actor: TBD / Update 12/9/2016 / VO TODO
+M2_Timer_Obj_Reminder_2 = {
+	{text = '[QAI]: 5 minutes remain.', vid = '', bank = '', cue = '', faction = 'Cybran'},
+}
 
 
 ------------
@@ -288,3 +331,9 @@ M2_Post_Intro_2 = {
 ------------
 -- Reminders
 ------------
+
+
+
+---------
+-- Taunts
+---------

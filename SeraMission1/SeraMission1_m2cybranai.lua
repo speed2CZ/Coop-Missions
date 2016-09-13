@@ -56,10 +56,10 @@ function CybranM2BaseAirAttacks()
             Priority = 1000,
         }
     )
-    opai:SetChildQuantity('T2Transports', 3)
+    opai:SetChildQuantity('T2Transports', 6)
     opai:SetLockingStyle('None')
     opai:AddBuildCondition('/lua/editor/unitcountbuildconditions.lua',
-        'HaveLessThanUnitsWithCategory', {'default_brain', 6, categories.ura0104})
+        'HaveLessThanUnitsWithCategory', {'default_brain', 4, categories.ura0104})
 
     -- T1 Bombers
     quantity = {4, 6, 8}
@@ -188,7 +188,7 @@ function CybranM2BaseAirAttacks()
     opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
             'BrainsCompareNumCategory', {'default_brain', {'Player', 'Coop1', 'Coop2', 'Coop3', 'Order'}, trigger[Difficulty], categories.NAVAL * categories.MOBILE - categories.TECH1, '>='})
 
-    -- Air Patrols
+    -- Air Defense
     -- Gunships
     quantity = {4, 5, 6}
     for i = 1, 2 do
@@ -263,7 +263,7 @@ function CybranM2BaseLandAttacks()
     -- M2_Cybran_Base_Amph_Attack_Chain_2
 
     quantity = {8, 10, 12}
-    trigger = {80, 60, 40}
+    trigger = {90, 70, 50}
     opai = CybranM2Base:AddOpAI('BasicLandAttack', 'M2_Cybran_Base_Amphibious_Attack_1',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolChainPickerThread'},
@@ -297,6 +297,7 @@ function CybranM2BaseLandAttacks()
     --------
     -- T2 Tanks
     quantity = {4, 8, 12}
+    trigger = {{180, 160, 140}, {160, 140, 120}}
     for i = 1, 2 do
         opai = CybranM2Base:AddOpAI('BasicLandAttack', 'M2_Cybran_TransportAttack_1_' .. i,
             {
@@ -305,15 +306,15 @@ function CybranM2BaseLandAttacks()
                     AttackChain = 'M2_Player_Island_Drop_Chain',
                     LandingList = {'M2_Drop_Marker_' .. i .. '_1', 'M2_Drop_Marker_' .. i .. '_2'},
                     MovePath = 'M2_Cybran_Base_Transport_Chain_' .. i,
-                    TransportReturn = 'M2_Cybran_Base_Marker',
+                    --TransportReturn = 'M2_Cybran_Base_Marker', -- Removed until transport return function is fixed
                 },
                 Priority = 140,
             }
         )
         opai:SetChildQuantity('HeavyTanks', quantity[Difficulty])
-        opai:SetLockingStyle('DeathTimer', {LockTimer = 60})
+        opai:SetLockingStyle('DeathTimer', {LockTimer = 120})
         opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
-            'BrainsCompareNumCategory', {'default_brain', {'Player', 'Coop1', 'Coop2', 'Coop3', 'Order'}, 1, categories.LAND * categories.FACTORY - categories.TECH1, '>='})
+            'BrainsCompareNumCategory', {'default_brain', {'Player', 'Coop1', 'Coop2', 'Coop3', 'Order'}, trigger[i][Difficulty], categories.ALLUNITS - categories.WALL, '>='})
     end
 
     -- Loyalists
@@ -327,12 +328,12 @@ function CybranM2BaseLandAttacks()
                     AttackChain = 'M2_Player_Island_Drop_Chain',
                     LandingList = {'M2_Drop_Marker_' .. i .. '_1', 'M2_Drop_Marker_' .. i .. '_2'},
                     MovePath = 'M2_Cybran_Base_Transport_Chain_' .. i,
-                    TransportReturn = 'M2_Cybran_Base_Marker',
+                    --TransportReturn = 'M2_Cybran_Base_Marker', -- Removed until transport return function is fixed
                 },
                 Priority = 150,
             }
         )
-        opai:SetChildQuantity('HeavyTanks', quantity[Difficulty])
+        opai:SetChildQuantity('SiegeBots', quantity[Difficulty])
         opai:SetLockingStyle('DeathTimer', {LockTimer = 60})
         opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
             'BrainsCompareNumCategory', {'default_brain', {'Player', 'Coop1', 'Coop2', 'Coop3', 'Order'}, trigger[Difficulty], categories.FACTORY * categories.TECH3, '>='})
