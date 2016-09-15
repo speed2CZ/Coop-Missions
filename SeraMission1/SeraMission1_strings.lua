@@ -120,7 +120,7 @@ M1_S1_Description = 'It is advised to eliminate all UEF forces on the island bef
 
 -- Primary Objective 2 - Protect Carrier
 M1_P2_Title = 'Protect Order Aircraft Carrier and Tempest'
-M1_P2_Description = 'The Order will provide you units for an attack on the UEF island base. Make sure you don\'t the lose mobile factories. At least one must survive.'
+M1_P2_Description = 'The Order will provide you units for an attack on the UEF island base. Make sure you don\'t lose the mobile factories. At least one must survive.'
 
 -- Primary Objective 3 - Timer
 M1_P3_Title = 'Gate in with ACU'
