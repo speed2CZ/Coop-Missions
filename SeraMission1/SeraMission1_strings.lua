@@ -49,7 +49,7 @@ Player_Win = {
 
 -- Both mobile factories dead / Actor: TBD / Update 9/9/2016 / VO TODO
 M1_Carriers_Died = {
-	{text = '[Seraphim]: You let the UEF to destroy your mobile factories!', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+	{text = '[Seraphim]: You let the UEF destroy both of your mobile factories!', vid = '', bank = '', cue = '', faction = 'Seraphim'},
 }
 
 -- Timer Ran Out / Actor: TBD / Update 9/9/2016 / VO TODO
@@ -80,12 +80,12 @@ Player_Dead = {
 ------------
 -- Research Station / Actor: TBD / Update 1/8/2016 / VO TODO
 Intro_Research_Station = {
-	{text = '[Seraphim]: This is one of the UEF\'s research stations for creating experimental weapons on this planet.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+	{text = '[Seraphim]: Warrior, this is one of the UEF\'s experimental weapon research stations on this planet. It is a very important target.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
 }
 
 -- First Base / Actor: TBD / Update 1/8/2016 / VO TODO
 Intro_UEF_Base = {
-	{text = '[Seraphim]: The station is guarded by a small base that must be destroyed before we can send ACUs.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+	{text = '[Seraphim]: The station is guarded by a small base that must be destroyed before we can send in any ACUs.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
 }
 
 -- UEF Patrols / Actor: TBD / Update 1/8/2016 / VO TODO
@@ -95,8 +95,8 @@ Intro_Patrols = {
 
 -- Carriers / Actor: TBD / Update 1/8/2016 / VO TODO
 Intro_Carriers = {
-	{text = '[Seraphim]: Order forces are coming in from southeast to begin the assault.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
-	{text = '[Seraphim]: A Tempest and an aircraft carrier will provide you units to clear the landing area so ACUs can gate in.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+	{text = '[Seraphim]: Order forces will come in from southeast to begin the assault.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+	{text = '[Seraphim]: They\'re sending a Tempest and an aircraft carrier to provide you with units to sanitize the landing area. Once its cleared the ACUs can gate in.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
 }
 
 
@@ -112,7 +112,7 @@ Intro_Carriers = {
 -------------
 -- Primary Objective 1 - Kill Research Station
 M1_P1_Title = 'Destroy UEF Research Station'
-M1_P1_Description = 'UEF is developing new weapons on this planet. Destroy marked research station to slow down their progress.'
+M1_P1_Description = 'The UEF is developing new weapons on this planet. Destroy the marked research station to slow down their progress.'
 
 -- Secondary Objective 1 - Clear Landing Areas
 M1_S1_Title = 'Destroy the UEF Island Base'
@@ -120,11 +120,11 @@ M1_S1_Description = 'It is advised to eliminate all UEF forces on the island bef
 
 -- Primary Objective 2 - Protect Carrier
 M1_P2_Title = 'Protect Order Aircraft Carrier and Tempest'
-M1_P2_Description = 'Order will provide you units for an attack on the UEF island base. Make sure you don\'t lose mobile factories. At least one must survive.'
+M1_P2_Description = 'The Order will provide you units for an attack on the UEF island base. Make sure you don\'t lose the mobile factories. At least one must survive.'
 
 -- Primary Objective 3 - Timer
 M1_P3_Title = 'Gate in with ACU'
-M1_P3_Description = 'ACUs must gate before UEF\'s Defense Sattelites arrives.'
+M1_P3_Description = 'ACUs must gate in before UEF\'s Defense Sattelites arrives.'
 
 
 
@@ -150,14 +150,14 @@ M1_Kill_Research_Station_1 = {
 
 -- Following dialogue / Actor: TBD / Update 1/8/2016 / VO TODO
 M1_Kill_Research_Station_2 = {
-	{text = '[Research]: This is Director TODO:name. Research Station Gama is detecting incoming Order units from the southeast.', vid = '', bank = '', cue = '', faction = 'UEF'},
+	{text = '[Research]: This is Director TODO:name. Research Station Gamma is detecting incoming Order units from the southeast.', vid = '', bank = '', cue = '', faction = 'UEF'},
 	{text = '[UEF Commander]: I\'m taking over control of all military stuctures. Destroying the Order forces won\'t take long...', vid = '', bank = '', cue = '', faction = 'UEF'},
 	{text = '[Order Commander]: We shall see.', vid = '', bank = '', cue = '', faction = 'Aeon'},
 }
 
 -- Timer reveal / Actor: TBD / Update 1/8/2016 / VO TODO
 M1_Reveal_Timer = {
-	{text = '[Seraphim]: Warrior, our intel indicates there are several Experimental Defense Satellites approaching the carrier\'s location.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+	{text = '[Seraphim]: Warrior, we are detecting several Experimental Defense Satellites approaching the carrier\'s location.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
 	{text = '[UEF Commander]: You\'ve come to the wrong planet you freak!', vid = '', bank = '', cue = '', delay = 5, faction = 'UEF'},
 	{text = '[QAI]: I will make a virus that will disable the satellites. However uploading it will require an ACU to be on the planet.', vid = '', bank = '', cue = '', faction = 'Cybran'},
 }
@@ -181,17 +181,17 @@ M1_Gate_In_Button = {
 
 -- Research Station Killed / Actor: TBD / Update 1/8/2016 / VO TODO
 M1_Research_Station_Killed_1 = {
-	{text = '[Seraphim]: Confirming the first research station is destroyed. Proceed with clearing the landing area.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+	{text = '[Seraphim]: We have confirmed that the first research station is destroyed. Proceed with clearing the landing area. Sanitize everything, Warrior.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
 }
 
 -- Research Station Killed / Actor: TBD / Update 1/8/2016 / VO TODO
 M1_Research_Station_Killed_2 = {
-	{text = '[Seraphim]: Confirming the first research station is destroyed.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+	{text = '[Seraphim]: We have confirmed that the first research station is destroyed.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
 }
 
 -- Landing Area Cleared / Actor: TBD / Update 1/8/2016 / VO TODO
 M1_Landing_Area_Cleared = {
-	{text = '[Seraphim]: The landing area secured. Starting gate in procedures.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+	{text = '[Seraphim]: The landing area has been sanitized. We will start the gate in procedures, Warrior.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
 }
 
 
@@ -212,7 +212,7 @@ M1_Timer_Obj_Reminder_2 = {
 
 -- 1 min until satellites arrive / Actor: TBD / Update 8/9/2016 / VO TODO
 M1_Timer_Obj_Reminder_3 = {
-	{text = '[QAI]: The UEF satellites will arrive in 1 minutes.', vid = '', bank = '', cue = '', faction = 'Cybran'},
+	{text = '[QAI]: The UEF satellites will arrive in 1 minute.', vid = '', bank = '', cue = '', faction = 'Cybran'},
 }
 
 
@@ -228,12 +228,12 @@ M1_Timer_Obj_Reminder_3 = {
 ------------
 -- Gate in ACU / Actor: TBD / Update 8/9/2016 / VO TODO
 M2_Intro_1 = {
-	{text = '[QAI]: Gating in AUCs... Virus upload started.', vid = '', bank = '', cue = '', faction = 'Cybran'},
+	{text = '[QAI]: Gating in ACUs... Virus upload started.', vid = '', bank = '', cue = '', faction = 'Cybran'},
 }
 
 -- Incoming attack / Actor: TBD / Update 12/9/2016 / VO TODO
 M2_Intro_2 = {
-	{text = '[Seraphim]: Warrior, enemy units are approaching your position, destroy them all and establish a base. The Order commander will support your assault.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+	{text = '[Seraphim]: Warrior, the enemy is sending units to your position, destroy them all and establish a base. The Order commander will support your assault.', vid = '', bank = '', cue = '', faction = 'Seraphim'},
 	{text = '[QAI]: Scanning area for the main UEF research station.', vid = '', bank = '', cue = '', faction = 'Cybran'},
 }
 
@@ -246,11 +246,11 @@ M2_Post_Intro_1 = {
 
 -- Satellites dying / Actor: TBD / Update 12/9/2016 / VO TODO
 M2_Post_Intro_2 = {
-	{text = '[UEF Commander]: What the hell is going on? I\'m losing control of the satellites, they are falling down from the sky!.', vid = '', bank = '', cue = '', faction = 'UEF'},
+	{text = '[UEF Commander]: What the hell is going on? I\'m losing control of the satellites, they are falling out of the sky!.', vid = '', bank = '', cue = '', faction = 'UEF'},
 	{text = '[Seraphim]: Ha-ha-ha!.', vid = '', bank = '', cue = '', delay = 2, faction = 'Seraphim'},
-	{text = '[Research]: Seems like our network got infected with some kind of virus. It is disturbing the communication between the control center and the satellite.', vid = '', bank = '', cue = '', faction = 'UEF'},
+	{text = '[Research]: Seems like our network got infected with some kind of virus. It is interrupting the communication between the control center and the satellite.', vid = '', bank = '', cue = '', faction = 'UEF'},
 	{text = '[UEF Commander]: Fix it ASAP!.', vid = '', bank = '', cue = '', delay = 5, faction = 'UEF'},
-	{text = '[QAI]: I am unable to locate the main UEF research facility. Monitoring station on the planet is required. Sending it ACU.', vid = '', bank = '', cue = '', faction = 'Cybran'},
+	{text = '[QAI]: I am unable to locate the main UEF research facility. Monitoring station on the planet is required. Sending in ACU.', vid = '', bank = '', cue = '', faction = 'Cybran'},
 }
 
 
@@ -270,7 +270,7 @@ M2_P4_Description = 'QAI will construct a monitoring station to locate UEF resea
 
 -- Primary Objective 5 - Timer
 M2_P5_Title = 'Wait until QAI locates UEF'
-M2_P5_Description = 'Location the research facility will take some time, prepare your army meanwhile.'
+M2_P5_Description = 'Locating the research facility will take some time, prepare your army meanwhile.'
 
 
 
@@ -279,12 +279,12 @@ M2_P5_Description = 'Location the research facility will take some time, prepare
 ------------
 -- Protect QAI / Actor: TBD / Update 12/9/2016 / VO TODO
 M2_Protect_QAI = {
-	{text = '[Seraphim]: Warrior, make sure QAI\'s ACU won\'t die. Must must succeed!', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+	{text = '[Seraphim]: Warrior, make sure QAI\'s ACU doesn't get destroyed. It must locate the research station!', vid = '', bank = '', cue = '', faction = 'Seraphim'},
 }
 
 -- QAI dies / Actor: TBD / Update 12/9/2016 / VO TODO
 M2_QAI_Dead = {
-	{text = '[Seraphim]: QAI\'s ACU was destroyed. We can\'t locate UEF research station anymore!', vid = '', bank = '', cue = '', faction = 'Seraphim'},
+	{text = '[Seraphim]: QAI\'s ACU was destroyed. We can\'t locate the UEF research station anymore!', vid = '', bank = '', cue = '', faction = 'Seraphim'},
 }
 
 -- Reveal Timer objective / Actor: TBD / Update 12/9/2016 / VO TODO
