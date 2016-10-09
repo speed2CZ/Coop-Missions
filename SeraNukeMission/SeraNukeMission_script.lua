@@ -17,6 +17,11 @@ local M2UEFAI = import('/maps/SeraNukeMission/SeraNukeMission_m2UEFAI.lua')
 local M3AeonAI = import('/maps/SeraNukeMission/SeraNukeMission_m3AeonAI.lua') 
 local M3CybranAI = import('/maps/SeraNukeMission/SeraNukeMission_m3CybranAI.lua')  
 local M3UEFAI = import('/maps/SeraNukeMission/SeraNukeMission_m3UEFAI.lua')
+
+local M4AeonAI = import('/maps/SeraNukeMission/SeraNukeMission_m4AeonAI.lua')
+local M4CybranAI = import('/maps/SeraNukeMission/SeraNukeMission_m4CybranAI.lua')
+local M4UEFAI = import('/maps/SeraNukeMission/SeraNukeMission_m4UEFAI.lua')
+
 local Objectives = import('/lua/ScenarioFramework.lua').Objectives
 #local OpStrings = import('/maps/SeraNukeMission/SeraNukeMission_strings.lua')  --> make
 local ScenarioFramework = import('/lua/ScenarioFramework.lua')
@@ -37,7 +42,7 @@ ScenarioInfo.Civilians = 7
 ScenarioInfo.Coop1 = 8
 ScenarioInfo.Coop2 = 9
 ScenarioInfo.Coop3 = 10
-ScenarioInfo.HumanPlayers = {} --Is this needed????
+---ScenarioInfo.HumanPlayers = {} --Is this needed????
 
 
 ScenarioInfo.PlayerExists = false
@@ -84,19 +89,10 @@ end
 
 function OrderCommanderKilled()
 	ArmyBrains[Order]:OnDefeat()
-		--for i,v in ArmyBrains[Seraphim]:GetListOfUnits(categories.ALLUNITS, false) do
-		--	v:Kill()
-		--end
-	return
 end
 
 function SeraphimCommanderKilled()
 	ArmyBrains[Seraphim]:OnDefeat()
-		--WaitSeconds(5)
-		--for i,v in ArmyBrains[Seraphim]:GetListOfUnits(categories.ALLUNITS, false) do
-		--	v:Kill()
-		--end
-	return
 end
 
 function M1CoalitionAttacks()
@@ -194,7 +190,15 @@ function OnPopulate(scenario)
 		ScenarioInfo.Coop2Exists = true
 	end
 	if ArmyTable[ScenarioInfo.Coop3] then
-		ScenarioInfo.Coop2Exists = true
+		ScenarioInfo.Coop3Exists = true
+		ScenarioInfo.Coop3Base = ScenarioInfoScenarioUtils.CreateArmyGroup('Coop3','Base')
+		----create mex positions for this base that are not normally there
+		for k, unit in EntityCategoryFilterDown(categories.uab1302, ScenarioInfo.Coop3Base) do
+			posx = unit:GetPosition()[1]
+			posy = unit:GetPosition()[3]
+			GenerateResourcesMarker(posx, posy)		
+		end
+
 	end
     -- Unit Cap
     --ScenarioFramework.SetSharedUnitCap(1000)
@@ -226,6 +230,18 @@ function OnPopulate(scenario)
 		M1SeraAI.SeraphimBaseAI() 
 		ArmyBrains[Seraphim]:PBMSetCheckInterval(6)
 	else
+		local Coop1Base = {}
+		Coop1Base.Core = ScenarioUtils.CreateArmyGroup('Seraphim', 'CoreBase')
+		Coop1Base.InnerDefenseRing = ScenarioUtils.CreateArmyGroup('Seraphim', 'InnerDefenseRing' )
+		Coop1Base.SupportFactories = ScenarioUtils.CreateArmyGroup('Seraphim', 'SeraphimSupportFactories')	
+		if Difficulty<3 then
+			Coop1Base.OuterDefenseRing = ScenarioUtils.CreateArmyGroup('Seraphim', 'OuterDefenseRing' )
+		end
+		for index, group in Coop1Base do
+			for i, unit in group do
+				ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Coop1])
+			end
+		end
 	end
 	
 	------------
@@ -235,6 +251,7 @@ function OnPopulate(scenario)
 	local DefenseForceEast = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M1_DefenseForceEast_D' .. Difficulty, 'GrowthFormation')
 	local DefenseFleet1 = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'DefenseFleet1_D' .. Difficulty, 'GrowthFormation')
 	local DefenseFleet2 = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'DefenseFleet2_D' .. Difficulty, 'GrowthFormation')
+	local DefenseAirPatrol = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M1_DefeseAirPatrol_D' .. Difficulty, 'GrowthFormation')
 	
 	--If there's no coop1, set patrols
 	if not ScenarioInfo.Coop1Exists then
@@ -242,6 +259,7 @@ function OnPopulate(scenario)
 		ScenarioFramework.PlatoonPatrolChain(DefenseForceEast, 'M1_SeraLandPatrolEast')
 		ScenarioFramework.PlatoonPatrolChain(DefenseFleet1, 'M1_SeraSeaPatrolSouth')	
 		ScenarioFramework.PlatoonPatrolChain(DefenseFleet2, 'M1_SeraSeaPatrolWest')
+		ScenarioFramework.PlatoonPatrolChain(DefenseAirPatrol, 'M1_SeraLandPatrolSouth')
 	else  --else, just give them to coop1
 		for index, unit in DefenseForceSouth:GetPlatoonUnits() do
 			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Coop1])
@@ -253,6 +271,9 @@ function OnPopulate(scenario)
 			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Coop1])
 		end
 		for index, unit in DefenseFleet2:GetPlatoonUnits() do
+			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Coop1])
+		end
+		for index, unit in DefenseAirPatrol:GetPlatoonUnits() do
 			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Coop1])
 		end
 	end
@@ -382,7 +403,7 @@ function IntroMission1NIS()
 			IssueAttack(ScenarioInfo.NISGroupPlayer ,ScenarioInfo.NISGatePlayer)
 			
 			WaitSeconds(8)
-			ScenarioInfo.PlayerCommander = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true, PlayerCommanderKilled)
+			ScenarioInfo.PlayerCommander = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Gate', true, true, PlayerCommanderKilled)
 			
 			--WaitSeconds(1)
 			IssueGuard({ScenarioInfo.PlayerCommander}, ScenarioInfo.YolonaOss)
@@ -392,39 +413,9 @@ function IntroMission1NIS()
 		
 		-- spawn coop players too
 		if ScenarioInfo.Coop1Exists or ScenarioInfo.Coop2Exists or ScenarioInfo.Coop3Exists then
-			ForkThread(function()
-				WaitSeconds(10)
-				local VisMarkerPlayer	= ScenarioFramework.CreateVisibleAreaLocation(100, 'M1NISCoop', 10, ArmyBrains[Player])
-				Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('NISCoopGate'), 4)
-				local ArmyTable = ListArmies()
-				ScenarioInfo.NISGateCoop = ScenarioUtils.CreateArmyGroup('Seraphim', 'CoopGate')[1]
-				ScenarioInfo.NISGroupCoop = ScenarioUtils.CreateArmyGroup('UEF', 'M1_NISAirRaid')		
-				IssueAttack(ScenarioInfo.NISGroupCoop ,ScenarioInfo.NISGateCoop)
-				if ScenarioInfo.Coop1Exists then
-					ScenarioInfo.Coop1Commander = ScenarioFramework.SpawnCommander('Coop1', 'Commander', 'Warp', true, true, Coop1CommanderKilled)
-					WaitSeconds(1)
-					IssueMove({ScenarioInfo.Coop1Commander},ScenarioUtils.MarkerToPosition('Coop1Move'))
-					WaitSeconds(1)
-				end
-				if ScenarioInfo.Coop2Exists then
-					ScenarioInfo.Coop2Commander = ScenarioFramework.SpawnCommander('Coop2', 'Commander', 'Warp', true, true, Coop2CommanderKilled)
-					WaitSeconds(1)
-					IssueMove({ScenarioInfo.Coop1Commander},ScenarioUtils.MarkerToPosition('Coop1Move'))
-					WaitSeconds(1)
-				end				
-				if ScenarioInfo.Coop3Exists then
-					ScenarioInfo.Coop3Commander = ScenarioFramework.SpawnCommander('Coop3', 'Commander', 'Warp', true, true, Coop3CommanderKilled)
-					WaitSeconds(1)
-					IssueMove({ScenarioInfo.Coop3Commander},ScenarioUtils.MarkerToPosition('Coop1Move'))
-					WaitSeconds(1)
-				end	
-				for k, v in ScenarioInfo.NISGroupCoop do
-					if not v:IsDead() then
-						v:Kill()
-					end
-				end
-				ScenarioInfo.NISGateCoop:Kill()
-			end)
+			WaitSeconds(10)
+			ForkThread(M1CoopNIS)
+			WaitSeconds(20)
 		else
 			WaitSeconds(16)
 		end
@@ -443,16 +434,58 @@ function IntroMission1NIS()
     IntroMission1()
 end
 
-function Coop1CommanderKilled()
+function M1CoopNIS()
+	local VisMarkerPlayer	= ScenarioFramework.CreateVisibleAreaLocation(100, 'M1NISCoop', 20, ArmyBrains[Player])
+	ScenarioInfo.NISGroupCoop = ScenarioUtils.CreateArmyGroup('UEF', 'M1_NISAirRaidCoop')		
+	ScenarioInfo.NISGateCoop = ScenarioUtils.CreateArmyGroup('Seraphim', 'M1_CoopGate')[1]
+	IssueAttack(ScenarioInfo.NISGroupCoop ,ScenarioInfo.NISGateCoop)
+	Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('M1NISCoop'), 4)
+	if ScenarioInfo.Coop1Exists then
+		ScenarioInfo.Coop1Commander = ScenarioFramework.SpawnCommander('Coop1', 'Commander', 'Gate', true, true, Coop1CommanderKilled)
+		ScenarioInfo.SeraphimCommander = ScenarioInfo.Coop1Commander
+		IssueMove({ScenarioInfo.Coop1Commander},ScenarioUtils.MarkerToPosition('Coop1Move'))
+		WaitSeconds(2)
+	else
+		WaitSeconds(2)
+	end
+	if ScenarioInfo.Coop2Exists then
+		ScenarioInfo.Coop2Commander = ScenarioFramework.SpawnCommander('Coop2', 'Commander', 'Gate', true, true, Coop2CommanderKilled)
+		WaitSeconds(1)
+		IssueMove({ScenarioInfo.Coop2Commander},ScenarioUtils.MarkerToPosition('Coop2Move'))
+		WaitSeconds(2)
+	else
+		WaitSeconds(3)
+	end				
+	if ScenarioInfo.Coop3Exists then
+		ScenarioInfo.Coop3Commander = ScenarioFramework.SpawnCommander('Coop3', 'Commander', 'Gate', true, true, Coop3CommanderKilled)
+		WaitSeconds(1)
+		IssueMove({ScenarioInfo.Coop3Commander},ScenarioUtils.MarkerToPosition('Coop3Move'))
+		WaitSeconds(3)
+	else
+		WaitSeconds(3)
+	end	
+	
+	for k, v in ScenarioInfo.NISGroupCoop do
+		if not v:IsDead() then
+			IssueAggressiveMove({v},ScenarioUtils.MarkerToPosition('Coop1Move'))
+		end
+	end
+	---]]
+	--WaitSeconds(2)
+	ScenarioInfo.NISGateCoop:Kill()
 
+end
+
+function Coop1CommanderKilled()
+	ArmyBrains[Coop1]:OnDefeat()
 end
 
 function Coop2CommanderKilled()
-
+	ArmyBrains[Coop2]:OnDefeat()
 end
 
 function Coop3CommanderKilled()
-
+	ArmyBrains[Coop3]:OnDefeat()
 end
 
 function IntroMission1()
@@ -504,15 +537,7 @@ function StartMission1()
             Units = {ScenarioInfo.SeraphimCommander},
         }
     )
-    ScenarioInfo.M1S1:AddResultCallback(
-        function(result)
-            if(result == false) then
-                --PlayerLose()
-				--ArmyBrains[Seraphim]:OnDefeat()
-
-            end
-        end
-    )
+    ScenarioInfo.M1S1:AddResultCallback()
     table.insert(AssignedObjectives, ScenarioInfo.M1S1)
 	
     ------------------------------------------
@@ -658,7 +683,7 @@ function M2CoalitionAttacks()
 		end
 	end)
 	
-	--UEF Fatboy Attack, two attacks at the same time, but happens only once
+	--UEF Fatboy Attack, two attacks at the same time, but happens only once this wave
 	ForkThread(function()
 	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_FatBoys_D' .. Difficulty, 'GrowthFormation')
     ScenarioFramework.PlatoonMoveChain(platoon, 'M2_FatBoyMove1')
@@ -744,9 +769,6 @@ function Mission2NIS()
 end
 
 function IntroMission2()
-
-
-
     if ScenarioInfo.MissionNumber == 2 or ScenarioInfo.MissionNumber == 3 then
         return
     end
@@ -831,9 +853,11 @@ function IntroMission2()
 	end
 	
 	------
-	-- Add Seraphim Tech 3 navy attack to base build
+	-- Add Seraphim Tech 3 navy attack to base build if we have an ai there
 	----
-	M1SeraAI.M2SeraphimAttacks()
+	if not ScenarioInfo.Coop1Exists then
+		M1SeraAI.M2SeraphimAttacks()
+	end
 	
 	ForkThread(Mission2NIS)
 	
@@ -913,7 +937,23 @@ function IntroMission2()
 	
 end
 
-function 	M3CybranFleetAttack()
+function M3CoalitionAttacks() --We will save time by also calling this in M4
+	M3CybranFleetAttack()
+	M3AeonFleetAttack()
+	M3CybranMegaliths()
+	M3AeonGCs()
+	M3CybranMonkeyAttack()
+	M3UEFFatboyAttack()
+	M3UEFAirRaid()
+	M3CybranAirRaid()
+	if ScenarioInfo.MissionNumber == 3 then --These attacks only occur on M3
+		M3AeonCZAR()
+		M3_CybranSubAttack()	
+		M3_UEFSubAttack()
+	end
+end
+
+function M3CybranFleetAttack()
     platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_FleetAttack_D' .. Difficulty, 'GrowthFormation')
     ScenarioFramework.PlatoonPatrolChain(platoon, 'M3_CybranFleetAttack')
 	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
@@ -925,7 +965,7 @@ function M3AeonFleetAttack()
 	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
 end
 
-function 	M3_CybranSubAttack()
+function M3_CybranSubAttack()
 	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_SubAttack_D' .. Difficulty, 'GrowthFormation')
 	ScenarioFramework.PlatoonMoveChain(platoon, 'M3_CybranSubAttack')
 	ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
@@ -990,11 +1030,6 @@ function M3_UEFSubAttack()
 	end
 end
 
-function M3SeraphimSelens()
-	local Selens = ScenarioUtils.CreateArmyGroup('Seraphim', 'M3_Selens')
-	SetFireState(Selens, 'HoldFire')
-end
-
 function M3CybranMegaliths()
     platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_Megaliths_D' .. Difficulty, 'GrowthFormation')
     ScenarioFramework.PlatoonAttackChain(platoon, 'M1_SeraphimBase')
@@ -1043,6 +1078,64 @@ function M3AeonCZAR()
 	end)
 end
 
+function M3CybranMonkeyAttack()
+	ScenarioInfo.M3RecurringAttacks.CybranSpiders = ForkThread(function()
+		for i=1, ((Difficulty + 1)) do
+			WaitSeconds(120)
+			platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M2_Experimentals_D' .. Difficulty, 'GrowthFormation')
+			ScenarioFramework.PlatoonMoveChain(platoon, 'M1_CybranAmphibiousMove')
+			ScenarioFramework.PlatoonAttackChain(platoon, 'M1_SeraphimBase')
+			ScenarioFramework.PlatoonMoveChain(platoon, 'M1_CybranAmphibiousAttack')
+			WaitSeconds(240/Difficulty)
+		end
+	end)
+end
+
+function M3UEFFatboyAttack()
+	ForkThread(function()
+		platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_FatBoys_D' .. Difficulty, 'GrowthFormation')
+		ScenarioFramework.PlatoonMoveChain(platoon, 'M2_FatBoyMove1')
+		ScenarioFramework.PlatoonAttackChain(platoon, 'M2_OrderBase')
+		ScenarioFramework.PlatoonMoveChain(platoon, 'M1_YolonaOss')
+		
+		WaitSeconds(10)
+		
+		platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_FatBoys_D' .. Difficulty, 'GrowthFormation')
+		ScenarioFramework.PlatoonMoveChain(platoon, 'M2_FatBoyMove2')
+		ScenarioFramework.PlatoonAttackChain(platoon, 'M2_OrderBase')
+		ScenarioFramework.PlatoonMoveChain(platoon, 'M1_YolonaOss')
+	end)
+end
+
+function M3UEFAirRaid()
+	ScenarioInfo.M3RecurringAttacks.UEFAirRaids = ForkThread(function()
+		for i = 1, (5 * Difficulty) do
+			platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M3_AirRaid_D' .. Difficulty, 'GrowthFormation')
+			ScenarioFramework.PlatoonAttackChain(platoon, 'M2_OrderBase')
+			ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
+			WaitSeconds(5)
+			WaitSeconds(120/Difficulty)
+		end
+	end)
+end
+
+function M3CybranAirRaid()
+	ScenarioInfo.M3RecurringAttacks.CybranAirRaids = ForkThread(function()
+		for i = 1, (5 * Difficulty) do
+			platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_AirRaid_D' .. Difficulty, 'GrowthFormation')
+			ScenarioFramework.PlatoonAttackChain(platoon, 'M2_CybranIslandBase')
+			ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
+			WaitSeconds(5)
+			WaitSeconds(120/Difficulty)
+		end
+	end)
+end
+
+function M3SeraphimSelens()
+	local Selens = ScenarioUtils.CreateArmyGroup('Seraphim', 'M3_Selens')
+	SetFireState(Selens, 'HoldFire')
+end
+
 function IntroMission3()
     if ScenarioInfo.MissionNumber == 3 or ScenarioInfo.MissionNumber == 4 then
         return
@@ -1058,6 +1151,20 @@ function IntroMission3()
 	
 	ScenarioInfo.M3RecurringAttacks = {}
 	
+	------------
+	--If the Order and Seraphim have surviving fleets, let's have them start looking for enemies to kill
+	-----------
+	
+	if ScenarioInfo.M2SeraphimFleet:GetBrain():PlatoonExists(ScenarioInfo.M2SeraphimFleet) then
+		ScenarioInfo.M2SeraphimFleet:PlatoonAttackClosestUnit()
+	end
+	if  ScenarioInfo.M2OrderEastFleet :GetBrain():PlatoonExists( ScenarioInfo.M2OrderEastFleet) then
+		 ScenarioInfo.M2OrderEastFleet:PlatoonAttackClosestUnit()
+	end	
+	if  ScenarioInfo.M2OrderWestFleet :GetBrain():PlatoonExists( ScenarioInfo.M2OrderWestFleet) then
+		 ScenarioInfo.M2OrderWestFleet:PlatoonAttackClosestUnit()
+	end	
+	   
 	------------
     -- Seraphim and Order Experimental Attacks and Seraphim Selens
     ------------
@@ -1079,82 +1186,16 @@ function IntroMission3()
 	end
 	
 	------------
-    -- Cybran and Aeon Fleet Attacks
+    -- Cybran and Aeon Fleet Attacks, UEF and Cybran Submarine Attacks
     ------------
-	
-	M3CybranFleetAttack()
-
-	M3AeonFleetAttack()
-	
-	------------
-    -- UEF and Cybran Submarine Attacks
-    ------------
-	M3_CybranSubAttack()
-
-	M3_UEFSubAttack()
-	
 	------------
     -- UEF, Cybran, and Aeon Experimental Attacks
     ------------
-	
-	--Megaliths
-	M3CybranMegaliths()
-
-	---GCs
-	M3AeonGCs()
-	
-	--Cybran Monkey Attack
-	ScenarioInfo.M3RecurringAttacks.CybranSpiders = ForkThread(function()
-	for i=1, (Difficulty + 1) do
-		WaitSeconds(120)
-		platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M2_Experimentals_D' .. Difficulty, 'GrowthFormation')
-		ScenarioFramework.PlatoonMoveChain(platoon, 'M1_CybranAmphibiousMove')
-		ScenarioFramework.PlatoonAttackChain(platoon, 'M1_SeraphimBase')
-		ScenarioFramework.PlatoonMoveChain(platoon, 'M1_CybranAmphibiousAttack')
-		WaitSeconds(240/Difficulty)
-	end
-	end)
-	
-	--UEF Fatboy Attack
-	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M2_FatBoys_D' .. Difficulty, 'GrowthFormation')
-	ScenarioFramework.PlatoonMoveChain(platoon, 'M3_UEFIslandBase')
-	platoon:ForkThread(function(platoon)
-		WaitSeconds(5*60)
-		if platoon:GetBrain():PlatoonExists(platoon) then
-			ScenarioFramework.PlatoonMoveChain(platoon, 'M2_FatBoyMove1')
-			ScenarioFramework.PlatoonAttackChain(platoon, 'M2_OrderBase')
-			ScenarioFramework.PlatoonMoveChain(platoon, 'M1_YolonaOss')
-		else
-		end
-	end)
+	M3CoalitionAttacks()
 	
 	------------
     -- Cybran, UEF, and Aeon Air Raids
     ------------
-	--Cybran Air Raid, lasts 10 minutes
-	ScenarioInfo.M3RecurringAttacks.CybranAirRaids = ForkThread(function()
-		for i = 1, (5 * Difficulty) do
-			platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_AirRaid_D' .. Difficulty, 'GrowthFormation')
-			ScenarioFramework.PlatoonAttackChain(platoon, 'M2_CybranIslandBase')
-			ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
-			WaitSeconds(5)
-			WaitSeconds(120/Difficulty)
-		end
-	end)
-	
-	-- Aeon Air Raid
-	M3AeonCZAR()
-	
-	--UEF Air Raid, lasts 10 minutes
-	ScenarioInfo.M3RecurringAttacks.CybranAirRaids = ForkThread(function()
-		for i = 1, (5 * Difficulty) do
-			platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M3_AirRaid_D' .. Difficulty, 'GrowthFormation')
-			ScenarioFramework.PlatoonAttackChain(platoon, 'M2_OrderBase')
-			ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_YolonaOss')
-			WaitSeconds(5)
-			WaitSeconds(120/Difficulty)
-		end
-	end)
 	
 	------------
     -- Civilian City and Defenses
@@ -1305,8 +1346,85 @@ IntroMission4 = function()
 	
 	ScenarioFramework.SetPlayableArea('AREA_4', false)
 	
-	---Spawn Cybran, Aeon and UEF bases with Nukes, Mavor, and Salvation.  Spawn the commanders.  Spawn lots of attacks.  Set objective to kill the commanders.
+	---UEF, Cybran, and Aeon Sea, Air, and Experimental Attacks
+	M3CoalitionAttacks() 
+	
+	------------
+    -- Aeon Air Base, Naval Base, and Salvation Base
+    ------------
+	M4AeonAI.AeonM4AirBaseAI()
+	M4AeonAI.AeonM4NavalBaseAI()
+	M4AeonAI.AeonM4SalvationBaseAI()
 
+	local AeonM4DefenseLine = ScenarioUtils.CreateArmyGroup('Aeon','M4_DefenseLine')	
+	local AeonM4SMDs = ScenarioUtils.CreateArmyGroup('Aeon','M4_SMD')
+	for i,SMD in AeonM3SMDs do
+		SMD:GiveTacticalSiloAmmo(Difficulty - 1)
+	end
+	--ACU
+    ScenarioInfo.AeonCommander = ScenarioFramework.SpawnCommander('Aeon', 'Commander', false, 'Rhealis', true, M4AeonCommanderKilled, 
+        {'AdvancedEngineering','T3Engineering','Shield','ShieldHeavy','EnhancedSensors'})
+	
+	------------
+    -- UEF Air Base, Naval Base, and Mavor Base
+    ------------
+	M4UEFAI.UEFM4AirBaseAI()
+	M4UEFAI.UEFM4NavalBaseAI()
+	M4UEFAI.UEFM4SalvationBaseAI()
+	
+	local UEFM4DefenseLine = ScenarioUtils.CreateArmyGroup('UEF','M4_DefenseLine')	
+	local UEFM4SMDs = ScenarioUtils.CreateArmyGroup('UEF','M4_SMD')
+	for i,SMD in AeonM3SMDs do
+		SMD:GiveTacticalSiloAmmo(Difficulty - 1)
+	end
+	---ACU
+	ScenarioInfo.UEFCommander = ScenarioFramework.SpawnCommander('UEF', 'Commander', false, 'Henry', true, M4UEFCommanderKilled, 
+        {'AdvancedEngineering','T3Engineering','Shield','ShieldGeneratorField','ResourceAllocation'})
+	
+	
+	------------
+    -- Cybran Air Base, Naval Base, and Mavor Base
+    ------------
+	M4CybranAI.CybranM4AirBaseAI()
+	M4CybranAI.CybranM4NavalBaseAI()
+	M4CybranAI.CybranM4SalvationBaseAI()
+	
+	local CybranM4DefenseLine = ScenarioUtils.CreateArmyGroup('Cybran','M4_DefenseLine')	
+	local CybranM4SMDs = ScenarioUtils.CreateArmyGroup('Cybran','M4_SMD')
+	for i,SMD in AeonM3SMDs do
+		SMD:GiveTacticalSiloAmmo(Difficulty - 1)
+	end
+	
+	---ACU
+	ScenarioInfo.CybranCommander = ScenarioFramework.SpawnCommander('Cybran', 'Commander', false, 'Speed2', true, M4CybranCommanderKilled, 
+        {'AdvancedEngineering','T3Engineering','StealthGenerator','CloakingGenerator','MicrowaveLaserGenerator'})
+
+
+	---	Set objective to kill the commanders.
+    ScenarioInfo.M3P4 = Objectives.CategoriesInArea(
+        'primary',                      -- type
+        'incomplete',                   -- complete
+        'Kill the Coalition Commanders',    -- title
+        'Defeat the Coalition commanders.',  -- description
+        'kill',                         -- action
+        {
+            Units = {ScenarioInfo.UEFCommander,
+					ScenarioInfo.CybranCommander,
+					ScenarioInfo.AeonCommander},
+        }
+   )
+end
+
+function M4UEFCommanderKilled()
+	ArmyBrains[UEF]:OnDefeat()
+end
+
+function M4CybranCommanderKilled()
+	ArmyBrains[Cybran]:OnDefeat()
+end
+
+function M4AeonCommanderKilled()
+	ArmyBrains[Aeon]:OnDefeat()
 end
 
 PlayerLoseYolonaOss = function()
