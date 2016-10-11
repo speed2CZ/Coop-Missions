@@ -21,9 +21,9 @@ local ScenarioPlatoonAI = import('/lua/ScenarioPlatoonAI.lua')
 local ScenarioUtils = import('/lua/sim/ScenarioUtilities.lua')
 local Utilities = import('/lua/Utilities.lua')
 
----------
+----------
 -- Globals
----------
+----------
 ScenarioInfo.Player = 1
 ScenarioInfo.Seraphim = 2
 ScenarioInfo.Order = 3
@@ -34,10 +34,10 @@ ScenarioInfo.Civilians = 7
 ScenarioInfo.Coop1 = 8
 ScenarioInfo.Coop2 = 9
 ScenarioInfo.Coop3 = 10
-ScenarioInfo.HumanPlayers = {}
---------
+
+---------
 -- Locals
---------
+---------
 local Player = ScenarioInfo.Player
 local Coop1 = ScenarioInfo.Coop1
 local Coop2 = ScenarioInfo.Coop2
@@ -48,7 +48,6 @@ local Order = ScenarioInfo.Order
 local Seraphim = ScenarioInfo.Seraphim
 local UEF = ScenarioInfo.UEF
 local Civilians = ScenarioInfo.Civilians
-
 
 local AssignedObjectives = {}
 local Difficulty = ScenarioInfo.Options.Difficulty
@@ -87,7 +86,7 @@ function OnPopulate(scenario)
     local tblArmy = ListArmies()
     for army, color in colors do
         if tblArmy[ScenarioInfo[army]] then
-            ScenarioFramework.SetArmyColor(ScenarioInfo[army], unpack(color))
+            SetArmyColor(ScenarioInfo[army], unpack(color))
         end
     end
 
@@ -198,7 +197,7 @@ function IntroMission1NIS()
         local VisMarker1_2 = ScenarioFramework.CreateVisibleAreaLocation(110, 'M1_Vis_1_2', 0, ArmyBrains[Player])
         -- Intel on enemy bases, since they're not shown during NIS
         local VisMarker1_3 = ScenarioFramework.CreateVisibleAreaLocation(15, 'M1_North_Base_Marker', 1, ArmyBrains[Player])
-        local VisMarker1_3 = ScenarioFramework.CreateVisibleAreaLocation(15, 'M1_Vis_1_4', 1, ArmyBrains[Player])
+        local VisMarker1_4 = ScenarioFramework.CreateVisibleAreaLocation(15, 'M1_Vis_1_4', 1, ArmyBrains[Player])
 
         ForkThread(NISUnits)
 
@@ -230,23 +229,23 @@ function IntroMission1NIS()
             ScenarioInfo.CoopCDR = {}
             local tblArmy = ListArmies()
             if tblArmy[ScenarioInfo.Coop1] then
-                ScenarioInfo.CoopCDR1 = ScenarioFramework.SpawnCommander('Coop1', 'Commander', 'Warp', true, true)
+                ScenarioInfo.CoopCDR1 = ScenarioFramework.SpawnCommander('Coop1', 'Commander', 'Warp', true, true, PlayerDeath)
             end
 
             WaitSeconds(3)
 
             if tblArmy[ScenarioInfo.Coop2] then
-                ScenarioInfo.CoopCDR2 = ScenarioFramework.SpawnCommander('Coop2', 'Commander', 'Warp', true, true)
+                ScenarioInfo.CoopCDR2 = ScenarioFramework.SpawnCommander('Coop2', 'Commander', 'Warp', true, true, PlayerDeath)
             end
 
             WaitSeconds(5)
 
-            ScenarioInfo.PlayerCDR = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true)
+            ScenarioInfo.PlayerCDR = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true, PlayerDeath)
 
             WaitSeconds(3)
 
             if tblArmy[ScenarioInfo.Coop3] then
-                ScenarioInfo.CoopCDR3 = ScenarioFramework.SpawnCommander('Coop3', 'Commander', 'Warp', true, true)
+                ScenarioInfo.CoopCDR3 = ScenarioFramework.SpawnCommander('Coop3', 'Commander', 'Warp', true, true, PlayerDeath)
             end
         end)
 
@@ -261,7 +260,7 @@ function IntroMission1NIS()
         Cinematics.ExitNISMode()
     else
         DropReinforcements('Seraphim', 'Player', 'NIS_Bots_Player_D' .. Difficulty, 'NIS_Drop_Player', 'NIS_Transport_Death')
-        ScenarioInfo.PlayerCDR = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true)
+        ScenarioInfo.PlayerCDR = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true, PlayerDeath)
 
         -- spawn coop players too
         ScenarioInfo.CoopCDR = {}
@@ -269,7 +268,7 @@ function IntroMission1NIS()
         coop = 1
         for iArmy, strArmy in pairs(tblArmy) do
             if iArmy >= ScenarioInfo.Coop1 then
-                ScenarioInfo.CoopCDR[coop] = ScenarioFramework.SpawnCommander(strArmy, 'Commander', 'Warp', true, true)
+                ScenarioInfo.CoopCDR[coop] = ScenarioFramework.SpawnCommander(strArmy, 'Commander', 'Warp', true, true, PlayerDeath)
                 DropReinforcements('Seraphim', strArmy, 'NIS_Bots_' .. strArmy ..'_D' .. Difficulty, 'NIS_Drop_' .. strArmy, 'NIS_Transport_Death')
                 coop = coop + 1
                 WaitSeconds(0.5)
@@ -288,7 +287,7 @@ function NISUnits()
     end
 
     local units = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'NIS_Air', 'GrowthFormation')
-    for k, v in units:GetPlatoonUnits() do
+    for _, v in units:GetPlatoonUnits() do
         ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('NIS_Air_Chain')))
     end
 
@@ -300,7 +299,7 @@ function NISUnits()
     ForkThread(function()
         WaitSeconds(17)
         local ASFs = ScenarioUtils.CreateArmyGroup('UEF', 'NIS_Bomber_ASFs')
-        for k, v in ASFs do
+        for _, v in ASFs do
             IssueAttack({v}, ScenarioInfo.UnitNames[Seraphim]['NIS_Bomber_1'])
         end
     end)
@@ -311,10 +310,10 @@ function NISUnits()
     local MainLandFactory = ScenarioInfo.UnitNames[UEF]['NIS_Land_Fac']
     local MainAirFactory = ScenarioInfo.UnitNames[UEF]['NIS_Air_Fac']
 
-    for k, v in LandFactories do
+    for _, v in LandFactories do
         IssueFactoryAssist({v}, MainLandFactory)
     end
-    for k, v in AirFactories do
+    for _, v in AirFactories do
         IssueFactoryAssist({v}, MainAirFactory)
     end
 
@@ -331,12 +330,12 @@ function NISUnits()
     -- Seraphim Attack
     ------------------
     local ASFs = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'NIS_ASFs', 'GrowthFormation')
-    for k, v in ASFs:GetPlatoonUnits() do
+    for _, v in ASFs:GetPlatoonUnits() do
         ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('NIS_Air_Chain')))
     end
 
     local gunships = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'NIS_Gunships', 'GrowthFormation')
-    for k, v in gunships:GetPlatoonUnits() do
+    for _, v in gunships:GetPlatoonUnits() do
         IssueAggressiveMove({v}, ScenarioUtils.MarkerToPosition('M1_NIS_Destroy_Marker'))
     end
 
@@ -357,7 +356,7 @@ function NISUnits()
     WaitSeconds(2)
 
     local AirUnits = ArmyBrains[Seraphim]:GetListOfUnits(categories.xsa0303 + categories.xsa0203, false)
-    for k, unit in AirUnits do
+    for _, unit in AirUnits do
         IssueClearCommands({unit})
         IssueMove({unit}, ScenarioUtils.MarkerToPosition('M1_NIS_Destroy_Marker'))
         ScenarioFramework.CreateUnitToMarkerDistanceTrigger(DestroyUnit, unit, 'M1_NIS_Destroy_Marker', 10)
@@ -366,7 +365,7 @@ function NISUnits()
     WaitSeconds(10)
 
     local UEFAir = ArmyBrains[UEF]:GetListOfUnits(categories.uea0303, false)
-    for k, unit in UEFAir do
+    for _, unit in UEFAir do
         if unit and not unit:IsDead() then
             unit:Kill()
         end
@@ -382,7 +381,7 @@ function DropReinforcements(brain, targetBrain, units, DropLocation, TransportDe
         function()
             local allUnits = ScenarioUtils.CreateArmyGroup(brain, units)
 
-            for k, unit in allUnits do
+            for _, unit in allUnits do
                 if EntityCategoryContains( categories.TRANSPORTATION, unit ) then
                     table.insert(allTransports, unit )
                 else
@@ -390,7 +389,7 @@ function DropReinforcements(brain, targetBrain, units, DropLocation, TransportDe
                 end
             end
             
-            for k, transport in allTransports do
+            for _, transport in allTransports do
                 ScenarioFramework.AttachUnitsToTransports(landUnits, {transport})
                 WaitSeconds(0.5)
                 IssueTransportUnload({transport}, ScenarioUtils.MarkerToPosition(DropLocation))
@@ -398,7 +397,7 @@ function DropReinforcements(brain, targetBrain, units, DropLocation, TransportDe
                 ScenarioFramework.CreateUnitToMarkerDistanceTrigger(DestroyUnit, transport, TransportDestination, 10)
             end
 
-            for k, unit in landUnits do
+            for _, unit in landUnits do
                 while (not unit:IsDead() and unit:IsUnitState('Attached')) do
                     WaitSeconds(.5)
                 end
@@ -415,6 +414,10 @@ function IntroMission1()
 
     if Debug then
         Utilities.UserConRequest('SallyShears')
+        Utilities.UserConRequest('net_lag 0')
+        -- path_Armybudget 500
+        -- net_Lag 0
+        -- sc_FrameTimeClamp 30
         -- Utilities.UserConRequest('ren_IgnoreDecalLOD')
         -- Utilities.UserConRequest('ren_ShadowLOD' 500) -- 250
     end
@@ -516,7 +519,7 @@ function StartMission1()
     ScenarioFramework.CreateUnitToMarkerDistanceTrigger(M1SendPercies1, ScenarioInfo.PlayerCDR, 'M1_South_Base_Marker', 40)
     ScenarioFramework.CreateUnitToMarkerDistanceTrigger(M1SendPercies2, ScenarioInfo.PlayerCDR, 'M1_North_Base_Marker', 40)
 
-    for k, ACU in ScenarioInfo.CoopCDR or {} do
+    for _, ACU in ScenarioInfo.CoopCDR or {} do
         ScenarioFramework.CreateUnitToMarkerDistanceTrigger(M1SendPercies1, ACU, 'M1_South_Base_Marker', 40)
         ScenarioFramework.CreateUnitToMarkerDistanceTrigger(M1SendPercies2, ACU, 'M1_North_Base_Marker', 40)
     end
@@ -567,7 +570,7 @@ function M1SendPercies1(unit)
         table.insert(unitsTable, unit)
 
         local platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_Percies_1_D' .. Difficulty, 'GrowthFormation')
-        for k, v in platoon:GetPlatoonUnits() do
+        for _, v in platoon:GetPlatoonUnits() do
             IssueAttack({v}, unit)
         end
         ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_South_Land_Attack_Chain_' .. Random(1,2))
@@ -575,7 +578,7 @@ function M1SendPercies1(unit)
         WaitSeconds(270 - 30 * Difficulty)
 
         if ScenarioInfo.MissionNumber == 1 then
-            for k, unit in unitsTable do
+            for k, _ in unitsTable do
                 ScenarioFramework.CreateUnitToMarkerDistanceTrigger(M1SendPercies1, unit, 'M1_South_Base_Marker', 40)
                 table.remove(unitsTable, k)
             end
@@ -594,7 +597,7 @@ function M1SendPercies2(unit)
         table.insert(unitsTable, unit)
 
         local platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_Percies_2_D' .. Difficulty, 'GrowthFormation')
-        for k, v in platoon:GetPlatoonUnits() do
+        for _, v in platoon:GetPlatoonUnits() do
             IssueAttack({v}, unit)
         end
         ScenarioFramework.PlatoonPatrolChain(platoon, 'M1_North_Land_Attack_Chain_' .. Random(1,2))
@@ -602,7 +605,7 @@ function M1SendPercies2(unit)
         WaitSeconds(280 - 30 * Difficulty)
         
         if ScenarioInfo.MissionNumber == 1 then
-            for k, unit in unitsTable do
+            for k, _ in unitsTable do
                 ScenarioFramework.CreateUnitToMarkerDistanceTrigger(M1SendPercies2, unit, 'M1_North_Base_Marker', 40)
                 table.remove(unitsTable, k)
             end
@@ -698,8 +701,12 @@ function IntroMission2()
     M2OrderAI.OrderM2MainBaseAI()
     M2OrderAI.OrderM2NavalBaseAI()
     M2OrderAI.OrderM2ExpansionBaseAI()
-    --M2OrderAI.M2OrderCarriers()
-    ScenarioFramework.CreateTimerTrigger(M2OrderAI.M2OrderCarriers, 2 * Difficulty * 60)
+
+    if Debug then
+        M2OrderAI.M2OrderCarriers() -- Only for Testing
+    else
+        ScenarioFramework.CreateTimerTrigger(M2OrderAI.M2OrderCarriers, 2 * Difficulty * 60)
+    end
     ArmyBrains[Order]:PBMSetCheckInterval(5)
 
     -- Order CDR
@@ -709,18 +716,18 @@ function IntroMission2()
     -- Order Initial Patrols
     -- Air
     platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M2_Order_Init_Air_Patrol_D' .. Difficulty, 'AttackFormation')
-    for k, v in platoon:GetPlatoonUnits() do
+    for _, v in platoon:GetPlatoonUnits() do
         ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M2_Order_Main_Base_Air_Patrol_Chain')))
     end
 
     -- Land
     platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M2_Oder_Init_Colos_' .. Difficulty, 'AttackFormation')
-    for k, v in platoon:GetPlatoonUnits() do
+    for _, v in platoon:GetPlatoonUnits() do
         ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M2_Order_Main_Base_Exp_Patrol_Chain')))
     end
 
     platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M2_Order_Init_Air_Patrol_2', 'AttackFormation')
-    for k, v in platoon:GetPlatoonUnits() do
+    for _, v in platoon:GetPlatoonUnits() do
         ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M2_Order_Naval_Defense_Chain')))
     end
 
@@ -748,7 +755,6 @@ function IntroMission2()
 
     ForkThread(M2CheatEconomy)
     ForkThread(EnableStealthOnAir)
-    ForkThread(MassFabsEnergyDrainReduction)
     IntroMission2NIS()
 end
 
@@ -838,7 +844,7 @@ function M2InitialAttack()
 
             local allUnits = ScenarioUtils.CreateArmyGroup('UEF', 'M2_UEF_Drops_' .. i .. '_D' .. Difficulty)
 
-            for k, unit in allUnits do
+            for _, unit in allUnits do
                 if EntityCategoryContains( categories.TRANSPORTATION, unit ) then
                     table.insert(allTransports, unit )
                 else
@@ -846,7 +852,7 @@ function M2InitialAttack()
                 end
             end
             
-            for k, transport in allTransports do
+            for _, transport in allTransports do
                 ScenarioFramework.AttachUnitsToTransports(landUnits, {transport})
                 WaitSeconds(0.5)
                 for j = 1, 3 do
@@ -862,7 +868,7 @@ function M2InitialAttack()
             end
 
             --local platoon = ArmyBrains[UEF]:MakePlatoon('','')
-            for k, unit in landUnits do
+            for _, unit in landUnits do
                 while (not unit:IsDead() and unit:IsUnitState('Attached')) do
                     WaitSeconds(.5)
                 end
@@ -911,21 +917,6 @@ function M2CheatEconomy()
     end
 end
 
-function MassFabsEnergyDrainReduction()
-    local MassFabs = {}
-    while true do
-        for i = 3, 6 do
-            for _, v in ArmyBrains[i]:GetListOfUnits(categories.MASSFABRICATION * categories.TECH3, false) do
-                if not ( MassFabs[v:GetEntityId()] or v:IsBeingBuilt() ) then
-                    v:SetConsumptionPerSecondEnergy(1000)
-                    MassFabs[v:GetEntityId()] = true
-                end
-            end
-        end
-        WaitSeconds(10)
-    end
-end
-
 function EnableStealthOnAir()
     local T3AirUnits = {}
     while true do
@@ -939,7 +930,7 @@ function EnableStealthOnAir()
     end
 
     --[[
-    for k, spider in ScenarioInfo.M3SpiderbotPlatoon:GetPlatoonUnits() do
+    for _, spider in ScenarioInfo.M3SpiderbotPlatoon:GetPlatoonUnits() do
         if EntityCategoryContains(categories.url0402, spider) then
             spider:ToggleScriptBit('RULEUTC_StealthToggle')
             ScenarioFramework.CreateArmyIntelTrigger(M3OnSpiderbotSpotted, ArmyBrains[Player], 'LOSNow', spider, true, categories.ALLUNITS, true, ArmyBrains[Cybran])
@@ -1006,7 +997,7 @@ function IntroMission3()
 
     ScenarioUtils.CreateArmyGroup('Order', 'M3_Order_Bases')
     local units = ScenarioUtils.CreateArmyGroupAsPlatoon('Order', 'M3_Order_Units', 'AttackFormation')
-    for k, v in units:GetPlatoonUnits() do
+    for _, v in units:GetPlatoonUnits() do
         ScenarioFramework.GroupPatrolRoute({v}, ScenarioPlatoonAI.GetRandomPatrolRoute(ScenarioUtils.ChainToPositions('M3_Order_Death_Patrol_Chain')))
     end
 
@@ -1019,32 +1010,94 @@ function IntroMission3()
     -- Army Cap
     SetArmyUnitCap(UEF, 1500)
 
+    -- Spawning Land and Naval units now for Cinematics, Air will follow after Cinematics since it moves much faster.
     M3CounterAttack()
-    ForkThread(M4CheatEconomy)
+
+    ForkThread(M3CheatEconomy)
     ForkThread(IntroMission3NIS)
 end
 
+-- Land and Naval CounterAttack
 function M3CounterAttack()
-    local M3Spiders = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_CA_Spiders_D' .. Difficulty, 'AttackFormation')
-    local M3GCs = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M3_CA_GCs_D' .. Difficulty, 'AttackFormation')  
+    local platoon, patrolChain
 
-    if Random(1,2) == 1 then
-        ScenarioFramework.PlatoonPatrolChain(M3Spiders, 'M3_Exp_Attack_Chain_South')
-        ScenarioFramework.PlatoonPatrolChain(M3GCs, 'M3_Exp_Attack_Chain_North')
-    else
-        ScenarioFramework.PlatoonPatrolChain(M3Spiders, 'M3_Exp_Attack_Chain_North')
-        ScenarioFramework.PlatoonPatrolChain(M3GCs, 'M3_Exp_Attack_Chain_South')
+    local function M3RandomPatrolRoute()
+        if Random(1,2) == 1 then
+            return 'M3_Exp_Attack_Chain_North'
+        else
+            return 'M3_Exp_Attack_Chain_South'
+        end
     end
-
-    local M3Fatboys = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M3_Fatboys_D' .. Difficulty, 'AttackFormation')
-    ScenarioFramework.PlatoonPatrolChain(M3Fatboys, 'M3_UEF_LandAttack_North_Chain')
-
-    for _, v in M3Spiders:GetPlatoonUnits() do
-        table.insert(ScenarioInfo.M3ObjectiveExperimentalas, v)
-    end
+    -------
+    -- Aeon
+    -------
+    -- GC
+    patrolChain = M3RandomPatrolRoute()
+    local M3GCs = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M3_CA_GCs_D' .. Difficulty, 'AttackFormation')
+    ScenarioFramework.PlatoonPatrolChain(M3GCs, patrolChain)
     for _, v in M3GCs:GetPlatoonUnits() do
         table.insert(ScenarioInfo.M3ObjectiveExperimentalas, v)
     end
+
+    -- Harbingers
+    patrolChain = M3RandomPatrolRoute()
+    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M3_CA_Harbingers_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, patrolChain)
+
+    -- T3 Mobile AA
+    patrolChain = M3RandomPatrolRoute()
+    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M3_CA_AA_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, patrolChain)
+
+    -- Sniperbots
+    patrolChain = M3RandomPatrolRoute()
+    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Aeon', 'M3_CA_Snipers_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, patrolChain)
+
+    ---------
+    -- Cybran
+    ---------
+    -- Spiders
+    patrolChain = M3RandomPatrolRoute()
+    local M3Spiders = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_CA_Spiders_D' .. Difficulty, 'AttackFormation')  
+    ScenarioFramework.PlatoonPatrolChain(M3Spiders, patrolChain)
+    for _, v in M3Spiders:GetPlatoonUnits() do
+        table.insert(ScenarioInfo.M3ObjectiveExperimentalas, v)
+    end
+
+    -- Loyalists
+    --[[
+    for i = 1, 2 do
+        patrolChain = M3RandomPatrolRoute()
+        platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_CA_Loyalists_' .. i .. '_D' .. Difficulty, 'GrowthFormation')
+        ScenarioFramework.PlatoonPatrolChain(platoon, patrolChain)
+    end
+    ]]--
+    patrolChain = M3RandomPatrolRoute()
+    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_CA_Loyalists_1_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, patrolChain)
+    
+    -- Bricks
+    patrolChain = M3RandomPatrolRoute()
+    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_CA_Bricks_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, patrolChain)
+
+    -- Mobile Arty
+    patrolChain = M3RandomPatrolRoute()
+    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_CA_Arty_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, patrolChain)
+
+    -- Mobile T3 AA
+    patrolChain = M3RandomPatrolRoute()
+    platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('Cybran', 'M3_CA_AA_D' .. Difficulty, 'GrowthFormation')
+    ScenarioFramework.PlatoonPatrolChain(platoon, patrolChain)
+
+    ------
+    -- UEF
+    ------
+    -- Fatboy
+    local M3Fatboys = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M3_Fatboys_D' .. Difficulty, 'AttackFormation')
+    ScenarioFramework.PlatoonPatrolChain(M3Fatboys, 'M3_UEF_LandAttack_North_Chain')
     for _, v in M3Fatboys:GetPlatoonUnits() do
         table.insert(ScenarioInfo.M3ObjectiveExperimentalas, v)
     end
@@ -1090,6 +1143,7 @@ function IntroMission3NIS()
     StartMission3()
 end
 
+-- Air CounterAttack
 function M3CounterAttackAir()
     local units = nil
     local trigger = {}
@@ -1112,7 +1166,7 @@ function M3CounterAttackAir()
         end
     end
 
-    -- Spawns Air Superiority for every 30, 25, 20 gunships, up to 10 groups
+    -- Spawns Air Superiority
     local num = 0
     for _, player in ScenarioInfo.HumanPlayers do
         num = num + table.getn(ArmyBrains[player]:GetListOfUnits(categories.AIR * categories.MOBILE * categories.TECH3, false))
@@ -1156,35 +1210,37 @@ function StartMission3()
 end
 
 function M3SeraphimReinforcements()
-    ForkThread(function()
-        local units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M3_Sera_Exps_D' .. Difficulty, 'AttackFormation')
-        units:MoveToLocation(ScenarioUtils.MarkerToPosition('M3_Yothas_Destination_1'), false)
-        WaitSeconds(1)
-        for _, v in units:GetPlatoonUnits() do
-            while v:IsUnitState('Moving') do
-                WaitSeconds(1)
-            end
-            ScenarioFramework.GiveUnitToArmy(v, 'Player')
-        end
+    ForkThread(
+        function()
+            -- Allow players to build T4 Bots and Bombers
+            ScenarioFramework.RemoveRestrictionForAllHumans(categories.xsl0401 + categories.xsa0402, true)
 
-        -- Allow players to build Ythothas
-        for _, player in ScenarioInfo.HumanPlayers do
-            ScenarioFramework.RemoveRestriction(player, categories.xsl0401)
-        end
-
-        units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M3_Sera_T3_Subs_D' .. Difficulty, 'AttackFormation')
-        units:MoveToLocation(ScenarioUtils.MarkerToPosition('M3_Subs_Destination'), false)
-        WaitSeconds(1)
-        for _, v in units:GetPlatoonUnits() do
-            while v:IsUnitState('Moving') do
-                WaitSeconds(1)
+            -- Move on map and give T4 Bot
+            local units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M3_Sera_Exps_D' .. Difficulty, 'AttackFormation')
+            units:MoveToLocation(ScenarioUtils.MarkerToPosition('M3_Yothas_Destination_1'), false)
+            WaitSeconds(1)
+            for _, v in units:GetPlatoonUnits() do
+                while v:IsUnitState('Moving') do
+                    WaitSeconds(1)
+                end
+                ScenarioFramework.GiveUnitToArmy(v, 'Player')
             end
-            ScenarioFramework.GiveUnitToArmy(v, 'Player')
+            
+            -- T3 Subs
+            units = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M3_Sera_T3_Subs_D' .. Difficulty, 'AttackFormation')
+            units:MoveToLocation(ScenarioUtils.MarkerToPosition('M3_Subs_Destination'), false)
+            WaitSeconds(1)
+            for _, v in units:GetPlatoonUnits() do
+                while v:IsUnitState('Moving') do
+                    WaitSeconds(1)
+                end
+                ScenarioFramework.GiveUnitToArmy(v, 'Player')
+            end
         end
-    end)
+    )
 end
 
-function M4CheatEconomy()
+function M3CheatEconomy()
     while ScenarioInfo.MissionNumber >= 3 do
         ArmyBrains[Aeon]:GiveResource('MASS', 150)
         ArmyBrains[Aeon]:GiveResource('ENERGY', 2000)
@@ -1275,6 +1331,8 @@ function StartMisson4()
                 if ScenarioInfo.M4P2.Active then
                     -- ScenarioFramework.Dialogue(OpStrings.M3_Fort_Clarke_Destroyd, false, true)
                     M3UEFAI.DisableFortClarkeBase()
+                elseif not ScenarioInfo.M4CommandersSpotted then
+                    M4AssignSecondPrimary()
                 else
                     -- ScenarioFramework.Dialogue(OpStrings.M3_Fort_Clarke_Destroyd, PlayerWin, true)
                     PlayerWin()
@@ -1324,7 +1382,32 @@ function M4NukeParty()
         WaitSeconds(Random(4,8))
         IssueNuke({CybranNuke[1]}, ScenarioUtils.MarkerToPosition('M4_Cybran_Nuke_Marker'))
         WaitSeconds(80)
-        run = run +1
+        run = run + 1
+    end
+
+    WaitSeconds(180)
+
+    -- Activate UEF Nukes
+    local plat = ArmyBrains[UEF]:MakePlatoon('', '')
+    ArmyBrains[UEF]:AssignUnitsToPlatoon(plat, {UEFNuke[1]}, 'Attack', 'NoFormation')
+    plat:ForkAIThread(plat.NukeAI)
+
+    if Difficulty >= 2 then
+        WaitSeconds(180)
+
+        -- Activate Aeon Nukes
+        local plat = ArmyBrains[Aeon]:MakePlatoon('', '')
+        ArmyBrains[Aeon]:AssignUnitsToPlatoon(plat, {AeonNuke[1]}, 'Attack', 'NoFormation')
+        plat:ForkAIThread(plat.NukeAI)
+    end
+
+    if Difficulty == 3 then
+        WaitSeconds(180)
+
+        -- Activate Cybran Nukes
+        local plat = ArmyBrains[Cybran]:MakePlatoon('', '')
+        ArmyBrains[Cybran]:AssignUnitsToPlatoon(plat, {CybranNuke[1]}, 'Attack', 'NoFormation')
+        plat:ForkAIThread(plat.NukeAI)
     end
 end
 
@@ -1392,12 +1475,11 @@ function PlayerWin()
 end
 
 function PlayerDeath()
-    if Dubug then return end
     if (not ScenarioInfo.OpEnded) then
         ScenarioFramework.CDRDeathNISCamera(ScenarioInfo.PlayerCDR)
         ScenarioFramework.EndOperationSafety()
         ScenarioInfo.OpComplete = false
-        for k, v in AssignedObjectives do
+        for _, v in AssignedObjectives do
             if(v and v.Active) then
                 v:ManualResult(false)
             end
@@ -1412,24 +1494,9 @@ function PlayerDeath()
     end
 end
 
-function PlayerLose()
-    if(not ScenarioInfo.OpEnded) then
-        ScenarioFramework.CDRDeathNISCamera(ScenarioInfo.PlayerCDR)
-        ScenarioFramework.EndOperationSafety()
-        ScenarioInfo.OpComplete = false
-        for k, v in AssignedObjectives do
-            if(v and v.Active) then
-                v:ManualResult(false)
-            end
-        end
-        WaitSeconds(3)
-        ScenarioFramework.Dialogue(OpStrings.sACUDie, KillGame, true)
-    end
-end
-
 function KillGame()
     UnlockInput()
-    ScenarioFramework.EndOperation(ScenarioInfo.OpComplete, ScenarioInfo.OpComplete)
+    ScenarioFramework.EndOperation(ScenarioInfo.OpComplete, ScenarioInfo.OpComplete, true)
 end
 
 ------------------
@@ -1443,9 +1510,11 @@ end
 -- Debug Functions
 ------------------
 function OnCtrlF3()
+    ScenarioInfo.Mega = ScenarioUtils.CreateArmyUnit('Player', 'UNIT_10263')
 end
 
 function OnShiftF3()
+    --[[
     ForkThread(function()
         Cinematics.EnterNISMode()
         Cinematics.CameraMoveToMarker('Cam_Cyb_0', 0)
@@ -1456,6 +1525,8 @@ function OnShiftF3()
         WaitSeconds(1)
         Cinematics.ExitNISMode()
     end)
+    ]]--
+    ScenarioInfo.Mega:ShowBone('Missile_Turret', true)
 end
 
 function OnCtrlF4()

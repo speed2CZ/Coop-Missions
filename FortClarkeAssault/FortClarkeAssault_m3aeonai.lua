@@ -131,8 +131,8 @@ function AeonM3BaseLandAttacks()
     )
     opai:SetChildQuantity('MobileMissiles', quantity[Difficulty])
     opai:SetFormation('AttackFormation')
-    opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
-        'BrainGreaterThanOrEqualNumCategory', {'default_brain', 'Order', 10, categories.DEFENSE})
+    opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainsCompareNumCategory',
+        {'default_brain', {'Order'}, 10, categories.DEFENSE, '>='})
 
     quantity = {6, 8, 8}
     opai = AeonM3Base:AddOpAI('BasicLandAttack', 'M2_Aeon_LandAttack_3',
@@ -146,8 +146,8 @@ function AeonM3BaseLandAttacks()
     )
     opai:SetChildQuantity('MobileFlak', quantity[Difficulty])
     opai:SetFormation('AttackFormation')
-    opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
-        'BrainGreaterThanOrEqualNumCategory', {'default_brain', 'Order', 10, categories.AIR * categories.TECH2 * categories.MOBILE})
+    opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainsCompareNumCategory',
+        {'default_brain', {'Order'}, 10, categories.AIR * categories.TECH2 * categories.MOBILE, '>='})
 
     for i = 1, 2 do
         quantity = {6, 9, 12}
@@ -162,8 +162,8 @@ function AeonM3BaseLandAttacks()
         )
         opai:SetChildQuantity('SiegeBots', quantity[Difficulty])
         opai:SetFormation('AttackFormation')
-        opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
-            'BrainGreaterThanOrEqualNumCategory', {'default_brain', 'Order', 30, categories.LAND})
+        opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainsCompareNumCategory',
+            {'default_brain', {'Order'}, 30, categories.LAND, '>='})
     end
     --[[ -- Sniper Bots
     for i = 1, 2 do
@@ -180,7 +180,6 @@ function AeonM3BaseLandAttacks()
         opai:SetChildQuantity('HeavyBots', quantity[Difficulty])
         opai:SetFormation('AttackFormation')
         opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
-            'BrainGreaterThanOrEqualNumCategory', {'default_brain', 'Order', 40, categories.LAND})
     end]]--
 end
 
@@ -249,15 +248,16 @@ function AeonM3BaseNavalAttacks()
     local quantity = {}
     local trigger = {}
 
+    quantity = {20, 25, 30}
     opai = AeonM3BaseNaval:AddNavalAI('M3_Aeon_NavalAttack1',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
             PlatoonData = {
-                PatrolChain = 'M2_Order_Naval_Attack_Chain_1',
+                PatrolChain = 'M3_UEF_Base_NavalAttack_Chain',
             },
             EnabledTypes = {'Destroyer', 'Cruiser', 'Submarine'},
-            MaxFrigates = 11,
-            MinFrigates = 30,
+            MaxFrigates = quantity[Difficulty],
+            MinFrigates = quantity[Difficulty],
             Priority = 110,
             Overrides = {
                 CORE_TO_CRUISERS = 2,
@@ -271,25 +271,29 @@ function AeonM3BaseNavalAttacks()
     opai:SetLockingStyle('None')
 
     trigger = {8, 7, 6}
+    quantity = {55, 65, 75}
     opai = AeonM3BaseNaval:AddNavalAI('M3_Aeon_Base_BattleshipAttack_1',
         {
             MasterPlatoonFunction = {SPAIFileName, 'PatrolThread'},
             PlatoonData = {
                 PatrolChain = 'M3_UEF_Base_NavalAttack_Chain',
             },
-            EnabledTypes = {'Battleship', 'Cruiser'},
-            MaxFrigates = 75,
-            MinFrigates = 75,
+            EnabledTypes = {'Battleship', 'Destroyer', 'Cruiser'},
+            MaxFrigates = quantity[Difficulty],
+            MinFrigates = quantity[Difficulty],
             Priority = 140,
             Overrides = {
                 CORE_TO_CRUISERS = 1,
             },
         }
     )
-    opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua',
-        'BrainGreaterThanOrEqualNumCategory', {'default_brain', 'Player', trigger[Difficulty], categories.BATTLESHIP})
+    opai:AddBuildCondition('/lua/editor/otherarmyunitcountbuildconditions.lua', 'BrainsCompareNumCategory',
+        {'default_brain', {'HumanPlayers'}, trigger[Difficulty], categories.BATTLESHIP, '>='})
 end
 
+--------
+-- Other
+--------
 function M4AeonExperimentals()
     local opai = nil
     local quantity = {}

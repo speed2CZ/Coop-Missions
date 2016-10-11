@@ -1,12 +1,12 @@
 version = 3
 ScenarioInfo = {
-    name = 'Fort Clarke Assault - Beta V7',
-    description = 'Description',
+    name = 'Fort Clarke Assault BETA',
+    description = "Rework of the first FA mission from Seraphim point of view. Work in progress.",
     type = 'campaign_coop',
     starts = true,
     preview = '',
     size = {1024, 1024},
-    map = '/maps/X1CA_001/X1CA_001.scmap',
+    map = '/maps/FortClarkeAssault/FortClarkeAssault.scmap',
     save = '/maps/FortClarkeAssault/FortClarkeAssault_save.lua',
     script = '/maps/FortClarkeAssault/FortClarkeAssault_script.lua',
     norushradius = 0.000000,
