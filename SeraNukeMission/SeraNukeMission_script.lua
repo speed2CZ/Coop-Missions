@@ -32,31 +32,31 @@ local Utilities = import('/lua/Utilities.lua')
 ---------
 -- Globals
 ---------
-ScenarioInfo.Player = 1
+ScenarioInfo.Player1 = 1
 ScenarioInfo.Seraphim = 2
 ScenarioInfo.Order = 3
 ScenarioInfo.UEF = 4
 ScenarioInfo.Aeon = 5
 ScenarioInfo.Cybran = 6
 ScenarioInfo.Civilians = 7
-ScenarioInfo.Coop1 = 8
-ScenarioInfo.Coop2 = 9
-ScenarioInfo.Coop3 = 10
+ScenarioInfo.Player2 = 8
+ScenarioInfo.Player3 = 9
+ScenarioInfo.Player4 = 10
 ---ScenarioInfo.HumanPlayers = {} --Is this needed????
 
 
-ScenarioInfo.PlayerExists = false
-ScenarioInfo.Coop1Exists = false
-ScenarioInfo.Coop2Exists = false
-ScenarioInfo.Coop3Exists = false
+ScenarioInfo.Player1Exists = false
+ScenarioInfo.Player2Exists = false
+ScenarioInfo.Player3Exists = false
+ScenarioInfo.Player4Exists = false
 
 --------
 -- Locals
 --------
-local Player = ScenarioInfo.Player
-local Coop1 = ScenarioInfo.Coop1
-local Coop2 = ScenarioInfo.Coop2
-local Coop3 = ScenarioInfo.Coop3
+local Player1 = ScenarioInfo.Player1
+local Player2 = ScenarioInfo.Player2
+local Player3 = ScenarioInfo.Player3
+local Player4 = ScenarioInfo.Player4
 local Aeon = ScenarioInfo.Aeon
 local Cybran = ScenarioInfo.Cybran
 local Order = ScenarioInfo.Order
@@ -79,10 +79,10 @@ local SkipNIS2 = false
 local SkipNIS3 = false
 local SkipNIS4 = false
 
-function PlayerCommanderKilled()
-	ArmyBrains[Player]:OnDefeat()
+function Player1CommanderKilled()
+	ArmyBrains[Player1]:OnDefeat()
     if(not ScenarioInfo.OpEnded) then
-        ScenarioFramework.CDRDeathNISCamera(ScenarioInfo.PlayerCommander)
+        ScenarioFramework.CDRDeathNISCamera(ScenarioInfo.Player1Commander)
     end
 	return
 end
@@ -124,12 +124,12 @@ function M1CoalitionAttacks()
 	platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_AttackFleet_D' .. Difficulty, 'GrowthFormation')
     ScenarioFramework.PlatoonMoveChain(platoon, 'M1_AttackFleet_UEF1')
 	
-	-- UEF Riptide Attack vs Player and vs Seraphim, lasts 3 minutes
+	-- UEF Riptide Attack vs Player1 and vs Seraphim, lasts 3 minutes
 	ScenarioInfo.M1RecurringAttacks.UEFRipTides = ForkThread(
 	function()
 		for i = 1, Difficulty do
 			for i = 1, Difficulty do
-				platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_AttackPlayer_D' .. Difficulty, 'GrowthFormation')
+				platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_AttackPlayer1_D' .. Difficulty, 'GrowthFormation')
 				ScenarioFramework.PlatoonAttackChain(platoon, 'M1_YolonaOss')
 		
 				platoon = ScenarioUtils.CreateArmyGroupAsPlatoon('UEF', 'M1_AttackSera_D' .. Difficulty, 'GrowthFormation')
@@ -161,18 +161,18 @@ function OnPopulate(scenario)
     ScenarioUtils.InitializeScenarioArmies()
 
     -- Sets Army Colors
-    --ScenarioFramework.SetSeraphimColor(Player)
+    --ScenarioFramework.SetSeraphimColor(Player1)
     ScenarioFramework.SetSeraphimColor(Seraphim)
-    ScenarioFramework.SetArmyColor(Player, 220, 200, 20)
+    ScenarioFramework.SetArmyColor(Player1, 220, 200, 20)
 	ScenarioFramework.SetAeonEvilColor(Order)
-    ScenarioFramework.SetUEFPlayerColor(UEF)
-    ScenarioFramework.SetAeonPlayerColor(Aeon)
-    ScenarioFramework.SetCybranPlayerColor(Cybran)
+    ScenarioFramework.SetUEFPlayer1Color(UEF)
+    ScenarioFramework.SetAeonPlayer1Color(Aeon)
+    ScenarioFramework.SetCybranPlayer1Color(Cybran)
     ScenarioFramework.SetUEFAlly2Color(Civilians)
     local colors = {
-        ['Coop1'] = {255, 200, 0}, 
-        ['Coop2'] = {189, 116, 16}, 
-        ['Coop3'] = {89, 133, 39}
+        ['Player2'] = {255, 200, 0}, 
+        ['Player3'] = {189, 116, 16}, 
+        ['Player4'] = {89, 133, 39}
     }
     local ArmyTable = ListArmies()
     for army, color in colors do
@@ -180,20 +180,20 @@ function OnPopulate(scenario)
             ScenarioFramework.SetArmyColor(ScenarioInfo[army], unpack(color))
         end
     end
-	if ArmyTable[ScenarioInfo.Player] then
-		ScenarioInfo.PlayerExists = true
+	if ArmyTable[ScenarioInfo.Player1] then
+		ScenarioInfo.Player1Exists = true
 	end
-	if ArmyTable[ScenarioInfo.Coop1] then
-		ScenarioInfo.Coop1Exists = true
+	if ArmyTable[ScenarioInfo.Player2] then
+		ScenarioInfo.Player2Exists = true
 	end
-	if ArmyTable[ScenarioInfo.Coop2] then
-		ScenarioInfo.Coop2Exists = true
+	if ArmyTable[ScenarioInfo.Player3] then
+		ScenarioInfo.Player3Exists = true
 	end
-	if ArmyTable[ScenarioInfo.Coop3] then
-		ScenarioInfo.Coop3Exists = true
-		ScenarioInfo.Coop3Base = ScenarioInfoScenarioUtils.CreateArmyGroup('Coop3','Base')
+	if ArmyTable[ScenarioInfo.Player4] then
+		ScenarioInfo.Player4Exists = true
+		ScenarioInfo.Player4Base = ScenarioInfoScenarioUtils.CreateArmyGroup('Player4','Base')
 		----create mex positions for this base that are not normally there
-		for k, unit in EntityCategoryFilterDown(categories.uab1302, ScenarioInfo.Coop3Base) do
+		for k, unit in EntityCategoryFilterDown(categories.uab1302, ScenarioInfo.Player4Base) do
 			posx = unit:GetPosition()[1]
 			posy = unit:GetPosition()[3]
 			GenerateResourcesMarker(posx, posy)		
@@ -203,7 +203,7 @@ function OnPopulate(scenario)
     -- Unit Cap
     --ScenarioFramework.SetSharedUnitCap(1000)
 
-    -- Disable friendly AI sharing resources to players
+    -- Disable friendly AI sharing resources to Player1s
     GetArmyBrain(Seraphim):SetResourceSharing(false)
 	GetArmyBrain(Order):SetResourceSharing(false)
 	
@@ -223,23 +223,23 @@ function OnPopulate(scenario)
 	end
 	
 	------------
-    -- Seraphim Base, run by AI if coop1 not present, else given to player
+    -- Seraphim Base, run by AI if Player2 not present, else given to Player1
     ------------
 	
-	if not ScenarioInfo.Coop1Exists then
+	if not ScenarioInfo.Player2Exists then
 		M1SeraAI.SeraphimBaseAI() 
 		ArmyBrains[Seraphim]:PBMSetCheckInterval(6)
 	else
-		local Coop1Base = {}
-		Coop1Base.Core = ScenarioUtils.CreateArmyGroup('Seraphim', 'CoreBase')
-		Coop1Base.InnerDefenseRing = ScenarioUtils.CreateArmyGroup('Seraphim', 'InnerDefenseRing' )
-		Coop1Base.SupportFactories = ScenarioUtils.CreateArmyGroup('Seraphim', 'SeraphimSupportFactories')	
+		local Player2Base = {}
+		Player2Base.Core = ScenarioUtils.CreateArmyGroup('Seraphim', 'CoreBase')
+		Player2Base.InnerDefenseRing = ScenarioUtils.CreateArmyGroup('Seraphim', 'InnerDefenseRing' )
+		Player2Base.SupportFactories = ScenarioUtils.CreateArmyGroup('Seraphim', 'SeraphimSupportFactories')	
 		if Difficulty<3 then
-			Coop1Base.OuterDefenseRing = ScenarioUtils.CreateArmyGroup('Seraphim', 'OuterDefenseRing' )
+			Player2Base.OuterDefenseRing = ScenarioUtils.CreateArmyGroup('Seraphim', 'OuterDefenseRing' )
 		end
-		for index, group in Coop1Base do
+		for index, group in Player2Base do
 			for i, unit in group do
-				ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Coop1])
+				ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Player2])
 			end
 		end
 	end
@@ -253,33 +253,33 @@ function OnPopulate(scenario)
 	local DefenseFleet2 = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'DefenseFleet2_D' .. Difficulty, 'GrowthFormation')
 	local DefenseAirPatrol = ScenarioUtils.CreateArmyGroupAsPlatoon('Seraphim', 'M1_DefeseAirPatrol_D' .. Difficulty, 'GrowthFormation')
 	
-	--If there's no coop1, set patrols
-	if not ScenarioInfo.Coop1Exists then
+	--If there's no Player2, set patrols
+	if not ScenarioInfo.Player2Exists then
 		ScenarioFramework.PlatoonPatrolChain(DefenseForceSouth, 'M1_SeraLandPatrolSouth')
 		ScenarioFramework.PlatoonPatrolChain(DefenseForceEast, 'M1_SeraLandPatrolEast')
 		ScenarioFramework.PlatoonPatrolChain(DefenseFleet1, 'M1_SeraSeaPatrolSouth')	
 		ScenarioFramework.PlatoonPatrolChain(DefenseFleet2, 'M1_SeraSeaPatrolWest')
 		ScenarioFramework.PlatoonPatrolChain(DefenseAirPatrol, 'M1_SeraLandPatrolSouth')
-	else  --else, just give them to coop1
+	else  --else, just give them to Player2
 		for index, unit in DefenseForceSouth:GetPlatoonUnits() do
-			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Coop1])
+			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Player2])
 		end
 		for index, unit in DefenseForceEast:GetPlatoonUnits() do
-			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Coop1])
+			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Player2])
 		end
 		for index, unit in DefenseFleet1:GetPlatoonUnits() do
-			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Coop1])
+			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Player2])
 		end
 		for index, unit in DefenseFleet2:GetPlatoonUnits() do
-			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Coop1])
+			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Player2])
 		end
 		for index, unit in DefenseAirPatrol:GetPlatoonUnits() do
-			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Coop1])
+			ScenarioFramework.GiveUnitToArmy(unit, ArmyTable[ScenarioInfo.Player2])
 		end
 	end
 	
-	--If there is no coop1, spawn the Commander
-	if not ScenarioInfo.Coop1Exists then
+	--If there is no Player2, spawn the Commander
+	if not ScenarioInfo.Player2Exists then
 		ScenarioInfo.SeraphimCommander  = ScenarioFramework.SpawnCommander('Seraphim', 'Commander', false, 'Ithanyis', false, SeraphimCommanderKilled,
 		{'BlastAttack','DamageStabilization','RateOfFire'})
 		---So it doesnt wander away from the main base and get killed building T1 PD
@@ -304,14 +304,14 @@ function OnPopulate(scenario)
     end)
 
 	------------
-    -- Player Base and Fleet
+    -- Player1 Base and Fleet
     ------------
-	local PlayerBase = ScenarioUtils.CreateArmyGroup('Player', 'Base')
-	local DefenseFleet = ScenarioUtils.CreateArmyGroupAsPlatoon('Player', 'DefenseFleet','GrowthFormation')
+	local Player1Base = ScenarioUtils.CreateArmyGroup('Player1', 'Base')
+	local DefenseFleet = ScenarioUtils.CreateArmyGroupAsPlatoon('Player1', 'DefenseFleet','GrowthFormation')
 	for k, v in EntityCategoryFilterDown(categories.xss0201, DefenseFleet:GetPlatoonUnits()) do
         IssueDive({v})
     end
-	for k, v in EntityCategoryFilterDown(categories.xsb2401, PlayerBase) do
+	for k, v in EntityCategoryFilterDown(categories.xsb2401, Player1Base) do
         ScenarioInfo.YolonaOss = v
     end
 	
@@ -330,8 +330,8 @@ function OnStart(self)
     --------------------
     -- Build Restrictions
     --------------------
-    for _, player in ScenarioInfo.HumanPlayers do
-        ScenarioFramework.AddRestriction(player,
+    for _, Player1 in ScenarioInfo.HumanPlayer1s do
+        ScenarioFramework.AddRestriction(Player1,
             categories.xal0305 + -- Aeon Sniper Bot
             categories.xaa0202 + -- Aeon Mid Range fighter (Swift Wind)
             categories.xal0203 + -- Aeon Assault Tank (Blaze)
@@ -396,23 +396,23 @@ function IntroMission1NIS()
 		
 		ForkThread(function()
 		    -- Vision for NIS location
-			local VisMarkerPlayer	= ScenarioFramework.CreateVisibleAreaLocation(150, 'M1_CybranAmphibiousAttack3', 20, ArmyBrains[Player])
-			ScenarioInfo.NISGatePlayer = ScenarioUtils.CreateArmyGroup('Player', 'M1_NISGate')[1]
-			ScenarioInfo.NISGroupPlayer = ScenarioUtils.CreateArmyGroup('UEF', 'M1_NISAirRaid')	
+			local VisMarkerPlayer1	= ScenarioFramework.CreateVisibleAreaLocation(150, 'M1_CybranAmphibiousAttack3', 20, ArmyBrains[Player1])
+			ScenarioInfo.NISGatePlayer1 = ScenarioUtils.CreateArmyGroup('Player1', 'M1_NISGate')[1]
+			ScenarioInfo.NISGroupPlayer1 = ScenarioUtils.CreateArmyGroup('UEF', 'M1_NISAirRaid')	
 
-			IssueAttack(ScenarioInfo.NISGroupPlayer ,ScenarioInfo.NISGatePlayer)
+			IssueAttack(ScenarioInfo.NISGroupPlayer1 ,ScenarioInfo.NISGatePlayer1)
 			
 			WaitSeconds(8)
-			ScenarioInfo.PlayerCommander = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Gate', true, true, PlayerCommanderKilled)
+			ScenarioInfo.Player1Commander = ScenarioFramework.SpawnCommander('Player1', 'Commander', 'Gate', true, true, Player1CommanderKilled)
 			
 			--WaitSeconds(1)
-			IssueGuard({ScenarioInfo.PlayerCommander}, ScenarioInfo.YolonaOss)
+			IssueGuard({ScenarioInfo.Player1Commander}, ScenarioInfo.YolonaOss)
 		end)
 		
 		Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('M1_CybranAmphibiousAttack3'), 4)
 		
-		-- spawn coop players too
-		if ScenarioInfo.Coop1Exists or ScenarioInfo.Coop2Exists or ScenarioInfo.Coop3Exists then
+		-- spawn coop Player1s too
+		if ScenarioInfo.Player2Exists or ScenarioInfo.Player3Exists or ScenarioInfo.Player4Exists then
 			WaitSeconds(10)
 			ForkThread(M1CoopNIS)
 			WaitSeconds(20)
@@ -421,45 +421,45 @@ function IntroMission1NIS()
 		end
 
 		--VisMarker:Destroy()
-		for k, v in ScenarioInfo.NISGroupPlayer do
+		for k, v in ScenarioInfo.NISGroupPlayer1 do
 			if not v:IsDead() then
 				v:Kill()
 			end
 		end
-		ScenarioInfo.NISGatePlayer:Kill()
+		ScenarioInfo.NISGatePlayer1:Kill()
 		Cinematics.ExitNISMode()
 	else
-		ScenarioInfo.PlayerCommander = ScenarioFramework.SpawnCommander('Player', 'Commander', 'Warp', true, true, PlayerCommanderKilled)
+		ScenarioInfo.Player1Commander = ScenarioFramework.SpawnCommander('Player1', 'Commander', 'Warp', true, true, Player1CommanderKilled)
 	end
     IntroMission1()
 end
 
 function M1CoopNIS()
-	local VisMarkerPlayer	= ScenarioFramework.CreateVisibleAreaLocation(100, 'M1NISCoop', 20, ArmyBrains[Player])
+	local VisMarkerPlayer1	= ScenarioFramework.CreateVisibleAreaLocation(100, 'M1NISCoop', 20, ArmyBrains[Player1])
 	ScenarioInfo.NISGroupCoop = ScenarioUtils.CreateArmyGroup('UEF', 'M1_NISAirRaidCoop')		
 	ScenarioInfo.NISGateCoop = ScenarioUtils.CreateArmyGroup('Seraphim', 'M1_CoopGate')[1]
 	IssueAttack(ScenarioInfo.NISGroupCoop ,ScenarioInfo.NISGateCoop)
 	Cinematics.CameraMoveToMarker(ScenarioUtils.GetMarker('M1NISCoop'), 4)
-	if ScenarioInfo.Coop1Exists then
-		ScenarioInfo.Coop1Commander = ScenarioFramework.SpawnCommander('Coop1', 'Commander', 'Gate', true, true, Coop1CommanderKilled)
-		ScenarioInfo.SeraphimCommander = ScenarioInfo.Coop1Commander
-		IssueMove({ScenarioInfo.Coop1Commander},ScenarioUtils.MarkerToPosition('Coop1Move'))
+	if ScenarioInfo.Player2Exists then
+		ScenarioInfo.Player2Commander = ScenarioFramework.SpawnCommander('Player2', 'Commander', 'Gate', true, true, Player2CommanderKilled)
+		ScenarioInfo.SeraphimCommander = ScenarioInfo.Player2Commander
+		IssueMove({ScenarioInfo.Player2Commander},ScenarioUtils.MarkerToPosition('Player2Move'))
 		WaitSeconds(2)
 	else
 		WaitSeconds(2)
 	end
-	if ScenarioInfo.Coop2Exists then
-		ScenarioInfo.Coop2Commander = ScenarioFramework.SpawnCommander('Coop2', 'Commander', 'Gate', true, true, Coop2CommanderKilled)
+	if ScenarioInfo.Player3Exists then
+		ScenarioInfo.Player3Commander = ScenarioFramework.SpawnCommander('Player3', 'Commander', 'Gate', true, true, Player3CommanderKilled)
 		WaitSeconds(1)
-		IssueMove({ScenarioInfo.Coop2Commander},ScenarioUtils.MarkerToPosition('Coop2Move'))
+		IssueMove({ScenarioInfo.Player3Commander},ScenarioUtils.MarkerToPosition('Player3Move'))
 		WaitSeconds(2)
 	else
 		WaitSeconds(3)
 	end				
-	if ScenarioInfo.Coop3Exists then
-		ScenarioInfo.Coop3Commander = ScenarioFramework.SpawnCommander('Coop3', 'Commander', 'Gate', true, true, Coop3CommanderKilled)
+	if ScenarioInfo.Player4Exists then
+		ScenarioInfo.Player4Commander = ScenarioFramework.SpawnCommander('Player4', 'Commander', 'Gate', true, true, Player4CommanderKilled)
 		WaitSeconds(1)
-		IssueMove({ScenarioInfo.Coop3Commander},ScenarioUtils.MarkerToPosition('Coop3Move'))
+		IssueMove({ScenarioInfo.Player4Commander},ScenarioUtils.MarkerToPosition('Player4Move'))
 		WaitSeconds(3)
 	else
 		WaitSeconds(3)
@@ -467,7 +467,7 @@ function M1CoopNIS()
 	
 	for k, v in ScenarioInfo.NISGroupCoop do
 		if not v:IsDead() then
-			IssueAggressiveMove({v},ScenarioUtils.MarkerToPosition('Coop1Move'))
+			IssueAggressiveMove({v},ScenarioUtils.MarkerToPosition('Player2Move'))
 		end
 	end
 	---]]
@@ -476,16 +476,16 @@ function M1CoopNIS()
 
 end
 
-function Coop1CommanderKilled()
-	ArmyBrains[Coop1]:OnDefeat()
+function Player2CommanderKilled()
+	ArmyBrains[Player2]:OnDefeat()
 end
 
-function Coop2CommanderKilled()
-	ArmyBrains[Coop2]:OnDefeat()
+function Player3CommanderKilled()
+	ArmyBrains[Player3]:OnDefeat()
 end
 
-function Coop3CommanderKilled()
-	ArmyBrains[Coop3]:OnDefeat()
+function Player4CommanderKilled()
+	ArmyBrains[Player4]:OnDefeat()
 end
 
 function IntroMission1()
@@ -518,7 +518,7 @@ function StartMission1()
     ScenarioInfo.M1P1:AddResultCallback(
         function(result)
             if(result == false) then
-                PlayerLoseYolonaOss()
+                Player1LoseYolonaOss()
             end
         end
     )
@@ -596,12 +596,12 @@ function StartMission1()
     -----------
     -- Triggers
     -----------
-    -- Send group of percies if players ACUs are close to the UEF bases
+    -- Send group of percies if Player1s ACUs are close to the UEF bases
     --ScenarioInfo.M1Percies1Locked = false
     --ScenarioInfo.M1Percies2Locked = false
 
-    --ScenarioFramework.CreateUnitToMarkerDistanceTrigger(M1SendPercies1, ScenarioInfo.PlayerCDR, 'M1_South_Base_Marker', 40)
-    --ScenarioFramework.CreateUnitToMarkerDistanceTrigger(M1SendPercies2, ScenarioInfo.PlayerCDR, 'M1_North_Base_Marker', 40)
+    --ScenarioFramework.CreateUnitToMarkerDistanceTrigger(M1SendPercies1, ScenarioInfo.Player1CDR, 'M1_South_Base_Marker', 40)
+    --ScenarioFramework.CreateUnitToMarkerDistanceTrigger(M1SendPercies2, ScenarioInfo.Player1CDR, 'M1_North_Base_Marker', 40)
 
     --for k, ACU in ScenarioInfo.CoopCDR or {} do
     --    ScenarioFramework.CreateUnitToMarkerDistanceTrigger(M1SendPercies1, ACU, 'M1_South_Base_Marker', 40)
@@ -758,7 +758,7 @@ function Mission2NIS()
     if not SkipNIS3 then
         Cinematics.EnterNISMode()
 
-        local VisMarkerM2 = ScenarioFramework.CreateVisibleAreaLocation(200, 'M2_UEFAirBase', 0, ArmyBrains[Player])
+        local VisMarkerM2 = ScenarioFramework.CreateVisibleAreaLocation(200, 'M2_UEFAirBase', 0, ArmyBrains[Player1])
 
         Cinematics.CameraMoveToMarker('M2NISTempest', 4)
         WaitSeconds(10)
@@ -855,7 +855,7 @@ function IntroMission2()
 	------
 	-- Add Seraphim Tech 3 navy attack to base build if we have an ai there
 	----
-	if not ScenarioInfo.Coop1Exists then
+	if not ScenarioInfo.Player2Exists then
 		M1SeraAI.M2SeraphimAttacks()
 	end
 	
@@ -876,7 +876,7 @@ function IntroMission2()
     ScenarioInfo.M1S2:AddResultCallback(
         function(result)
             if(result == false) then
-                --PlayerLose()
+                --Player1Lose()
 				--ArmyBrains[Order]:OnDefeat()
 
             end
@@ -989,7 +989,7 @@ function M3_UEFSubAttack()
 					if not ScenarioInfo.OrderCommander:IsDead() then
 						IssueNuke({self}, ScenarioUtils.MarkerToPosition('M3_UEFNuke' .. i ..(self.target)))
 					else
-						IssueNuke({self}, ScenarioUtils.MarkerToPosition('M1_YolonaOss')) --If the Order is dead, shoot the player instead
+						IssueNuke({self}, ScenarioUtils.MarkerToPosition('M1_YolonaOss')) --If the Order is dead, shoot the Player1 instead
 					end
 					WaitSeconds(10)
 				end
@@ -1427,7 +1427,7 @@ function M4AeonCommanderKilled()
 	ArmyBrains[Aeon]:OnDefeat()
 end
 
-PlayerLoseYolonaOss = function()
+Player1LoseYolonaOss = function()
 
     if(not ScenarioInfo.OpEnded) then
         ScenarioFramework.CDRDeathNISCamera(ScenarioInfo.YolonaOss)
